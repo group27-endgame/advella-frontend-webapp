@@ -5,7 +5,9 @@ WORKDIR /app
 # Cache and Install dependencies
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install --production --network-timeout 500000
+RUN npm config rm proxy
+RUN npm config rm https-proxy
+RUN yarn install --production
 # Copy app files
 COPY . .
 # Build the app

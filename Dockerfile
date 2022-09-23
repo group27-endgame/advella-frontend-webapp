@@ -5,7 +5,7 @@ WORKDIR /app
 # Cache and Install dependencies
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install --production
+RUN yarn install --production --network-timeout 500000
 # Copy app files
 COPY . .
 # Build the app

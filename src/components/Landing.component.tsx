@@ -18,6 +18,7 @@ function Landing() {
             flexDirection: "column",
             alignItems: " center",
             justifyContent: "center",
+            textAlign: " center",
           }}
           minHeight="90vh"
         >

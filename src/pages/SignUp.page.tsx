@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
 
 export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -13,7 +15,11 @@ export default function SignUp() {
     console.log({
       email: data.get("email"),
       password: data.get("password"),
+      username: data.get("username"),
+      description: data.get,
     });
+
+    console.log(data);
   };
 
   return (
@@ -39,15 +45,6 @@ export default function SignUp() {
             margin="normal"
             required
             fullWidth
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
             label="Username"
             name="username"
             autoComplete="username"
@@ -61,6 +58,15 @@ export default function SignUp() {
             label="Password"
             type="password"
             autoComplete="current-password"
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
           />
           <TextField
             margin="normal"
@@ -81,6 +87,12 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
+
+          <Grid container justifyContent="center">
+            <Grid item sx={{ textAlign: " center" }}>
+              <Link href="/signin">{"Already have an account? Sing in"}</Link>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
     </Container>

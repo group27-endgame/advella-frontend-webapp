@@ -25,6 +25,7 @@ function Navbar() {
               src={require("../assets/images/logo.png")}
               width="80"
               style={{ objectFit: "cover" }}
+              alt="logo"
             />
           </Link>
         </Grid>

@@ -13,12 +13,14 @@ import SignUpPage from "./pages/SignUp.page";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<MainPage />}></Route>
-      <Route path="/signin" element={<SignInPage />}></Route>
-      <Route path="/signup" element={<SignUpPage />}></Route>
-      <Route path="*" element={<p>Path not resolved</p>} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<MainPage />}></Route>
+        <Route path="/signin" element={<SignInPage />}></Route>
+        <Route path="/signup" element={<SignUpPage />}></Route>
+        <Route path="*" element={<p>Path not resolved</p>} />
+      </Routes>
+    </>
   );
 }
 export default App;

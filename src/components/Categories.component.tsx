@@ -33,7 +33,7 @@ function Categories() {
         <Grid container spacing={2}>
           {categories.map(function (name, index) {
             return (
-              <Grid item xs={3}>
+              <Grid item xs={12} sm={6} md={4} xl={3}>
                 <CategoryCard
                   id={index}
                   image={"https://www.fillmurray.com/g/200/300"}

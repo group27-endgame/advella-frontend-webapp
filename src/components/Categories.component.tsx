@@ -22,8 +22,8 @@ function Categories() {
           gutterBottom
           sx={{
             fontWeight: "900",
-            fontSize: "5rem",
-            lineHeight: "5rem",
+            fontSize: { xs: "3rem", md: "5rem" },
+            lineHeight: { xs: "3rem", md: "5rem" },
             marginBottom: "4rem",
           }}
         >
@@ -32,11 +32,11 @@ function Categories() {
         <Grid container spacing={2}>
           {categories.map(function (name, index) {
             return (
-              <Grid item xs={12} sm={6} md={4} xl={3}>
+              <Grid item xs={6} md={4} xl={3} key={index}>
                 <CategoryCard
-                  id={index}
+                  categoryId={index}
                   image={"https://www.fillmurray.com/g/200/300"}
-                  title={" Category"}
+                  title={" Category " + index}
                 />
               </Grid>
             );

@@ -19,6 +19,7 @@ function Landing() {
             justifyContent: "center",
             textAlign: " center",
           }}
+          marginTop={4}
           minHeight="80vh"
         >
           <Grid container spacing={2}>

@@ -5,13 +5,13 @@ import Link from "@mui/material/Link";
 type CardProps = {
   image: string;
   title: string;
-  id: number;
+  categoryId: number;
 };
 function CategoryCard(this: any, props: CardProps) {
   return (
     <>
       <Link
-        href="#"
+        href={"/category/" + props.categoryId}
         underline="none"
         sx={{
           display: "flex",
@@ -24,7 +24,11 @@ function CategoryCard(this: any, props: CardProps) {
         <Avatar
           alt="Remy Sharp"
           src={props.image}
-          sx={{ width: 300, height: 300, gap: "2rem" }}
+          sx={{
+            width: { xs: 150, sm: 300 },
+            height: { xs: 150, sm: 300 },
+            gap: "2rem",
+          }}
         />
         <Typography
           gutterBottom

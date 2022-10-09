@@ -19,7 +19,7 @@ function Landing() {
             justifyContent: "center",
             textAlign: " center",
           }}
-          minHeight="90vh"
+          minHeight="80vh"
         >
           <Grid container spacing={2}>
             <Grid item xs={12} paddingY={4}>
@@ -27,8 +27,8 @@ function Landing() {
                 gutterBottom
                 sx={{
                   fontWeight: "900",
-                  fontSize: "5rem",
-                  lineHeight: "5rem",
+                  fontSize: { xs: "3rem", md: "5rem" },
+                  lineHeight: { xs: "3rem", md: "5rem" },
                 }}
               >
                 Shop and sell on our circular marketplace
@@ -52,6 +52,7 @@ function Landing() {
                   justifyContent: " center",
                   gap: "0.5rem",
                   marginBottom: "3rem",
+                  flexDirection: { xs: "column", sm: "row" },
                 }}
               >
                 <TextField
@@ -78,13 +79,23 @@ function Landing() {
               <ButtonGroup
                 variant="outlined"
                 aria-label="outlined primary button group"
+                sx={{ flexWrap: "wrap", rowGap: "1rem" }}
               >
                 <Button size="large" sx={{ textTransform: "capitalize" }}>
                   <Link href="#" color="inherit" underline="none">
                     Outdoors
                   </Link>
                 </Button>
-                <Button size="large" sx={{ textTransform: "capitalize" }}>
+                <Button
+                  size="large"
+                  sx={{
+                    textTransform: "capitalize",
+                    borderRightColor: {
+                      xs: "initial !important",
+                      sm: "transparent !important",
+                    },
+                  }}
+                >
                   <Link href="#" color="inherit" underline="none">
                     Housing
                   </Link>

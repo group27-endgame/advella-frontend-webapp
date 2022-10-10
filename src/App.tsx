@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar.component";
 import Newlisting from "./pages/NewListing.page";
 import CategoryPage from "./pages/Category.page";
 import ServicePage from "./pages/Service.page";
+import ProductPage from "./pages/Product.page";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           {" "}
         </Route>
         <Route path="/service" element={<ServicePage />} />
+        <Route path="/product" element={<ProductPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
     </>

@@ -15,13 +15,8 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import { useEffect, useState } from "react";
-export default function Service() {
-  const [likeCLicked, setLikeClicked] = useState(false);
+export default function Product() {
   const [letter, setLetter] = useState<string>();
-  const handleLikeIconClick = () => {
-    setLikeClicked(!likeCLicked);
-    // change <AddCircleIcon /> to <BlockIcon /> at "id"
-  };
 
   const images = [
     {
@@ -61,7 +56,7 @@ export default function Service() {
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography fontWeight={"bold"} sx={{ mb: 2 }}>
-              Service
+              Product
             </Typography>
             <Typography
               fontWeight={"bold"}
@@ -76,18 +71,8 @@ export default function Service() {
             </Typography>
             <Stack direction="row" spacing={2} marginBottom={2}>
               <Button
-                sx={{ textTransform: "capitalize", pl: 0 }}
-                onClick={handleLikeIconClick}
+                sx={{ textTransform: "capitalize", color: "green", pl: 0 }}
               >
-                {" "}
-                {likeCLicked ? (
-                  <ThumbUpAltIcon sx={{ mr: 1 }} />
-                ) : (
-                  <ThumbUpOffAltIcon sx={{ mr: 1 }} />
-                )}
-                Likes 1
-              </Button>
-              <Button sx={{ textTransform: "capitalize", color: "green" }}>
                 {" "}
                 <AttachMoneyIcon style={{ color: "green" }} />
                 Make a bid
@@ -173,7 +158,7 @@ export default function Service() {
               <Typography ml={1}>200dk</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
-              <Typography sx={{ opacity: 0.7 }}>Location:</Typography>
+              <Typography sx={{ opacity: 0.7 }}>Pick up location:</Typography>
               <Typography ml={1}>Horsens</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
@@ -188,7 +173,11 @@ export default function Service() {
               <Typography sx={{ opacity: 0.7 }}>Created:</Typography>
               <Typography ml={1}>27/09/2000</Typography>{" "}
             </Box>
-
+            <Box display={"flex"} mb={1}>
+              {" "}
+              <Typography sx={{ opacity: 0.7 }}>Deadline:</Typography>
+              <Typography ml={1}>27/09/2000</Typography>{" "}
+            </Box>
             <Box display={"flex"}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Category:</Typography>

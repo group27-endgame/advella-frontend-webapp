@@ -12,8 +12,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/system/Box";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+
 import { useEffect, useState } from "react";
 export default function Product() {
   const [letter, setLetter] = useState<string>();

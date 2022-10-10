@@ -1,4 +1,3 @@
-import React from "react";
 import "./App.css";
 
 import MainPage from "./pages/Main.page";
@@ -9,6 +8,7 @@ import SignUpPage from "./pages/SignUp.page";
 import Navbar from "./components/Navbar.component";
 import Newlisting from "./pages/NewListing.page";
 import CategoryPage from "./pages/Category.page";
+import ServicePage from "./pages/Service.page";
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
         <Route path="category/:categoryId" element={<CategoryPage />}>
           {" "}
         </Route>
+        <Route path="/service" element={<ServicePage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
     </>

@@ -42,7 +42,7 @@ export default function Service() {
     const userFirstLetter =
       document.querySelector(".userName")?.textContent![0];
     setLetter(userFirstLetter);
-  });
+  }, []);
 
   return (
     <>

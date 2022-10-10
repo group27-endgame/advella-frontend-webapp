@@ -9,8 +9,11 @@ import ImageUploading, { ImageListType } from "react-images-uploading";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 export default function NewListing() {
   const [images, setImages] = React.useState([]);
@@ -23,6 +26,12 @@ export default function NewListing() {
     // data for submit
     console.log(imageList, addUpdateIndex);
     setImages(imageList as never[]);
+  };
+
+  const [category, setCategory] = React.useState("");
+
+  const handleCategoryChange = (event: SelectChangeEvent) => {
+    setCategory(event.target.value as string);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -44,6 +53,7 @@ export default function NewListing() {
         images: images,
         duration: duration,
         location: data.get("location"),
+        category: category,
       });
     } else {
       console.log({
@@ -54,6 +64,7 @@ export default function NewListing() {
         date: data.get("date"),
         images: images,
         location: data.get("location"),
+        category: category,
       });
     }
   };
@@ -103,6 +114,7 @@ export default function NewListing() {
             label="Detail"
             rows={4}
             multiline={true}
+            sx={{ mb: 2 }}
           />
           <FormControl sx={{ textAlign: "left", width: "100%" }}>
             <FormLabel id="demo-row-radio-buttons-group-label">
@@ -147,6 +159,7 @@ export default function NewListing() {
                 InputProps={{ inputProps: { min: 0, max: 99999 } }}
               />
             </Grid>
+
             <Grid item xs={12} sm={6} sx={{ display: "flex", gap: "1rem" }}>
               <Box
                 sx={{
@@ -196,17 +209,17 @@ export default function NewListing() {
           </Grid>
 
           <Grid container spacing={3}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               {" "}
               <TextField
                 required
                 name="location"
                 label="Location"
-                sx={{ width: " 100%", marginBottom: "1.5rem" }}
+                sx={{ width: " 100%" }}
                 margin="normal"
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6} sx={{ paddingTop: "0px !important" }}>
               {" "}
               <TextField
                 id="date"
@@ -214,12 +227,37 @@ export default function NewListing() {
                 name="date"
                 label="Due date"
                 type="date"
-                sx={{ width: " 100%", marginBottom: "1.5rem" }}
+                sx={{
+                  width: " 100%",
+                  marginBottom: { sm: "1.5rem" },
+                }}
                 margin="normal"
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{ pt: "16px !important", mb: { xs: "1.5rem", sm: "0rem" } }}
+            >
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={category}
+                  label="Age"
+                  onChange={handleCategoryChange}
+                  required
+                >
+                  <MenuItem value={"Housing"}>Housing</MenuItem>
+                  <MenuItem value={"Appliances"}>Appliances</MenuItem>
+                  <MenuItem value={"Others"}>Others</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
 

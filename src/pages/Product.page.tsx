@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 export default function Product() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
-  const [newBid, setNewBid] = useState<any | null>();
+  const [newBid] = useState<any | null>();
 
   const images = [
     {

@@ -8,6 +8,7 @@ import {
   Divider,
   Link,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import Box from "@mui/system/Box";
@@ -16,6 +17,8 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useEffect, useState } from "react";
 export default function Product() {
   const [letter, setLetter] = useState<string>();
+  const [currentBid, setCurrentBid] = useState<any | null>(0);
+  const [newBid, setNewBid] = useState<any | null>();
 
   const images = [
     {
@@ -37,6 +40,19 @@ export default function Product() {
       document.querySelector(".userName")?.textContent![0];
     setLetter(userFirstLetter);
   }, []);
+
+  const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+
+    const newBid = data?.get("bidAmount");
+    if (newBid != null && newBid > currentBid) {
+      setCurrentBid(newBid);
+      console.log(newBid);
+      console.log("bid:" + newBid);
+      console.log("current Bid" + currentBid);
+    }
+  };
 
   return (
     <>
@@ -68,14 +84,72 @@ export default function Product() {
             >
               Need to fix some dishwasher
             </Typography>
-            <Stack direction="row" spacing={2} marginBottom={2}>
-              <Button
-                sx={{ textTransform: "capitalize", color: "green", pl: 0 }}
+            <Divider sx={{ mb: 2 }} />
+
+            <Stack
+              direction="column"
+              spacing={2}
+              marginBottom={2}
+              sx={{ textAlign: "left", alignItems: "flex-start" }}
+              divider={<Divider sx={{ mb: 2 }} flexItem />}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+
+                  width: "100%",
+                  alignItems: "start",
+                }}
+                component="form"
+                onSubmit={handleSetNewBid}
+                noValidate
               >
-                {" "}
-                <AttachMoneyIcon style={{ color: "green" }} />
-                Make a bid
-              </Button>
+                <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
+                  Current bid:&nbsp;
+                  <Typography fontWeight={"bold"} component={"span"}>
+                    {currentBid}dkk
+                  </Typography>
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    flex: 1,
+                    width: "100%",
+                    gap: "1rem",
+                  }}
+                >
+                  <TextField
+                    margin="none"
+                    required
+                    fullWidth
+                    label="Bid amount"
+                    name="bidAmount"
+                    type="number"
+                    value={newBid}
+                    InputProps={{
+                      inputProps: { min: { currentBid } },
+                    }}
+                    sx={{ maxWidth: { md: "25%" } }}
+                  />{" "}
+                  <Button
+                    variant="contained"
+                    sx={{
+                      textTransform: "capitalize",
+                      color: "white",
+                      background: "green",
+                      maxWidth: { md: "50%" },
+                    }}
+                    type="submit"
+                  >
+                    {" "}
+                    <AttachMoneyIcon style={{ color: "white" }} />
+                    Make a bid
+                  </Button>{" "}
+                </Box>
+              </Box>
             </Stack>
             <Divider sx={{ mb: 2 }} />
 

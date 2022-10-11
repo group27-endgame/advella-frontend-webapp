@@ -8,6 +8,7 @@ import {
   Divider,
   Link,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import Box from "@mui/system/Box";
@@ -17,10 +18,38 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import { useEffect, useState } from "react";
 export default function Service() {
   const [likeCLicked, setLikeClicked] = useState(false);
+  const [likeAmount, setLikeAmount] = useState<number>(0);
+
   const [letter, setLetter] = useState<string>();
+  const [currentBid, setCurrentBid] = useState<any | null>(0);
+  const [newBid, setNewBid] = useState<any | null>();
+
   const handleLikeIconClick = () => {
     setLikeClicked(!likeCLicked);
     // change <AddCircleIcon /> to <BlockIcon /> at "id"
+  };
+
+  const handleLikeClick = () => {
+    const getLike = likeAmount;
+    setLikeAmount(getLike + 1);
+  };
+
+  const handleDislikeClick = () => {
+    const getLike = likeAmount;
+    setLikeAmount(getLike - 1);
+  };
+
+  const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+
+    const newBid = data?.get("bidAmount");
+    if (newBid != null && newBid > currentBid) {
+      setCurrentBid(newBid);
+      console.log(newBid);
+      console.log("bid:" + newBid);
+      console.log("current Bid" + currentBid);
+    }
   };
 
   const images = [
@@ -74,24 +103,102 @@ export default function Service() {
             >
               Need to fix some dishwasher
             </Typography>
-            <Stack direction="row" spacing={2} marginBottom={2}>
-              <Button
+            <Stack
+              direction="column"
+              spacing={2}
+              marginBottom={2}
+              sx={{ textAlign: "left", alignItems: "flex-start" }}
+              divider={<Divider sx={{ mb: 2 }} flexItem />}
+            >
+              <Box
                 sx={{ textTransform: "capitalize", pl: 0 }}
                 onClick={handleLikeIconClick}
               >
-                {" "}
+                {/* // full thumnbs up icon, liked */}
                 {likeCLicked ? (
-                  <ThumbUpAltIcon sx={{ mr: 1 }} />
+                  <Button
+                    variant="text"
+                    component="span"
+                    onClick={handleDislikeClick}
+                    startIcon={<ThumbUpAltIcon sx={{ mr: 1 }}></ThumbUpAltIcon>}
+                  >
+                    {" "}
+                    Likes {likeAmount}{" "}
+                  </Button>
                 ) : (
-                  <ThumbUpOffAltIcon sx={{ mr: 1 }} />
+                  // empty thumbs up, not liked
+
+                  <Button
+                    variant="text"
+                    component="span"
+                    onClick={handleLikeClick}
+                    startIcon={
+                      <ThumbUpOffAltIcon sx={{ mr: 1 }}></ThumbUpOffAltIcon>
+                    }
+                  >
+                    {" "}
+                    Likes {likeAmount}{" "}
+                  </Button>
                 )}
-                Likes 1
-              </Button>
-              <Button sx={{ textTransform: "capitalize", color: "green" }}>
-                {" "}
-                <AttachMoneyIcon style={{ color: "green" }} />
-                Make a bid
-              </Button>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+
+                  width: "100%",
+                  alignItems: "start",
+                }}
+                component="form"
+                onSubmit={handleSetNewBid}
+                noValidate
+              >
+                <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
+                  Current bid:&nbsp;
+                  <Typography fontWeight={"bold"} component={"span"}>
+                    {currentBid}dkk
+                  </Typography>
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    flex: 1,
+                    width: "100%",
+                    gap: "1rem",
+                  }}
+                >
+                  <TextField
+                    margin="none"
+                    required
+                    fullWidth
+                    label="Bid amount"
+                    name="bidAmount"
+                    type="number"
+                    value={newBid}
+                    InputProps={{
+                      inputProps: { min: { currentBid } },
+                    }}
+                    sx={{ maxWidth: { md: "25%" } }}
+                  />{" "}
+                  <Button
+                    variant="contained"
+                    sx={{
+                      textTransform: "capitalize",
+                      color: "white",
+                      background: "green",
+                      maxWidth: { md: "50%" },
+                    }}
+                    type="submit"
+                  >
+                    {" "}
+                    <AttachMoneyIcon style={{ color: "white" }} />
+                    Make a bid
+                  </Button>{" "}
+                </Box>
+              </Box>
             </Stack>
             <Divider sx={{ mb: 2 }} />
 

@@ -46,7 +46,6 @@ export default function Product() {
 
   const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
     if (newBid > currentBid) {
       setCurrentBid(newBid);

@@ -3,10 +3,12 @@ import Grid from "@mui/material/Grid";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import {
+  Alert,
   Avatar,
   Button,
   Divider,
   Link,
+  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -19,7 +21,8 @@ export default function Product() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
   const [newBid] = useState<any | null>();
-
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const images = [
     {
       original: "https://picsum.photos/id/1018/1000/600/",
@@ -45,12 +48,23 @@ export default function Product() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const newBid = data?.get("bidAmount");
-    if (newBid != null && newBid > currentBid) {
+    if (newBid > currentBid) {
       setCurrentBid(newBid);
+      setOpenSnackbar(true);
+      setTimeout(() => {
+        setOpenSnackbar(false);
+      }, 6000);
       console.log(newBid);
       console.log("bid:" + newBid);
       console.log("current Bid" + currentBid);
+    } else {
+      console.log(newBid);
+      console.log("bid:" + newBid);
+      console.log("current Bid" + currentBid);
+      setOpenErrorSnackbar(true);
+      setTimeout(() => {
+        setOpenErrorSnackbar(false);
+      }, 6000);
     }
   };
 
@@ -263,6 +277,30 @@ export default function Product() {
             </Box>
           </Grid>
         </Grid>
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={6000}
+          open={openSnackbar}
+          message="I love snacks"
+        >
+          <Alert severity="success" sx={{ width: "100%" }}>
+            Success! You made a new bid with an amount of:
+            <Typography component="span" fontWeight={"bold"}>
+              &nbsp; {currentBid} dkk
+            </Typography>
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={6000}
+          open={openErrorSnackbar}
+          message="I love snacks"
+        >
+          <Alert severity="info" sx={{ width: "100%" }}>
+            Your bid need to be higher than the current one
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   );

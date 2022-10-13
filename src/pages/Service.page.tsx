@@ -330,7 +330,6 @@ export default function Service() {
           autoHideDuration={6000}
           open={openSnackbar}
           message="I love snacks"
-          key={"top" + "center"}
         >
           <Alert severity="success" sx={{ width: "100%" }}>
             Success! You made a new bid with an amount of:
@@ -345,7 +344,6 @@ export default function Service() {
           autoHideDuration={6000}
           open={openErrorSnackbar}
           message="I love snacks"
-          key={"top" + "center"}
         >
           <Alert severity="info" sx={{ width: "100%" }}>
             Your bid need to be higher than the current one

@@ -10,6 +10,7 @@ import Newlisting from "./pages/NewListing.page";
 import CategoryPage from "./pages/Category.page";
 import ServicePage from "./pages/Service.page";
 import ProductPage from "./pages/Product.page";
+import UserPage from "./pages/User.page";
 
 function App() {
   return (
@@ -23,8 +24,9 @@ function App() {
         <Route path="category/:categoryId" element={<CategoryPage />}>
           {" "}
         </Route>
-        <Route path="/service" element={<ServicePage />} />
-        <Route path="/product" element={<ProductPage />} />
+        <Route path="/service/:id" element={<ServicePage />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/user" element={<UserPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
     </>

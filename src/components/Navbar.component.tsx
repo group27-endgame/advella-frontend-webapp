@@ -151,6 +151,10 @@ function Navbar() {
               alt="logo"
             />
           </Link>
+          <Link href="/user" sx={{ fontSize: "3rem" }}>
+            {" "}
+            User
+          </Link>
         </Grid>
         <Grid
           item

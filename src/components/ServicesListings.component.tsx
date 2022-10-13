@@ -64,6 +64,7 @@ function ServicesListings() {
                   title={" Category"}
                   description={" popici"}
                   price={5}
+                  type={"product"}
                 />
               </Grid>
             );

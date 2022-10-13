@@ -3,10 +3,12 @@ import Grid from "@mui/material/Grid";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import {
+  Alert,
   Avatar,
   Button,
   Divider,
   Link,
+  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -22,11 +24,11 @@ export default function Service() {
 
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
-  const [newBid] = useState<any | null>();
-
+  const [newBid, setNewBid] = useState<any | null>();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const handleLikeIconClick = () => {
     setLikeClicked(!likeCLicked);
-    // change <AddCircleIcon /> to <BlockIcon /> at "id"
   };
 
   const handleLikeClick = () => {
@@ -41,14 +43,24 @@ export default function Service() {
 
   const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
-    const newBid = data?.get("bidAmount");
-    if (newBid != null && newBid > currentBid) {
+    if (newBid > currentBid) {
       setCurrentBid(newBid);
+      setOpenSnackbar(true);
+      setTimeout(() => {
+        setOpenSnackbar(false);
+      }, 6000);
       console.log(newBid);
       console.log("bid:" + newBid);
       console.log("current Bid" + currentBid);
+    } else {
+      console.log(newBid);
+      console.log("bid:" + newBid);
+      console.log("current Bid" + currentBid);
+      setOpenErrorSnackbar(true);
+      setTimeout(() => {
+        setOpenErrorSnackbar(false);
+      }, 6000);
     }
   };
 
@@ -140,6 +152,12 @@ export default function Service() {
                     Likes {likeAmount}{" "}
                   </Button>
                 )}
+                <Typography variant="body1" color="initial" sx={{ mt: 1 }}>
+                  Status:{" "}
+                  <Typography component="span" color="initial" fontWeight={600}>
+                    Ongoing
+                  </Typography>
+                </Typography>
               </Box>
 
               <Box
@@ -177,10 +195,8 @@ export default function Service() {
                     label="Bid amount"
                     name="bidAmount"
                     type="number"
-                    value={newBid}
-                    InputProps={{
-                      inputProps: { min: { currentBid } },
-                    }}
+                    defaultValue={currentBid}
+                    onChange={(e) => setNewBid(e.target.value)}
                     sx={{ maxWidth: { md: "25%" } }}
                   />{" "}
                   <Button
@@ -308,6 +324,33 @@ export default function Service() {
             </Box>
           </Grid>
         </Grid>
+
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={6000}
+          open={openSnackbar}
+          message="I love snacks"
+          key={"top" + "center"}
+        >
+          <Alert severity="success" sx={{ width: "100%" }}>
+            Success! You made a new bid with an amount of:
+            <Typography component="span" fontWeight={"bold"}>
+              &nbsp; {currentBid} dkk
+            </Typography>
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={6000}
+          open={openErrorSnackbar}
+          message="I love snacks"
+          key={"top" + "center"}
+        >
+          <Alert severity="info" sx={{ width: "100%" }}>
+            Your bid need to be higher than the current one
+          </Alert>
+        </Snackbar>
       </Container>
     </>
   );

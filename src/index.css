@@ -25,6 +25,7 @@ code {
   overflow: hidden;
   margin-bottom: 1.5rem;
   cursor: pointer;
+  position: relative;
 }
 
 
@@ -55,4 +56,16 @@ code {
   width: 30px !important;
 }
 
+.add-images-icon{
+  position: absolute;
+  left:47%;
+  top:28%
+}
+
+.line-clamp{
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
 

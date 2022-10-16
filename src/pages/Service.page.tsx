@@ -7,10 +7,16 @@ import {
   Avatar,
   Button,
   Divider,
+  IconButton,
   Link,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Modal,
   Snackbar,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Box from "@mui/system/Box";
@@ -18,15 +24,22 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import { useEffect, useState } from "react";
+import React from "react";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+
 export default function Service() {
   const [likeCLicked, setLikeClicked] = useState(false);
   const [likeAmount, setLikeAmount] = useState<number>(0);
-
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
   const [newBid, setNewBid] = useState<any | null>();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+
+  const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
   const handleLikeIconClick = () => {
     setLikeClicked(!likeCLicked);
   };
@@ -39,6 +52,17 @@ export default function Service() {
   const handleDislikeClick = () => {
     const getLike = likeAmount;
     setLikeAmount(getLike - 1);
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
@@ -85,6 +109,21 @@ export default function Service() {
     setLetter(userFirstLetter);
   }, []);
 
+  const style = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "100%",
+    maxWidth: "400px",
+    bgcolor: "background.paper",
+    borderRadius: "2px",
+    boxShadow: 24,
+    p: 4,
+    zIndex: 5,
+    background: "#fff",
+  };
+
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "3rem" }}>
@@ -101,9 +140,24 @@ export default function Service() {
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography fontWeight={"bold"} sx={{ mb: 2 }}>
-              Service
-            </Typography>
+            <Box display={"flex"} justifyContent="space-between">
+              <Typography fontWeight={"bold"} sx={{ mb: 2 }}>
+                Service
+              </Typography>
+              <Tooltip title="Edit listing">
+                <IconButton
+                  onClick={handleOptionsClick}
+                  size="small"
+                  sx={{ ml: 2 }}
+                  aria-controls={open ? "account-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  aria-label="settings"
+                >
+                  Edit
+                </IconButton>
+              </Tooltip>
+            </Box>
             <Typography
               fontWeight={"bold"}
               margin="normal"
@@ -172,12 +226,51 @@ export default function Service() {
                 onSubmit={handleSetNewBid}
                 noValidate
               >
-                <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
-                  Current bid:&nbsp;
-                  <Typography fontWeight={"bold"} component={"span"}>
-                    {currentBid}dkk
+                <Box
+                  display={"flex"}
+                  justifyContent="space-between"
+                  sx={{ width: "100%" }}
+                >
+                  <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
+                    Current bid:&nbsp;
+                    <Typography fontWeight={"bold"} component={"span"}>
+                      {currentBid}dkk
+                    </Typography>
                   </Typography>
-                </Typography>
+
+                  <Button
+                    variant="text"
+                    sx={{
+                      p: "0 !important",
+                      heigth: "fit-content",
+                      textTransform: "capitalize",
+                    }}
+                    onClick={handleOpenModal}
+                  >
+                    See Bidders
+                  </Button>
+                </Box>
+
+                <Modal
+                  open={openModal}
+                  onClose={handleCloseModal}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box sx={style}>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                    >
+                      Text in a modal
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                      Duis mollis, est non commodo luctus, nisi erat porttitor
+                      ligula.
+                    </Typography>
+                  </Box>
+                </Modal>
 
                 <Box
                   sx={{
@@ -349,6 +442,52 @@ export default function Service() {
             Your bid need to be higher than the current one
           </Alert>
         </Snackbar>
+        <Menu
+          anchorEl={anchorEl}
+          id="account-menu"
+          open={open}
+          onClose={handleClose}
+          onClick={handleClose}
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              overflow: "visible",
+              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+              mt: 1.5,
+              "& .MuiAvatar-root": {
+                width: 32,
+                height: 32,
+                ml: -0.5,
+                mr: 1,
+              },
+              "&:before": {
+                content: '""',
+                display: "block",
+                position: "absolute",
+                top: 0,
+                right: 14,
+                width: 10,
+                height: 10,
+                bgcolor: "background.paper",
+                transform: "translateY(-50%) rotate(45deg)",
+                zIndex: 0,
+              },
+            },
+          }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        >
+          <MenuItem>Close bidding</MenuItem>
+
+          <Divider />
+
+          <MenuItem sx={{ color: "red" }}>
+            <ListItemIcon>
+              <DeleteForeverIcon fontSize="small" style={{ color: "red" }} />
+            </ListItemIcon>
+            Delete
+          </MenuItem>
+        </Menu>
       </Container>
     </>
   );

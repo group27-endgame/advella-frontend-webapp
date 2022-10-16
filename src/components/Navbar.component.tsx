@@ -151,7 +151,7 @@ function Navbar() {
               alt="logo"
             />
           </Link>
-          <Link href="/user" sx={{ fontSize: "3rem" }}>
+          <Link href="/user/0" sx={{ fontSize: "3rem" }}>
             {" "}
             User
           </Link>
@@ -207,7 +207,7 @@ function Navbar() {
 
           {isLoggedIn ? (
             <Link
-              href="/myListings"
+              href="/mylistings"
               width={"100%"}
               sx={{
                 textDecoration: "none",

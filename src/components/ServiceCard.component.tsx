@@ -67,7 +67,7 @@ export default function ServiceCard(this: any, props: CardProps) {
           action={
             <div>
               {isLoggedIn ? (
-                <Tooltip title="Account settings">
+                <Tooltip title="Listing settings">
                   <IconButton
                     onClick={handleOptionsClick}
                     size="small"
@@ -163,7 +163,7 @@ export default function ServiceCard(this: any, props: CardProps) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem>Change status</MenuItem>
+        <MenuItem>Close bidding</MenuItem>
 
         <Divider />
 

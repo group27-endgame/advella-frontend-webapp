@@ -40,7 +40,7 @@ jobs:
           port: ${{ secrets.PORT }}
           command_timeout: 200m
           script: |
-            docker build https://github.com/group27-endgame/advella-frontend-webapp-admin.git#main -t advella-webapp
+            docker build https://github.com/group27-endgame/advella-frontend-webapp.git#main -t advella-webapp
             
             docker run \
             --name=advella-webapp \

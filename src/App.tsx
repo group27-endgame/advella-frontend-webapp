@@ -12,6 +12,7 @@ import ServicePage from "./pages/Service.page";
 import ProductPage from "./pages/Product.page";
 import UserPage from "./pages/User.page";
 import MyListings from "./pages/MyListings.page";
+import ChatPage from "./pages/Chat.page";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/service/:id" element={<ServicePage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/user/:id" element={<UserPage />} />
+        <Route path="/chat" element={<ChatPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
     </>

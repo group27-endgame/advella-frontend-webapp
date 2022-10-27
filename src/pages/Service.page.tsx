@@ -115,8 +115,6 @@ export default function Service() {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "100%",
-    maxWidth: "400px",
-    bgcolor: "background.paper",
     borderRadius: "2px",
     boxShadow: 24,
     p: 4,
@@ -206,13 +204,13 @@ export default function Service() {
                     Likes {likeAmount}{" "}
                   </Button>
                 )}
-                <Typography variant="body1" color="initial" sx={{ mt: 1 }}>
-                  Status:{" "}
-                  <Typography component="span" color="initial" fontWeight={600}>
-                    Ongoing
-                  </Typography>
-                </Typography>
               </Box>
+              <Typography variant="body1" color="initial" sx={{ mt: 1 }}>
+                Status:{" "}
+                <Typography component="span" color="initial" fontWeight={600}>
+                  Ongoing
+                </Typography>
+              </Typography>
 
               <Box
                 sx={{
@@ -229,6 +227,7 @@ export default function Service() {
                 <Box
                   display={"flex"}
                   justifyContent="space-between"
+                  alignContent={"center"}
                   sx={{ width: "100%" }}
                 >
                   <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
@@ -242,7 +241,7 @@ export default function Service() {
                     variant="text"
                     sx={{
                       p: "0 !important",
-                      heigth: "fit-content",
+                      height: "fit-content !important",
                       textTransform: "capitalize",
                     }}
                     onClick={handleOpenModal}
@@ -257,18 +256,43 @@ export default function Service() {
                   aria-labelledby="modal-modal-title"
                   aria-describedby="modal-modal-description"
                 >
-                  <Box sx={style}>
-                    <Typography
-                      id="modal-modal-title"
-                      variant="h6"
-                      component="h2"
-                    >
-                      Text in a modal
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                      Duis mollis, est non commodo luctus, nisi erat porttitor
-                      ligula.
-                    </Typography>
+                  <Box sx={style} className="bid-modal">
+                    <Box display={"flex"} flexDirection="column">
+                      <Stack direction="column" spacing={4} marginBottom={2}>
+                        <Typography
+                          fontWeight={"bold"}
+                          sx={{
+                            fontSize: "2rem",
+                            textAlign: { xs: "center", sm: "left" },
+                          }}
+                        >
+                          Bidders
+                        </Typography>
+                        {/* loop through the bidders */}
+
+                        <Box
+                          display={"flex"}
+                          alignItems="center"
+                          sx={{ flexDirection: { xs: "column", sm: "row" } }}
+                          gap={2}
+                        >
+                          <Avatar></Avatar>
+                          <Box display={"flex"}>
+                            <Typography>Janko - &#8203;</Typography>
+                            <Typography fontWeight={"bold"}>30dkk</Typography>
+                          </Box>
+                          <Button
+                            variant="contained"
+                            sx={{
+                              ml: { sm: "auto" },
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            Message
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </Box>
                   </Box>
                 </Modal>
 
@@ -352,7 +376,9 @@ export default function Service() {
                     textTransform: "capitalize",
                   }}
                 >
-                  View profile
+                  <Link href="/user/1" sx={{ textDecoration: "none" }}>
+                    View profile
+                  </Link>
                 </Button>
                 <Button
                   variant="contained"
@@ -362,7 +388,12 @@ export default function Service() {
                     textTransform: "capitalize",
                   }}
                 >
-                  Message
+                  <Link
+                    href="/chat"
+                    sx={{ textDecoration: "none", color: "white" }}
+                  >
+                    Message
+                  </Link>
                 </Button>
               </Box>
             </Box>

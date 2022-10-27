@@ -47,10 +47,10 @@ export default function MyListings() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           {categories.map(function (name, index) {
             return (
-              <Grid item xs={12} sm={6} md={4} xl={3} key={index}>
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <ServiceCard
                   id={index}
                   image={"https://www.fillmurray.com/g/200/300"}
@@ -59,7 +59,7 @@ export default function MyListings() {
                     "Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti"
                   }
                   price={0}
-                  type={"product"}
+                  type={"service"}
                 />
               </Grid>
             );

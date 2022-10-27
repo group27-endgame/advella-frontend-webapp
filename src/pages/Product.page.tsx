@@ -8,6 +8,7 @@ import {
   Button,
   Divider,
   Link,
+  Modal,
   Snackbar,
   Stack,
   TextField,
@@ -17,12 +18,17 @@ import Box from "@mui/system/Box";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 import { useEffect, useState } from "react";
+import React from "react";
 export default function Product() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
   const [newBid] = useState<any | null>();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
   const images = [
     {
       original: "https://picsum.photos/id/1018/1000/600/",
@@ -43,6 +49,20 @@ export default function Product() {
       document.querySelector(".userName")?.textContent![0];
     setLetter(userFirstLetter);
   }, []);
+
+  const style = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "100%",
+
+    borderRadius: "2px",
+    boxShadow: 24,
+    p: 4,
+    zIndex: 5,
+    background: "#fff",
+  };
 
   const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -118,12 +138,77 @@ export default function Product() {
                 onSubmit={handleSetNewBid}
                 noValidate
               >
-                <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
-                  Current bid:&nbsp;
-                  <Typography fontWeight={"bold"} component={"span"}>
-                    {currentBid}dkk
+                <Box
+                  display={"flex"}
+                  justifyContent="space-between"
+                  alignContent={"center"}
+                  sx={{ width: "100%" }}
+                >
+                  <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
+                    Current bid:&nbsp;
+                    <Typography fontWeight={"bold"} component={"span"}>
+                      {currentBid}dkk
+                    </Typography>
                   </Typography>
-                </Typography>
+
+                  <Button
+                    variant="text"
+                    sx={{
+                      p: "0 !important",
+                      height: "fit-content !important",
+                      textTransform: "capitalize",
+                    }}
+                    onClick={handleOpenModal}
+                  >
+                    See Bidders
+                  </Button>
+                </Box>
+
+                <Modal
+                  open={openModal}
+                  onClose={handleCloseModal}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box sx={style} className="bid-modal">
+                    <Box display={"flex"} flexDirection="column">
+                      <Stack direction="column" spacing={4} marginBottom={2}>
+                        <Typography
+                          fontWeight={"bold"}
+                          sx={{
+                            fontSize: "2rem",
+                            textAlign: { xs: "center", sm: "left" },
+                          }}
+                        >
+                          Bidders
+                        </Typography>
+                        {/* loop through the bidders */}
+
+                        <Box
+                          display={"flex"}
+                          alignItems="center"
+                          sx={{ flexDirection: { xs: "column", sm: "row" } }}
+                          gap={2}
+                        >
+                          <Avatar></Avatar>
+                          <Box display={"flex"}>
+                            <Typography>Janko - &#8203;</Typography>
+                            <Typography fontWeight={"bold"}>30dkk</Typography>
+                          </Box>
+                          <Button
+                            variant="contained"
+                            sx={{
+                              ml: { sm: "auto" },
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            Message
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </Box>
+                  </Box>
+                </Modal>
 
                 <Box
                   sx={{
@@ -207,7 +292,9 @@ export default function Product() {
                     textTransform: "capitalize",
                   }}
                 >
-                  View profile
+                  <Link href="/user/1" sx={{ textDecoration: "none" }}>
+                    View profile
+                  </Link>
                 </Button>
                 <Button
                   variant="contained"
@@ -217,7 +304,12 @@ export default function Product() {
                     textTransform: "capitalize",
                   }}
                 >
-                  Message
+                  <Link
+                    href="/chat"
+                    sx={{ textDecoration: "none", color: "white" }}
+                  >
+                    Message
+                  </Link>
                 </Button>
               </Box>
             </Box>

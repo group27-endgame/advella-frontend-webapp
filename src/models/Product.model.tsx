@@ -1,4 +1,5 @@
 import CategoryProduct from "./CategoryProduct.model";
+import ChatProduct from "./ChatProduct.model";
 import User from "./User.model";
 
 export default class Product {
@@ -11,7 +12,9 @@ export default class Product {
   public productDeadline: string;
   public productNumberOfBids: number;
   public categoryProduct: CategoryProduct;
-  public user: User;
+  public user: User[];
+  public posted: string;
+  public chatProducts: ChatProduct[];
 
   constructor(
     productId: number,
@@ -22,8 +25,11 @@ export default class Product {
     productPostedDatetime: string,
     productDeadline: string,
     productNumberOfBids: number,
-    user: User,
-    categoryProduct: CategoryProduct
+    users: User[],
+    categoryProduct: CategoryProduct,
+    posted:string,
+    chatProducts: ChatProduct[]
+
   ) {
     this.productId = productId;
     this.productTitle = productTitle;
@@ -33,7 +39,9 @@ export default class Product {
     this.productPostedDatetime = productPostedDatetime;
     this.productDeadline = productDeadline;
     this.productNumberOfBids = productNumberOfBids;
-    this.user = user;
+    this.user = users;
     this.categoryProduct = categoryProduct;
+    this.posted = posted;
+    this.chatProducts = chatProducts;
   }
 }

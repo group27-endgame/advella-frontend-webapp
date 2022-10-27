@@ -47,6 +47,6 @@ jobs:
             docker run -d \
             --name=advella-webapp \
             --network=advella \
-            -p 3002:80 \
+            -p 3001:80 \
             --restart unless-stopped \
             advella-webapp

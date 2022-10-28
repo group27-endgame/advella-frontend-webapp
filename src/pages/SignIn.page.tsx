@@ -7,15 +7,50 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  const [, setCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [usernameError, setUsernameError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
+  const validateForm = () => {
+    let returnVal = true;
+
+    setUsernameError(false);
+    setUsernameErrorMessage("");
+    setPasswordError(false);
+    setPasswordErrorMessage("");
+
+    if (username.length < 1) {
+      setUsernameError(true);
+      setUsernameErrorMessage("Username can't be empty");
+      returnVal = false;
+    }
+
+    if (password.length < 1) {
+      setPasswordError(true);
+      setPasswordErrorMessage("Password must be at least 5 characters long");
+      returnVal = false;
+    }
+    return returnVal;
+  };
+
+  const handleClick = () => {
+    if (validateForm()) {
+      setCookie("token", "token");
+      navigate("/");
+    }
   };
 
   return (
@@ -36,7 +71,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -45,6 +80,10 @@ export default function SignIn() {
             name="username"
             autoComplete="username"
             autoFocus
+            value={username}
+            error={usernameError}
+            helperText={usernameErrorMessage}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -53,7 +92,11 @@ export default function SignIn() {
             name="password"
             label="Password"
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
+            error={passwordError}
+            helperText={passwordErrorMessage}
           />
 
           <Button
@@ -61,6 +104,7 @@ export default function SignIn() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, maxWidth: "30%" }}
+            onClick={handleClick}
           >
             Sign In
           </Button>

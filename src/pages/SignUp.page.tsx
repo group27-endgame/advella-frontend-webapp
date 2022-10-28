@@ -7,19 +7,77 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import UserService from "../services/User.service";
 
 export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-      username: data.get("username"),
-      description: data.get,
-    });
+  const [, setCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
+  const userService: UserService = new UserService();
 
-    console.log(data);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [usernameError, setUsernameError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+
+  const handleSubmit = () => {
+    let returnVal = true;
+
+    setUsernameError(false);
+    setPasswordError(false);
+    setEmailError(false);
+    setDescriptionError(false);
+
+    setUsernameErrorMessage("");
+    setPasswordErrorMessage("");
+    setEmailErrorMessage("");
+    setDescriptionErrorMessage("");
+
+    if (username.length < 1) {
+      setUsernameError(true);
+      setUsernameErrorMessage("Username can't be empty");
+      returnVal = false;
+    }
+
+    if (password.length < 2) {
+      setPasswordError(true);
+      setPasswordErrorMessage("Password must be at least 3 characters long");
+      returnVal = false;
+    }
+
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      setEmailError(true);
+      setEmailErrorMessage("Email must be valid");
+      returnVal = false;
+    }
+
+    return returnVal;
+  };
+
+  const handleClick = () => {
+    if (handleSubmit()) {
+      userService
+        .registerUser(username, password, email, description)
+        .then((registered) => {
+          if (registered) {
+          }
+          setCookie("token", "token");
+          console.log(setCookie("token", "token"));
+          navigate("/signin");
+        });
+    }
   };
 
   return (
@@ -40,7 +98,7 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign Up
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -49,6 +107,10 @@ export default function SignUp() {
             name="username"
             autoComplete="username"
             autoFocus
+            value={username}
+            error={usernameError}
+            helperText={usernameErrorMessage}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -58,6 +120,10 @@ export default function SignUp() {
             label="Password"
             type="password"
             autoComplete="current-password"
+            value={password}
+            error={passwordError}
+            helperText={passwordErrorMessage}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -67,6 +133,10 @@ export default function SignUp() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={email}
+            error={emailError}
+            helperText={emailErrorMessage}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -77,6 +147,10 @@ export default function SignUp() {
             autoFocus
             multiline={true}
             rows={4}
+            value={description}
+            error={descriptionError}
+            helperText={descriptionErrorMessage}
+            onChange={(e) => setDescription(e.target.value)}
           />
 
           <Button
@@ -84,6 +158,7 @@ export default function SignUp() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, maxWidth: "30%" }}
+            onClick={handleClick}
           >
             Sign Up
           </Button>

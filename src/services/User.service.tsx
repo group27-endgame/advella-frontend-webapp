@@ -1,6 +1,6 @@
 import axios from "axios";
 import { apiURL } from "../constants";
-import UserModel from "../models/User.model";
+// import UserModel from "../models/User.model";
 export default class User {
   public async registerUser(
     username: string,

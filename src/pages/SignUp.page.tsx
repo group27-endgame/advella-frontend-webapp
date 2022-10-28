@@ -56,7 +56,7 @@ export default function SignUp() {
       setPasswordErrorMessage("Password must be at least 3 characters long");
       returnVal = false;
     }
-
+    //eslint-disable-next-line
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage("Email must be valid");

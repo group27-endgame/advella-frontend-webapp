@@ -9,11 +9,10 @@ import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
+import { Snackbar, Alert } from "@mui/material";
 
 export default function SignUp() {
-  const [, setCookie] = useCookies(["token"]);
   const navigate = useNavigate();
   const userService: UserService = new UserService();
 
@@ -31,6 +30,8 @@ export default function SignUp() {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+
+  const [isError, setIsError] = useState(false);
 
   const handleSubmit = () => {
     let returnVal = true;
@@ -72,10 +73,13 @@ export default function SignUp() {
         .registerUser(username, password, email, description)
         .then((registered) => {
           if (registered) {
+            navigate("/signin");
+          } else {
+            setIsError(true);
           }
-          setCookie("token", "token");
-          console.log(setCookie("token", "token"));
-          navigate("/signin");
+        })
+        .catch(() => {
+          setIsError(true);
         });
     }
   };
@@ -170,6 +174,19 @@ export default function SignUp() {
           </Grid>
         </Box>
       </Box>
+      <Snackbar
+        open={isError}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setIsError(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Can't register. User already exists.
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

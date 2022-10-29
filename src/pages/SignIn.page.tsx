@@ -10,10 +10,13 @@ import Container from "@mui/material/Container";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import UserService from "../services/User.service";
+import { Snackbar, Alert } from "@mui/material";
 
 export default function SignIn() {
   const [, setCookie] = useCookies(["token"]);
   const navigate = useNavigate();
+  const userService: UserService = new UserService();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +26,8 @@ export default function SignIn() {
 
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
+  const [isError, setIsError] = useState(false);
 
   const validateForm = () => {
     let returnVal = true;
@@ -48,8 +53,26 @@ export default function SignIn() {
 
   const handleClick = () => {
     if (validateForm()) {
-      setCookie("token", "token");
-      navigate("/");
+      userService
+        .login(username, password)
+        .then((token) => {
+          if (token) {
+            setCookie("token", token);
+            navigate("/");
+          } else {
+            setIsError(true);
+            setPassword("kks");
+          }
+        })
+        .catch((err) => {
+          setIsError(true);
+        });
+    }
+  };
+
+  const handleKeywordKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter") {
+      console.log("enter");
     }
   };
 
@@ -92,19 +115,19 @@ export default function SignIn() {
             name="password"
             label="Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
+            value={password}
             error={passwordError}
             helperText={passwordErrorMessage}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, maxWidth: "30%" }}
             onClick={handleClick}
+            onKeyUp={handleKeywordKeyPress}
           >
             Sign In
           </Button>
@@ -115,6 +138,20 @@ export default function SignIn() {
           </Grid>
         </Box>
       </Box>
+      <Snackbar
+        open={isError}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setIsError(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Wrong username, password or simply you do not have a permission to
+          access this webpage.
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

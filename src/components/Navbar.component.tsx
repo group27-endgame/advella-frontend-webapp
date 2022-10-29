@@ -5,11 +5,15 @@ import Divider from "@mui/material/Divider";
 import React from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 type Anchor = "right";
 
 function Navbar() {
   const isLoggedIn = true;
+  const [cookie, , removeCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
 
   const [state, setState] = React.useState({
     right: false,
@@ -28,6 +32,13 @@ function Navbar() {
 
       setState({ ...state, [anchor]: open });
     };
+
+  const signOut = () => {
+    console.log("click");
+
+    removeCookie("token");
+    navigate("/");
+  };
 
   // mobile items in the drawer
   const list = (anchor: Anchor) => (
@@ -52,7 +63,7 @@ function Navbar() {
           xs={10}
         >
           {/* My listings */}
-          {isLoggedIn ? (
+          {cookie.token !== undefined ? (
             <Link
               href="/newlisting"
               sx={{
@@ -78,7 +89,7 @@ function Navbar() {
             " "
           )}
 
-          {isLoggedIn ? (
+          {cookie.token !== undefined ? (
             <Link
               href="/myListings"
               width={"100%"}
@@ -95,17 +106,20 @@ function Navbar() {
             ""
           )}
 
-          {isLoggedIn ? (
+          {cookie.token !== undefined ? (
             <div style={{ display: "flex", alignItems: "center" }}>
               <Link
-                href="#"
+                href="/"
                 width={"100%"}
                 sx={{
                   textDecoration: "none",
                   color: "black",
                   marginRight: "1rem",
                   width: "auto",
+                  fontSize: "16px",
                 }}
+                component="button"
+                onClick={signOut}
               >
                 {"Sign Out"}
               </Link>
@@ -168,19 +182,21 @@ function Navbar() {
           xs={10}
         >
           {/* Sign in and out buttons */}
-          {isLoggedIn ? (
+          {cookie.token !== undefined ? (
             <div style={{ display: "flex", alignItems: "center" }}>
               <Link
-                href="#"
-                width={"100%"}
                 sx={{
                   textDecoration: "none",
                   color: "black",
                   marginRight: "1rem",
                   width: "auto",
+                  cursor: "pointer",
+                  fontSize: "16px",
                 }}
+                component="button"
+                onClick={signOut}
               >
-                {"Sign Out"}
+                Sign out
               </Link>
               <Divider
                 orientation="vertical"
@@ -205,7 +221,7 @@ function Navbar() {
 
           {/* My listings */}
 
-          {isLoggedIn ? (
+          {cookie.token !== undefined ? (
             <Link
               href="/mylistings"
               width={"100%"}
@@ -222,7 +238,7 @@ function Navbar() {
             ""
           )}
 
-          {isLoggedIn ? (
+          {cookie.token !== undefined ? (
             <Link href="/newlisting">
               <Button
                 type="submit"

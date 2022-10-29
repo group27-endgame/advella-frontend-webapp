@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import React from "react";
+import { useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -14,9 +14,37 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { useNavigate } from "react-router-dom";
 
 export default function NewListing() {
-  const [images, setImages] = React.useState([]);
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [listingType, setListingType] = useState("");
+  const [price, setPrice] = useState("");
+  const [images, setImages] = useState([]);
+  const [duration, setDuration] = useState("");
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [listingTypeError, setListingTypeError] = useState(false);
+  const [priceError, setPriceError] = useState(false);
+  const [imagesError, setImagesError] = useState(false);
+  const [durationError, setDurationError] = useState(false);
+  const [locationError, setLocationError] = useState(false);
+  const [categoryError, setCategoryError] = useState(false);
+
+  const [titleErrorMessage, setTitleErrorMessage] = useState("");
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+  const [listingTypeErrorMessage, setListingTypeErrorMessage] = useState("");
+  const [priceErrorMessage, setPriceErrorMessage] = useState("");
+  const [imagesErrorMessage, setImagesErrorMessage] = useState("");
+  const [durationErrorMessage, setDurationErrorMessage] = useState("");
+  const [locationErrorMessage, setLocationErrorMessage] = useState("");
+  const [categoryErrorMessage, setCategoryErrorMessage] = useState("");
+
   const maxNumber = 69;
 
   const onChange = (
@@ -27,8 +55,6 @@ export default function NewListing() {
     console.log(imageList, addUpdateIndex);
     setImages(imageList as never[]);
   };
-
-  const [category, setCategory] = React.useState("");
 
   const handleCategoryChange = (event: SelectChangeEvent) => {
     setCategory(event.target.value as string);
@@ -69,7 +95,7 @@ export default function NewListing() {
     }
   };
 
-  const [radioValue, setRadioValue] = React.useState("service");
+  const [radioValue, setRadioValue] = useState("service");
 
   const radioButtonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioValue((event.target as HTMLInputElement).value);
@@ -104,6 +130,7 @@ export default function NewListing() {
             label="Title"
             name="title"
             autoFocus
+            value={title}
           />
 
           <TextField
@@ -115,6 +142,8 @@ export default function NewListing() {
             rows={4}
             multiline={true}
             sx={{ mb: 2 }}
+            value={description}
+            onChange={radioButtonChange}
           />
           <FormControl sx={{ textAlign: "left", width: "100%" }}>
             <FormLabel id="demo-row-radio-buttons-group-label">
@@ -157,6 +186,7 @@ export default function NewListing() {
                 autoComplete="price"
                 type="number"
                 InputProps={{ inputProps: { min: 0, max: 99999 } }}
+                value={price}
               />
             </Grid>
 

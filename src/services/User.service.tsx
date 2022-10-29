@@ -10,8 +10,8 @@ export default class User {
   ): Promise<boolean> {
     try {
       const response = await axios.post(`${apiURL}/api/users/register`, {
-        userEmail: username,
-        userPassword: password,
+        username: username,
+        password: password,
         email: email,
         description: description,
       });
@@ -22,5 +22,24 @@ export default class User {
 
       return false;
     }
+  }
+
+  public async login(
+    username: string,
+    password: string
+  ): Promise<string | undefined> {
+    let token: string | undefined = undefined;
+
+    const params = new URLSearchParams();
+    params.append("username", username);
+    params.append("password", password);
+
+    const response = await axios.post(`${apiURL}/api/users/login`, params);
+
+    if (response.status !== 200) return undefined;
+
+    token = response.data.token;
+
+    return token;
   }
 }

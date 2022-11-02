@@ -13,10 +13,10 @@ function Categories() {
   const [cookie] = useCookies(["token"]);
   const [product, setProduct] = useState<CategoryProduct[]>([]);
   const [service, setService] = useState<CategoryService[]>([]);
-
+  const productService: ProductService = new ProductService();
+  const serviceService: ServiceService = new ServiceService();
+  // eslint-disable-next-line
   useEffect(() => {
-    const productService: ProductService = new ProductService();
-    const serviceService: ServiceService = new ServiceService();
     let mounted: boolean = true;
     productService.getProductCategories(cookie.token).then((response) => {
       if (mounted) {

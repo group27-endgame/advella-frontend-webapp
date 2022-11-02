@@ -132,7 +132,7 @@ export default function SignIn() {
             sx={{ mt: 3, mb: 2, maxWidth: "30%" }}
             onClick={handleClick}
             onKeyUp={(event) => {
-              if (event.key == "Enter") console.log("enter");
+              if (event.key === "Enter") console.log("enter");
             }}
           >
             Sign In

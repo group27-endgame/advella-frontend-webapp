@@ -89,15 +89,14 @@ export default function SignUp() {
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("keydown", detectKeyDown, true);
-  }, []);
-
   const detectKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
       handleClick();
     }
   };
+  useEffect(() => {
+    document.addEventListener("keydown", detectKeyDown, true);
+  }, []);
 
   return (
     <Container component="main" maxWidth="xs">

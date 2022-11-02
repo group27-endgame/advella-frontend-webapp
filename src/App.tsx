@@ -7,12 +7,13 @@ import SignInPage from "./pages/SignIn.page";
 import SignUpPage from "./pages/SignUp.page";
 import Navbar from "./components/Navbar.component";
 import Newlisting from "./pages/NewListing.page";
-import CategoryPage from "./pages/Category.page";
 import ServicePage from "./pages/Service.page";
 import ProductPage from "./pages/Product.page";
 import UserPage from "./pages/User.page";
 import MyListings from "./pages/MyListings.page";
 import ChatPage from "./pages/Chat.page";
+import CategoryProductPage from "./pages/CategoryProduct.page";
+import CategoryServicePage from "./pages/CategoryService.page";
 
 function App() {
   return (
@@ -25,9 +26,15 @@ function App() {
         <Route path="/newlisting" element={<Newlisting />}></Route>
         <Route path="/mylistings" element={<MyListings />}></Route>
 
-        <Route path="category/:categoryId" element={<CategoryPage />}>
-          {" "}
-        </Route>
+        <Route
+          path="/categoryProduct/:categoryId"
+          element={<CategoryProductPage />}
+        ></Route>
+        <Route
+          path="/categoryService/:categoryId"
+          element={<CategoryServicePage />}
+        ></Route>
+
         <Route path="/service/:id" element={<ServicePage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/user/:id" element={<UserPage />} />

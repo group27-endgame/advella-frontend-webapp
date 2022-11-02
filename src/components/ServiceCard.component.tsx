@@ -35,7 +35,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 type CardProps = {
   image?: string;
-  title?: string;
+  title: string | undefined | null;
   description?: string;
   price?: number;
   id?: number;
@@ -57,7 +57,7 @@ export default function ServiceCard(this: any, props: CardProps) {
 
   return (
     <React.Fragment>
-      <Card >
+      <Card sx={{ height: "100%" }}>
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -86,7 +86,7 @@ export default function ServiceCard(this: any, props: CardProps) {
             </div>
           }
           title={props.title}
-          subheader={"Price " + props.price}
+          subheader={"Price: " + props.price + " dkk"}
         />
         <Link
           href={
@@ -100,7 +100,7 @@ export default function ServiceCard(this: any, props: CardProps) {
             height="194"
             image={props.image}
             alt="Paella dish"
-            sx={{objectFit:'cover'}}
+            sx={{ objectFit: "cover" }}
           />
         </Link>
 

@@ -1,13 +1,16 @@
 import Product from "./Product.model";
 
 export default class CategoryProduct {
-  public categoryId: number;
-  public categoryTitle: string;
-  public products: Product[];
-  constructor(categoryId: number, categoryTitle: string, products: Product[]) {
-    this.categoryId = categoryId;
-    this.categoryTitle = categoryTitle;
+  public productCategoryId: number | undefined | null;
+  public title: string | undefined | null;
+  public products: Product[] | null | undefined;
+  constructor(
+    productCategoryId?: number | null,
+    title?: string | null,
+    products?: Product[] | null
+  ) {
+    this.productCategoryId = productCategoryId;
+    this.title = title;
     this.products = products;
-
   }
 }

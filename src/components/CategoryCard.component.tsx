@@ -4,14 +4,19 @@ import Link from "@mui/material/Link";
 
 type CardProps = {
   image: string;
-  title: string;
-  categoryId: number;
+  title: string | null | undefined;
+  categoryId: number | null | undefined;
+  type: string;
 };
 function CategoryCard(this: any, props: CardProps) {
   return (
     <>
       <Link
-        href={"/category/" + props.categoryId}
+        href={
+          props.type === "service"
+            ? "categoryService/" + props.categoryId
+            : "categoryProduct/" + props.categoryId
+        }
         underline="none"
         sx={{
           display: "flex",
@@ -20,7 +25,6 @@ function CategoryCard(this: any, props: CardProps) {
           alignItems: " center",
         }}
       >
-        {" "}
         <Avatar
           alt="Remy Sharp"
           src={props.image}

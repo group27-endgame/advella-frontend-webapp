@@ -4,9 +4,9 @@ import User from "./User.model";
 
 export default class Service {
   public serviceId: number;
-  public serviceTitle: string;
-  public serviceDetail: string;
-  public serviceMoneyAmount: number;
+  public title: string;
+  public detail: string;
+  public moneyAmount: number;
   public serviceDuration: number;
   public servicePostedDatetime: string;
   public serviceDeadline: string;
@@ -16,13 +16,13 @@ export default class Service {
   public categoryService: CategoryService;
   public serviceStatus: string;
   public users: User[];
-  public posted:User;
+  public posted: User;
   public chatServices: ChatService[];
   constructor(
     serviceId: number,
-    serviceTitle: string,
-    serviceDetail: string,
-    serviceMoneyAmount: number,
+    title: string,
+    detail: string,
+    moneyAmount: number,
     serviceDuration: number,
     servicePostedDatetime: string,
     serviceDeadline: string,
@@ -33,13 +33,12 @@ export default class Service {
     serviceStatus: string,
     users: User[],
     chatServices: ChatService[],
-    posted:User
-
+    posted: User
   ) {
     this.serviceId = serviceId;
-    this.serviceTitle = serviceTitle;
-    this.serviceDetail = serviceDetail;
-    this.serviceMoneyAmount = serviceMoneyAmount;
+    this.title = title;
+    this.detail = detail;
+    this.moneyAmount = moneyAmount;
     this.serviceDuration = serviceDuration;
     this.servicePostedDatetime = servicePostedDatetime;
     this.serviceDeadline = serviceDeadline;

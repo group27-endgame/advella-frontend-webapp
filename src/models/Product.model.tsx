@@ -3,38 +3,37 @@ import ChatProduct from "./ChatProduct.model";
 import User from "./User.model";
 
 export default class Product {
-  public productId: number;
-  public productTitle: string;
-  public productDetail: string;
-  public productMoneyAmount: number;
-  public productPickUpLocation: string;
-  public productPostedDatetime: string;
-  public productDeadline: string;
-  public productNumberOfBids: number;
-  public categoryProduct: CategoryProduct;
-  public user: User[];
-  public posted: string;
-  public chatProducts: ChatProduct[];
+  public productId: number | undefined;
+  public title: string | undefined | null;
+  public detail: string | undefined;
+  public moneyAmount: number | undefined;
+  public productPickUpLocation: string | undefined;
+  public productPostedDatetime: string | undefined;
+  public productDeadline: string | undefined;
+  public productNumberOfBids: number | undefined;
+  public categoryProduct: CategoryProduct | undefined;
+  public user: User[] | undefined;
+  public posted: string | undefined;
+  public chatProducts: ChatProduct[] | undefined;
 
   constructor(
-    productId: number,
-    productTitle: string,
-    productDetail: string,
-    productMoneyAmount: number,
-    productPickUpLocation: string,
-    productPostedDatetime: string,
-    productDeadline: string,
-    productNumberOfBids: number,
-    users: User[],
-    categoryProduct: CategoryProduct,
-    posted:string,
-    chatProducts: ChatProduct[]
-
+    productId?: number,
+    title?: string,
+    detail?: string,
+    moneyAmount?: number,
+    productPickUpLocation?: string,
+    productPostedDatetime?: string,
+    productDeadline?: string,
+    productNumberOfBids?: number,
+    users?: User[],
+    categoryProduct?: CategoryProduct,
+    posted?: string,
+    chatProducts?: ChatProduct[]
   ) {
     this.productId = productId;
-    this.productTitle = productTitle;
-    this.productDetail = productDetail;
-    this.productMoneyAmount = productMoneyAmount;
+    this.title = title;
+    this.detail = detail;
+    this.moneyAmount = moneyAmount;
     this.productPickUpLocation = productPickUpLocation;
     this.productPostedDatetime = productPostedDatetime;
     this.productDeadline = productDeadline;

@@ -11,10 +11,8 @@ import { useNavigate } from "react-router-dom";
 type Anchor = "right";
 
 function Navbar() {
-  const isLoggedIn = true;
-  const [cookie, , removeCookie] = useCookies(["token"]);
   const navigate = useNavigate();
-
+  const [cookie, , removeCookie] = useCookies(["token"]);
   const [state, setState] = React.useState({
     right: false,
   });

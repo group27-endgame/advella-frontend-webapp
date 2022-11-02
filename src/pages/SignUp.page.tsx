@@ -89,12 +89,12 @@ export default function SignUp() {
     }
   };
 
-  const detectKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleClick();
-    }
-  };
   useEffect(() => {
+    const detectKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleClick();
+      }
+    };
     document.addEventListener("keydown", detectKeyDown, true);
   }, []);
 

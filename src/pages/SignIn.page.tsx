@@ -71,14 +71,13 @@ export default function SignIn() {
   };
 
   useEffect(() => {
+    const detectKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleClick();
+      }
+    };
     document.addEventListener("keydown", detectKeyDown, true);
   }, []);
-
-  const detectKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleClick();
-    }
-  };
 
   return (
     <Container component="main" maxWidth="xs">

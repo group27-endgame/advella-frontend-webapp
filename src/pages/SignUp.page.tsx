@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/User.service";
 import { Snackbar, Alert } from "@mui/material";
@@ -20,16 +20,19 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [description, setDescription] = useState("");
+  const [location] = useState("");
 
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [, setLocationError] = useState(false);
 
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
+  const [, setLocationErrorMessage] = useState("");
 
   const [isError, setIsError] = useState(false);
 
@@ -40,11 +43,13 @@ export default function SignUp() {
     setPasswordError(false);
     setEmailError(false);
     setDescriptionError(false);
+    setLocationError(false);
 
     setUsernameErrorMessage("");
     setPasswordErrorMessage("");
     setEmailErrorMessage("");
     setDescriptionErrorMessage("");
+    setLocationErrorMessage("");
 
     if (username.length < 1) {
       setUsernameError(true);
@@ -70,7 +75,7 @@ export default function SignUp() {
   const handleClick = () => {
     if (handleSubmit()) {
       userService
-        .registerUser(username, password, email, description)
+        .registerUser(username, password, email, description, location)
         .then((registered) => {
           if (registered) {
             navigate("/signin");
@@ -81,6 +86,16 @@ export default function SignUp() {
         .catch(() => {
           setIsError(true);
         });
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", detectKeyDown, true);
+  }, []);
+
+  const detectKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleClick();
     }
   };
 

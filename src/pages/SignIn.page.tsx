@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
@@ -70,9 +70,13 @@ export default function SignIn() {
     }
   };
 
-  const handleKeywordKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === "Enter") {
-      console.log("enter");
+  useEffect(() => {
+    document.addEventListener("keydown", detectKeyDown, true);
+  }, []);
+
+  const detectKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleClick();
     }
   };
 
@@ -127,7 +131,9 @@ export default function SignIn() {
             variant="contained"
             sx={{ mt: 3, mb: 2, maxWidth: "30%" }}
             onClick={handleClick}
-            onKeyUp={handleKeywordKeyPress}
+            onKeyUp={(event) => {
+              if (event.key == "Enter") console.log("enter");
+            }}
           >
             Sign In
           </Button>

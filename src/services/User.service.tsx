@@ -1,12 +1,14 @@
 import axios from "axios";
 import { apiURL } from "../constants";
+import UserModel from "../models/User.model";
 // import UserModel from "../models/User.model";
 export default class User {
   public async registerUser(
     username: string,
     password: string,
     email: string,
-    description: string
+    description: string,
+    location: string
   ): Promise<boolean> {
     try {
       const response = await axios.post(`${apiURL}/api/users/register`, {
@@ -14,6 +16,7 @@ export default class User {
         password: password,
         email: email,
         description: description,
+        location: location,
       });
       if (response.status === 200) return true;
       return false;
@@ -41,5 +44,18 @@ export default class User {
     token = response.data.token;
 
     return token;
+  }
+
+  public async getCurrentUser(token: string): Promise<UserModel | undefined> {
+    let user: UserModel;
+    const response = await axios.get(`${apiURL}/api/users/currentUser`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (response.status !== 200) return undefined;
+
+    user = response.data;
+
+    return user;
   }
 }

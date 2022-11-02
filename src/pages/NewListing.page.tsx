@@ -15,37 +15,50 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useNavigate } from "react-router-dom";
+import ProductService from "../services/Product.service";
+import { useCookies } from "react-cookie";
+import getCurrentDate from "../utils/getCurrentDate";
+
+import ProductModel from "../models/Product.model";
+import ProductCategory from "../models/CategoryProduct.model";
 
 export default function NewListing() {
   const navigate = useNavigate();
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+
+  const [products, setProducts] = useState<ProductModel[]>([]);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [listingType, setListingType] = useState("");
   const [price, setPrice] = useState("");
   const [images, setImages] = useState([]);
-  const [duration, setDuration] = useState("");
+  const [hours, setHours] = useState("");
+  const [minutes, setMinutes] = useState("");
   const [location, setLocation] = useState("");
-  const [category, setCategory] = useState("");
+  const [deadline, setDeadline] = useState("");
+
+  const [categoryValue, setCategoryValue] = useState("service");
+  const [category, setCategory] = useState<ProductCategory | undefined>(
+    undefined
+  );
 
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
   const [listingTypeError, setListingTypeError] = useState(false);
   const [priceError, setPriceError] = useState(false);
-  const [imagesError, setImagesError] = useState(false);
   const [durationError, setDurationError] = useState(false);
   const [locationError, setLocationError] = useState(false);
-  const [categoryError, setCategoryError] = useState(false);
 
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
   const [listingTypeErrorMessage, setListingTypeErrorMessage] = useState("");
   const [priceErrorMessage, setPriceErrorMessage] = useState("");
-  const [imagesErrorMessage, setImagesErrorMessage] = useState("");
   const [durationErrorMessage, setDurationErrorMessage] = useState("");
   const [locationErrorMessage, setLocationErrorMessage] = useState("");
-  const [categoryErrorMessage, setCategoryErrorMessage] = useState("");
 
   const maxNumber = 69;
+
+  const productService: ProductService = new ProductService();
 
   const onChange = (
     imageList: ImageListType,
@@ -57,48 +70,86 @@ export default function NewListing() {
   };
 
   const handleCategoryChange = (event: SelectChangeEvent) => {
-    setCategory(event.target.value as string);
+    setCategoryValue(event.target.value as string);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  // useEffect(() =>{
+  //   productService.
+  // },[] )
 
-    const duration = {
-      hours: data.get("hours"),
-      minutes: data.get("minutes"),
-    };
+  const handleSubmit = () => {
+    let returnVal = true;
 
-    if (radioValue === "service") {
-      console.log({
-        title: data.get("title"),
-        description: data.get("detail"),
-        listingType: radioValue,
-        price: data.get("price"),
-        date: data.get("date"),
-        images: images,
-        duration: duration,
-        location: data.get("location"),
-        category: category,
-      });
-    } else {
-      console.log({
-        title: data.get("title"),
-        description: data.get("detail"),
-        listingType: radioValue,
-        price: data.get("price"),
-        date: data.get("date"),
-        images: images,
-        location: data.get("location"),
-        category: category,
-      });
+    setTitleError(false);
+    setDescriptionError(false);
+    setDurationError(false);
+    setListingTypeError(false);
+    setPriceError(false);
+    setDurationError(false);
+    setLocationError(false);
+
+    setTitleErrorMessage("");
+    setDescriptionErrorMessage("");
+    setDurationErrorMessage("");
+    setListingTypeErrorMessage("");
+    setPriceErrorMessage("");
+    setDurationErrorMessage("");
+    setLocationErrorMessage("");
+
+    return returnVal;
+
+    // if (radioValue === "service") {
+    //   console.log({
+    //     title: data.get("title"),
+    //     description: data.get("detail"),
+    //     listingType: radioValue,
+    //     price: data.get("price"),
+    //     date: data.get("date"),
+    //     images: images,
+    //     duration: duration,
+    //     location: data.get("location"),
+    //     category: category,
+    //   });
+    // } else {
+    //   console.log({
+    //     title: data.get("title"),
+    //     description: data.get("detail"),
+    //     listingType: radioValue,
+    //     price: data.get("price"),
+    //     date: data.get("date"),
+    //     images: images,
+    //     location: data.get("location"),
+    //     category: category,
+    //   });
+    // }
+  };
+
+  const handleClick = () => {
+    console.log(categoryValue);
+
+    if (handleSubmit()) {
+      productService
+        .addNewProduct(
+          title,
+          deadline,
+          price,
+          description,
+          location,
+          getCurrentDate()
+          // {categoryId: categoryValue.id }
+        )
+        .then((val) => {
+          console.log(val);
+          setTitle("");
+          navigate(`/product/${category?.productCategoryId}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
-
-  const [radioValue, setRadioValue] = useState("service");
-
   const radioButtonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRadioValue((event.target as HTMLInputElement).value);
+    setCategoryValue((event.target as HTMLInputElement).value);
   };
 
   return (
@@ -122,7 +173,7 @@ export default function NewListing() {
         >
           Create a new listing
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -131,6 +182,9 @@ export default function NewListing() {
             name="title"
             autoFocus
             value={title}
+            error={titleError}
+            helperText={titleErrorMessage}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
           <TextField
@@ -143,7 +197,9 @@ export default function NewListing() {
             multiline={true}
             sx={{ mb: 2 }}
             value={description}
-            onChange={radioButtonChange}
+            error={descriptionError}
+            helperText={descriptionErrorMessage}
+            onChange={(e) => setDescription(e.target.value)}
           />
           <FormControl sx={{ textAlign: "left", width: "100%" }}>
             <FormLabel id="demo-row-radio-buttons-group-label">
@@ -153,8 +209,8 @@ export default function NewListing() {
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
-              value={radioValue}
-              defaultValue={radioValue}
+              value={categoryValue}
+              defaultValue={categoryValue}
               onChange={radioButtonChange}
             >
               <FormControlLabel
@@ -187,6 +243,9 @@ export default function NewListing() {
                 type="number"
                 InputProps={{ inputProps: { min: 0, max: 99999 } }}
                 value={price}
+                error={priceError}
+                helperText={priceErrorMessage}
+                onChange={(e) => setPrice(e.target.value)}
               />
             </Grid>
 
@@ -200,7 +259,7 @@ export default function NewListing() {
                   gap: "1rem",
                   width: "100%",
                 }}
-                style={{ opacity: radioValue === "product" ? 0.5 : 1 }}
+                style={{ opacity: categoryValue === "product" ? 0.5 : 1 }}
               >
                 <Typography
                   sx={{
@@ -222,7 +281,9 @@ export default function NewListing() {
                   name="hours"
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 99999 } }}
-                  disabled={radioValue === "product"}
+                  disabled={categoryValue === "product"}
+                  onChange={(e) => setHours(e.target.value)}
+                  value={hours}
                 />
                 <TextField
                   margin="normal"
@@ -232,7 +293,9 @@ export default function NewListing() {
                   name="minutes"
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 99999 } }}
-                  disabled={radioValue === "product"}
+                  disabled={categoryValue === "product"}
+                  onChange={(e) => setMinutes(e.target.value)}
+                  value={minutes}
                 />
               </Box>
             </Grid>
@@ -247,16 +310,22 @@ export default function NewListing() {
                 label="Location"
                 sx={{ width: " 100%" }}
                 margin="normal"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                error={locationError}
+                helperText={locationErrorMessage}
               />
             </Grid>
             <Grid item xs={12} sm={6} sx={{ paddingTop: "0px !important" }}>
               {" "}
               <TextField
-                id="date"
+                id="deadline"
                 required
-                name="date"
-                label="Due date"
+                name="deadline"
+                label="Due deadline"
                 type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
                 sx={{
                   width: " 100%",
                   marginBottom: { sm: "1.5rem" },
@@ -278,7 +347,7 @@ export default function NewListing() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={category}
+                  value={categoryValue}
                   label="Age"
                   onChange={handleCategoryChange}
                   required
@@ -381,6 +450,7 @@ export default function NewListing() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, maxWidth: "30%" }}
+            onClick={handleClick}
           >
             Create
           </Button>

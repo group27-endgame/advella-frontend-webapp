@@ -18,7 +18,7 @@ function Categories() {
   // eslint-disable-next-line
   useEffect(() => {
     let mounted: boolean = true;
-    productService.getProductCategories(cookie.token).then((response) => {
+    productService.getProductCategories().then((response) => {
       if (mounted) {
         setProduct(response);
       }

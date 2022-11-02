@@ -76,12 +76,10 @@ export default class Product {
     return productList;
   }
 
-  public async getProductCategories(token: string): Promise<CategoryProduct[]> {
+  public async getProductCategories(): Promise<CategoryProduct[]> {
     let categoryList: CategoryProduct[];
     try {
-      const response = await axios.get(`${apiURL}/api/product-categories/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`${apiURL}/api/product-categories/all`);
       if (response.status !== 200) return [];
 
       categoryList = response.data;

@@ -13,10 +13,10 @@ export default function CategoryProduct() {
   const [products, setProducts] = useState<ProductModel[]>([]);
 
   const { categoryId } = useParams();
-  const productService: ProductService = new ProductService();
-  const userService: UserService = new UserService();
 
   useEffect(() => {
+    const productService: ProductService = new ProductService();
+    const userService: UserService = new UserService();
     let mounted: boolean = true;
 
     productService

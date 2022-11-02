@@ -13,10 +13,10 @@ export default function CategoryService() {
   const [services, setServices] = useState<ServiceModel[]>([]);
 
   const { categoryId } = useParams();
-  const serviceService: ServiceService = new ServiceService();
-  const userService: UserService = new UserService();
 
   useEffect(() => {
+    const serviceService: ServiceService = new ServiceService();
+    const userService: UserService = new UserService();
     let mounted: boolean = true;
 
     serviceService

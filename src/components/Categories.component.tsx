@@ -10,13 +10,13 @@ import { useEffect, useState } from "react";
 import CategoryService from "../models/CategoryService.model";
 
 function Categories() {
-  const productService: ProductService = new ProductService();
-  const serviceService: ServiceService = new ServiceService();
   const [cookie] = useCookies(["token"]);
   const [product, setProduct] = useState<CategoryProduct[]>([]);
   const [service, setService] = useState<CategoryService[]>([]);
 
   useEffect(() => {
+    const productService: ProductService = new ProductService();
+    const serviceService: ServiceService = new ServiceService();
     let mounted: boolean = true;
     productService.getProductCategories(cookie.token).then((response) => {
       if (mounted) {

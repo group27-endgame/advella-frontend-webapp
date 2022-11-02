@@ -59,6 +59,7 @@ export default function ServiceCard(this: any, props: CardProps) {
     <React.Fragment>
       <Card sx={{ height: "100%" }}>
         <CardHeader
+          className="title-line-clamp"
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
               R

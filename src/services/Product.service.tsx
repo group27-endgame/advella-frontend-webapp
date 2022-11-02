@@ -92,17 +92,11 @@ export default class Product {
   }
 
   public async getProductsInCategory(
-    token: string,
     id: string | undefined
   ): Promise<ProductModel[]> {
     let categoryList: ProductModel[];
     try {
-      const response = await axios.get(
-        `${apiURL}/api/products/category/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${apiURL}/api/products/category/${id}`);
       if (response.status !== 200) return [];
 
       categoryList = response.data;

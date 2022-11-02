@@ -36,12 +36,10 @@ export default class Service {
     return serviceList;
   }
 
-  public async getServiceCategories(token: string): Promise<CategoryService[]> {
+  public async getServiceCategories(): Promise<CategoryService[]> {
     let categoryList: CategoryService[];
     try {
-      const response = await axios.get(`${apiURL}/api/service-categories/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`${apiURL}/api/service-categories/all`);
       if (response.status !== 200) return [];
 
       categoryList = response.data;
@@ -54,17 +52,11 @@ export default class Service {
   }
 
   public async getServicesInCategory(
-    token: string,
     id: string | undefined
   ): Promise<ServiceModel[]> {
     let servicesList: ServiceModel[];
     try {
-      const response = await axios.get(
-        `${apiURL}/api/services/category/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${apiURL}/api/services/category/${id}`);
       if (response.status !== 200) return [];
 
       servicesList = response.data;

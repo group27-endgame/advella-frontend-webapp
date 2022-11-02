@@ -20,13 +20,11 @@ export default function CategoryService() {
   useEffect(() => {
     let mounted: boolean = true;
 
-    serviceService
-      .getServicesInCategory(cookie.token, categoryId)
-      .then((response) => {
-        if (mounted) {
-          setServices(response);
-        }
-      });
+    serviceService.getServicesInCategory(categoryId).then((response) => {
+      if (mounted) {
+        setServices(response);
+      }
+    });
 
     userService.getCurrentUser(cookie.token).then((response) => {
       console.log(response);

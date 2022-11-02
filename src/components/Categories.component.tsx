@@ -4,13 +4,11 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import ProductService from "../services/Product.service";
 import ServiceService from "../services/Service.service";
-import { useCookies } from "react-cookie";
 import CategoryProduct from "../models/CategoryProduct.model";
 import { useEffect, useState } from "react";
 import CategoryService from "../models/CategoryService.model";
 
 function Categories() {
-  const [cookie] = useCookies(["token"]);
   const [product, setProduct] = useState<CategoryProduct[]>([]);
   const [service, setService] = useState<CategoryService[]>([]);
   const productService: ProductService = new ProductService();
@@ -24,7 +22,7 @@ function Categories() {
       }
     });
 
-    serviceService.getServiceCategories(cookie.token).then((response) => {
+    serviceService.getServiceCategories().then((response) => {
       if (mounted) {
         console.log(response);
         setService(response);

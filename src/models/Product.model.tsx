@@ -7,9 +7,10 @@ export default class Product {
   public title: string | undefined | null;
   public detail: string | undefined;
   public moneyAmount: number | undefined;
-  public productPickUpLocation: string | undefined;
-  public productPostedDatetime: string | undefined;
-  public productDeadline: string | undefined;
+  public pickUpLocation: string | undefined;
+  public postedDateTime: string | undefined;
+  public deadline: string | undefined;
+  public productStatus: string | undefined;
   public productNumberOfBids: number | undefined;
   public categoryProduct: CategoryProduct | undefined;
   public user: User[] | undefined;
@@ -21,26 +22,28 @@ export default class Product {
     title?: string,
     detail?: string,
     moneyAmount?: number,
-    productPickUpLocation?: string,
-    productPostedDatetime?: string,
-    productDeadline?: string,
+    pickUpLocation?: string,
+    postedDateTime?: string,
+    deadline?: string,
     productNumberOfBids?: number,
     users?: User[],
     categoryProduct?: CategoryProduct,
     posted?: string,
-    chatProducts?: ChatProduct[]
+    chatProducts?: ChatProduct[],
+    productStatus?: string
   ) {
     this.productId = productId;
     this.title = title;
     this.detail = detail;
     this.moneyAmount = moneyAmount;
-    this.productPickUpLocation = productPickUpLocation;
-    this.productPostedDatetime = productPostedDatetime;
-    this.productDeadline = productDeadline;
+    this.pickUpLocation = pickUpLocation;
+    this.postedDateTime = postedDateTime;
+    this.deadline = deadline;
     this.productNumberOfBids = productNumberOfBids;
     this.user = users;
     this.categoryProduct = categoryProduct;
     this.posted = posted;
     this.chatProducts = chatProducts;
+    this.productStatus = productStatus;
   }
 }

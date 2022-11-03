@@ -63,6 +63,7 @@ export default class Product {
         `${apiURL}/api/products/user/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
+          params: { amount: 5 },
         }
       );
       if (response.status !== 200) return [];
@@ -106,5 +107,38 @@ export default class Product {
     }
 
     return categoryList;
+  }
+  public async getProductById(productId: number): Promise<ProductModel | null> {
+    let product: ProductModel;
+    try {
+      const response = await axios.get(`${apiURL}/api/products/${productId}`);
+      if (response.status !== 200) return null;
+
+      product = response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+
+    return product;
+  }
+
+  public async getProductCategory(
+    categoryId: number
+  ): Promise<CategoryProduct | null> {
+    let category: CategoryProduct;
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/product-categories/${categoryId}`
+      );
+      if (response.status !== 200) return null;
+
+      category = response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+
+    return category;
   }
 }

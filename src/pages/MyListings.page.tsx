@@ -1,7 +1,13 @@
 import { Container, Grid, Typography, Link } from "@mui/material";
 import ServiceCard from "../components/ServiceCard.component";
+import ProductService from "../services/Product.service";
+import { useCookies } from "react-cookie";
+import UserService from "../services/User.service";
+import { useEffect } from "react";
 
 export default function MyListings() {
+  const [cookie] = useCookies(["token"]);
+
   var categories = [
     "Housing",
     "Electronics",
@@ -12,6 +18,23 @@ export default function MyListings() {
     "Something",
     " Kitchen",
   ];
+
+  const service: ProductService = new ProductService();
+  const userService: UserService = new UserService();
+
+  // let num: number | undefined = undefined;
+  useEffect(() => {
+    userService.getCurrentUser(cookie.token).then((response) => {
+      service
+        .getProductsInPostedByUser(cookie.token, response?.userId!)
+        .then((value) => {
+          console.log(value);
+        });
+    });
+
+    return () => {};
+  }, []);
+
   return (
     <>
       <Container maxWidth="xl" sx={{ my: "3rem" }}>

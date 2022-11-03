@@ -83,8 +83,12 @@ function Landing() {
                 sx={{ flexWrap: "wrap", rowGap: "1rem" }}
               >
                 <Button size="large" sx={{ textTransform: "capitalize" }}>
-                  <Link href="#" color="inherit" underline="none">
-                    Outdoors
+                  <Link
+                    href="categoryService/2"
+                    color="inherit"
+                    underline="none"
+                  >
+                    Marketing
                   </Link>
                 </Button>
                 <Button
@@ -97,13 +101,21 @@ function Landing() {
                     },
                   }}
                 >
-                  <Link href="#" color="inherit" underline="none">
-                    Housing
+                  <Link
+                    href="categoryProduct/2"
+                    color="inherit"
+                    underline="none"
+                  >
+                    Laptops
                   </Link>
                 </Button>
                 <Button size="large" sx={{ textTransform: "capitalize" }}>
-                  <Link href="#" color="inherit" underline="none">
-                    Electronics
+                  <Link
+                    href="categoryService/1"
+                    color="inherit"
+                    underline="none"
+                  >
+                    Technology
                   </Link>
                 </Button>
               </ButtonGroup>

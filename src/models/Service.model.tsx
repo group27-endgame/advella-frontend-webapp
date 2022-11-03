@@ -7,10 +7,10 @@ export default class Service {
   public title: string;
   public detail: string;
   public moneyAmount: number;
-  public serviceDuration: number;
-  public servicePostedDatetime: string;
-  public serviceDeadline: string;
-  public serviceLocation: string;
+  public duration: number;
+  public postedDateTime: string;
+  public deadline: string;
+  public location: string;
   public serviceNumberOfBids: number;
   public serviceNumberOfLikes: number;
   public categoryService: CategoryService;
@@ -23,10 +23,10 @@ export default class Service {
     title: string,
     detail: string,
     moneyAmount: number,
-    serviceDuration: number,
-    servicePostedDatetime: string,
+    duration: number,
+    postedDateTime: string,
     serviceDeadline: string,
-    serviceLocation: string,
+    location: string,
     serviceNumberOfBids: number,
     serviceNumberOfLikes: number,
     categoryService: CategoryService,
@@ -39,10 +39,10 @@ export default class Service {
     this.title = title;
     this.detail = detail;
     this.moneyAmount = moneyAmount;
-    this.serviceDuration = serviceDuration;
-    this.servicePostedDatetime = servicePostedDatetime;
-    this.serviceDeadline = serviceDeadline;
-    this.serviceLocation = serviceLocation;
+    this.duration = duration;
+    this.postedDateTime = postedDateTime;
+    this.deadline = serviceDeadline;
+    this.location = location;
     this.serviceNumberOfBids = serviceNumberOfBids;
     this.serviceNumberOfLikes = serviceNumberOfLikes;
     this.categoryService = categoryService;

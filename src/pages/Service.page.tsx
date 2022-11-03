@@ -26,6 +26,9 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import { useEffect, useState } from "react";
 import React from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { useParams } from "react-router-dom";
+import ServiceService from "../services/Service.service";
+import CategoryService from "../models/CategoryService.model";
 
 export default function Service() {
   const [likeCLicked, setLikeClicked] = useState(false);
@@ -39,6 +42,20 @@ export default function Service() {
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+
+  const [title, setTitle] = useState("");
+  const [detail, setDetail] = useState("");
+  const [money, setMoney] = useState<number | undefined>();
+  const [pickUpLocation, setpickUpLocation] = useState("");
+  const [postedTime, setPostedTime] = useState("");
+  const [status, setStatus] = useState("");
+  const [category, setCategory] = useState<CategoryService | undefined>(
+    undefined
+  );
+  const [duration, setDuration] = useState("");
+
+  const serviceService: ServiceService = new ServiceService();
+  const { serviceId } = useParams();
 
   const handleLikeIconClick = () => {
     setLikeClicked(!likeCLicked);
@@ -102,11 +119,40 @@ export default function Service() {
       thumbnail: "https://picsum.photos/id/1019/250/150/",
     },
   ];
+  function padTo2Digits(num: any | "") {
+    return num.toString().padStart(2, "0");
+  }
 
   useEffect(() => {
     const userFirstLetter =
       document.querySelector(".userName")?.textContent![0];
     setLetter(userFirstLetter);
+
+    serviceService.getServiceById(Number(serviceId)).then((response) => {
+      console.log(response);
+      serviceService.getServiceCategory(Number(serviceId)).then((cat) => {
+        let postedDateTime = new Date(response?.postedDateTime!);
+        const hours = Math.floor(response?.duration! / 60);
+        const minutes = response?.duration! % 60;
+
+        setTitle(response?.title!);
+        setDetail(response?.detail!);
+        setMoney(response?.moneyAmount!);
+        setpickUpLocation(response?.location!);
+        setStatus(response?.serviceStatus!);
+        setPostedTime(
+          postedDateTime.getDate() +
+            "/" +
+            (postedDateTime.getMonth() + 1) +
+            "/" +
+            postedDateTime.getFullYear()
+        );
+
+        setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
+
+        setCategory(cat!);
+      });
+    });
   }, []);
 
   const style = {
@@ -165,7 +211,7 @@ export default function Service() {
                 marginBottom: "1rem",
               }}
             >
-              Need to fix some dishwasher
+              {title}{" "}
             </Typography>
             <Stack
               direction="column"
@@ -208,7 +254,7 @@ export default function Service() {
               <Typography variant="body1" color="initial" sx={{ mt: 1 }}>
                 Status:{" "}
                 <Typography component="span" color="initial" fontWeight={600}>
-                  Ongoing
+                  {status}
                 </Typography>
               </Typography>
 
@@ -400,40 +446,29 @@ export default function Service() {
             <Typography mt={4} mb={2} fontWeight="bold">
               Description
             </Typography>
-            <Typography mb={4}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged. It was
-              popularised in the 1960s with the release of Letraset sheets
-              containing Lorem Ipsum passages, and more recently with desktop
-              publishing software like Aldus PageMaker including versions of
-              Lorem Ipsum.
-            </Typography>
+            <Typography mb={4}>{detail}</Typography>
             <Typography mb={2} fontWeight="bold">
               Details
             </Typography>
             <Box display={"flex"} mb={1}>
               <Typography sx={{ opacity: 0.7 }}>Price:</Typography>
-              <Typography ml={1}>200dk</Typography>
+              <Typography ml={1}>{money} dk</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
               <Typography sx={{ opacity: 0.7 }}>Location:</Typography>
-              <Typography ml={1}>Horsens</Typography>
+              <Typography ml={1}>{pickUpLocation}</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>
                 Approximate duration:
               </Typography>
-              <Typography ml={1}>10 hours</Typography>
+              <Typography ml={1}>{duration}</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Created:</Typography>
-              <Typography ml={1}>27/09/2000</Typography>{" "}
+              <Typography ml={1}>{postedTime}</Typography>{" "}
             </Box>
 
             <Box display={"flex"}>
@@ -441,8 +476,11 @@ export default function Service() {
               <Typography sx={{ opacity: 0.7 }}>Category:</Typography>
               <Typography ml={1} color={"black"}>
                 {" "}
-                <Link href="#" color={"#000"}>
-                  House
+                <Link
+                  href={`/categoryService/${category?.serviceCategoryId!}`}
+                  color={"#000"}
+                >
+                  {category?.title}
                 </Link>
               </Typography>
             </Box>

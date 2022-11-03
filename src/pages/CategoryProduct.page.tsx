@@ -30,8 +30,6 @@ export default function CategoryProduct() {
       console.log(response);
     });
 
-    console.log(products);
-
     return () => {
       mounted = false;
     };

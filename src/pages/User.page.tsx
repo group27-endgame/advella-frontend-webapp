@@ -3,6 +3,9 @@ import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
 import Rating from "@mui/material/Rating";
 import ServiceCard from "../components/ServiceCard.component";
+// import ProductService from "../services/Product.service";
+// import Product from "../models/Product.model";
+// import { useCookies } from "react-cookie";
 
 export default function User() {
   const [letter, setLetter] = useState<string>();
@@ -136,7 +139,7 @@ export default function User() {
         <Grid container spacing={2}>
           {categories.map(function (name, index) {
             return (
-              <Grid item xs={12} sm={6} md={4} xl={3} key={index}>
+              <Grid item xs={6} md={4} lg={3} key={index}>
                 <ServiceCard
                   id={index}
                   image={"https://www.fillmurray.com/g/200/300"}

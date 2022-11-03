@@ -35,8 +35,8 @@ function App() {
           element={<CategoryServicePage />}
         ></Route>
 
-        <Route path="/service/:id" element={<ServicePage />} />
-        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/service/:serviceId" element={<ServicePage />} />
+        <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="/user/:id" element={<UserPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />

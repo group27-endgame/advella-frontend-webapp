@@ -67,4 +67,38 @@ export default class Service {
 
     return servicesList;
   }
+
+  public async getServiceById(serviceId: number): Promise<ServiceModel | null> {
+    let service: ServiceModel;
+    try {
+      const response = await axios.get(`${apiURL}/api/services/${serviceId}`);
+      if (response.status !== 200) return null;
+
+      service = response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+
+    return service;
+  }
+
+  public async getServiceCategory(
+    categoryId: number
+  ): Promise<CategoryService | null> {
+    let category: CategoryService;
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/service-categories/${categoryId}`
+      );
+      if (response.status !== 200) return null;
+
+      category = response.data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+
+    return category;
+  }
 }

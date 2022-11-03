@@ -16,9 +16,12 @@ import {
 } from "@mui/material";
 import Box from "@mui/system/Box";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import React from "react";
+import ProductService from "../services/Product.service";
+import CategoryProduct from "../models/CategoryProduct.model";
+
 export default function Product() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
@@ -28,6 +31,20 @@ export default function Product() {
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+
+  const [title, setTitle] = useState("");
+  const [detail, setDetail] = useState("");
+  const [money, setMoney] = useState<number | undefined>();
+  const [pickUpLocation, setpickUpLocation] = useState("");
+  const [postedTime, setPostedTime] = useState("");
+  const [productDeadline, setProductDeadline] = useState("");
+  const [category, setCategory] = useState<CategoryProduct | undefined>(
+    undefined
+  );
+  const [status, setStatus] = useState("");
+
+  const productService: ProductService = new ProductService();
+  const { productId } = useParams();
 
   const images = [
     {
@@ -44,10 +61,45 @@ export default function Product() {
     },
   ];
 
+  function padTo2Digits(num: any | "") {
+    return num.toString().padStart(2, "0");
+  }
+
   useEffect(() => {
     const userFirstLetter =
       document.querySelector(".userName")?.textContent![0];
     setLetter(userFirstLetter);
+
+    productService.getProductById(Number(productId)).then((response) => {
+      productService.getProductCategory(Number(productId)).then((cat) => {
+        console.log(cat);
+        let postedDateTime = new Date(response?.postedDateTime!);
+        let deadline = new Date(response?.deadline!);
+
+        setTitle(response?.title!);
+        setDetail(response?.detail!);
+        setMoney(response?.moneyAmount!);
+        setpickUpLocation(response?.pickUpLocation!);
+        setPostedTime(
+          postedDateTime.getDate() +
+            "/" +
+            (postedDateTime.getMonth() + 1) +
+            "/" +
+            postedDateTime.getFullYear()
+        );
+        setStatus(response?.productStatus!);
+
+        setProductDeadline(
+          deadline.getDate() +
+            "/" +
+            (deadline.getMonth() + 1) +
+            "/" +
+            deadline.getFullYear()
+        );
+
+        setCategory(cat!);
+      });
+    });
   }, []);
 
   const style = {
@@ -115,7 +167,7 @@ export default function Product() {
                 marginBottom: "1rem",
               }}
             >
-              Need to fix some dishwasher
+              {title}
             </Typography>
             <Divider sx={{ mb: 2 }} />
 
@@ -126,6 +178,12 @@ export default function Product() {
               sx={{ textAlign: "left", alignItems: "flex-start" }}
               divider={<Divider sx={{ mb: 2 }} flexItem />}
             >
+              <Typography variant="body1" color="initial">
+                Status:{" "}
+                <Typography component="span" color="initial" fontWeight={600}>
+                  {status}
+                </Typography>
+              </Typography>
               <Box
                 sx={{
                   display: "flex",
@@ -316,28 +374,17 @@ export default function Product() {
             <Typography mt={4} mb={2} fontWeight="bold">
               Description
             </Typography>
-            <Typography mb={4}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged. It was
-              popularised in the 1960s with the release of Letraset sheets
-              containing Lorem Ipsum passages, and more recently with desktop
-              publishing software like Aldus PageMaker including versions of
-              Lorem Ipsum.
-            </Typography>
+            <Typography mb={4}>{detail}</Typography>
             <Typography mb={2} fontWeight="bold">
               Details
             </Typography>
             <Box display={"flex"} mb={1}>
               <Typography sx={{ opacity: 0.7 }}>Price:</Typography>
-              <Typography ml={1}>200dk</Typography>
+              <Typography ml={1}>{money} dkk</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
               <Typography sx={{ opacity: 0.7 }}>Pick up location:</Typography>
-              <Typography ml={1}>Horsens</Typography>
+              <Typography ml={1}>{pickUpLocation}</Typography>
             </Box>
             <Box display={"flex"} mb={1}>
               {" "}
@@ -349,20 +396,23 @@ export default function Product() {
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Created:</Typography>
-              <Typography ml={1}>27/09/2000</Typography>{" "}
+              <Typography ml={1}>{postedTime}</Typography>{" "}
             </Box>
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Deadline:</Typography>
-              <Typography ml={1}>27/09/2000</Typography>{" "}
+              <Typography ml={1}>{productDeadline}</Typography>{" "}
             </Box>
             <Box display={"flex"}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Category:</Typography>
               <Typography ml={1} color={"black"}>
                 {" "}
-                <Link href="#" color={"#000"}>
-                  House
+                <Link
+                  href={`/categoryProduct/${category?.productCategoryId!}`}
+                  color={"#000"}
+                >
+                  {category?.title}
                 </Link>
               </Typography>
             </Box>

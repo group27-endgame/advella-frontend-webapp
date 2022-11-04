@@ -23,11 +23,12 @@ export default function CategoryProduct() {
     productService.getProductsInCategory(categoryId).then((response) => {
       if (mounted) {
         setProducts(response);
+        console.log(response);
       }
     });
 
     userService.getCurrentUser(cookie.token).then((response) => {
-      console.log(response);
+      // console.log(response);
     });
 
     return () => {
@@ -75,12 +76,13 @@ export default function CategoryProduct() {
             return (
               <Grid item xs={6} md={4} lg={3} key={index}>
                 <ServiceCard
-                  id={index}
+                  id={name.productId}
                   image={"https://www.fillmurray.com/g/200/300"}
                   title={name?.title}
                   description={name.detail}
                   price={name.moneyAmount}
                   type={"product"}
+                  categoryId={Number(categoryId)}
                 />
               </Grid>
             );

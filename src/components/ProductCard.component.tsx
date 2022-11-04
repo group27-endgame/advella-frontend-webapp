@@ -38,12 +38,11 @@ type CardProps = {
   title: string | undefined | null;
   description?: string;
   price?: number;
-  id?: number;
+  id?: number | undefined | null;
   type?: string;
-  categoryId?: number | undefined | null;
 };
 
-export default function ServiceCard(this: any, props: CardProps) {
+export default function ProductCard(this: any, props: CardProps) {
   const isLoggedIn = true;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -120,11 +119,7 @@ export default function ServiceCard(this: any, props: CardProps) {
           <ExpandMore aria-label="show more" expand={false}>
             <Link
               sx={{ textDecoration: "none", fontSize: "18px" }}
-              href={
-                props.type === "service"
-                  ? "/service/" + props.id
-                  : "/product/" + props.id
-              }
+              href={"/product/" + props.id}
             >
               Read more &gt;
             </Link>

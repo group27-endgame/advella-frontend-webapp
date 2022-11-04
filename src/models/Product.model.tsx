@@ -12,7 +12,7 @@ export default class Product {
   public deadline: string | undefined;
   public productStatus: string | undefined;
   public productNumberOfBids: number | undefined;
-  public categoryProduct: CategoryProduct | undefined;
+  public productCategory: CategoryProduct | undefined;
   public user: User[] | undefined;
   public posted: string | undefined;
   public chatProducts: ChatProduct[] | undefined;
@@ -27,7 +27,7 @@ export default class Product {
     deadline?: string,
     productNumberOfBids?: number,
     users?: User[],
-    categoryProduct?: CategoryProduct,
+    productCategory?: CategoryProduct,
     posted?: string,
     chatProducts?: ChatProduct[],
     productStatus?: string
@@ -41,7 +41,7 @@ export default class Product {
     this.deadline = deadline;
     this.productNumberOfBids = productNumberOfBids;
     this.user = users;
-    this.categoryProduct = categoryProduct;
+    this.productCategory = productCategory;
     this.posted = posted;
     this.chatProducts = chatProducts;
     this.productStatus = productStatus;

@@ -61,44 +61,43 @@ export default function Product() {
     },
   ];
 
-  function padTo2Digits(num: any | "") {
-    return num.toString().padStart(2, "0");
-  }
-
   useEffect(() => {
     const userFirstLetter =
       document.querySelector(".userName")?.textContent![0];
     setLetter(userFirstLetter);
 
     productService.getProductById(Number(productId)).then((response) => {
-      productService.getProductCategory(Number(productId)).then((cat) => {
-        console.log(cat);
-        let postedDateTime = new Date(response?.postedDateTime!);
-        let deadline = new Date(response?.deadline!);
+      console.log(response);
+      productService
+        .getProductCategory(response?.productCategory?.productCategoryId!)
+        .then((cat) => {
+          console.log(cat);
+          let postedDateTime = new Date(response?.postedDateTime!);
+          let deadline = new Date(response?.deadline!);
 
-        setTitle(response?.title!);
-        setDetail(response?.detail!);
-        setMoney(response?.moneyAmount!);
-        setpickUpLocation(response?.pickUpLocation!);
-        setPostedTime(
-          postedDateTime.getDate() +
-            "/" +
-            (postedDateTime.getMonth() + 1) +
-            "/" +
-            postedDateTime.getFullYear()
-        );
-        setStatus(response?.productStatus!);
+          setTitle(response?.title!);
+          setDetail(response?.detail!);
+          setMoney(response?.moneyAmount!);
+          setpickUpLocation(response?.pickUpLocation!);
+          setPostedTime(
+            postedDateTime.getDate() +
+              "/" +
+              (postedDateTime.getMonth() + 1) +
+              "/" +
+              postedDateTime.getFullYear()
+          );
+          setStatus(response?.productStatus!);
 
-        setProductDeadline(
-          deadline.getDate() +
-            "/" +
-            (deadline.getMonth() + 1) +
-            "/" +
-            deadline.getFullYear()
-        );
+          setProductDeadline(
+            deadline.getDate() +
+              "/" +
+              (deadline.getMonth() + 1) +
+              "/" +
+              deadline.getFullYear()
+          );
 
-        setCategory(cat!);
-      });
+          setCategory(cat!);
+        });
     });
   }, []);
 
@@ -386,13 +385,7 @@ export default function Product() {
               <Typography sx={{ opacity: 0.7 }}>Pick up location:</Typography>
               <Typography ml={1}>{pickUpLocation}</Typography>
             </Box>
-            <Box display={"flex"} mb={1}>
-              {" "}
-              <Typography sx={{ opacity: 0.7 }}>
-                Approximate duration:
-              </Typography>
-              <Typography ml={1}>10 hours</Typography>
-            </Box>
+
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Created:</Typography>

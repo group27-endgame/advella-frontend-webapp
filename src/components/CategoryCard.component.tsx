@@ -3,10 +3,12 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 
 type CardProps = {
-  image: string;
-  title: string | null | undefined;
-  categoryId: number | null | undefined;
-  type: string;
+  image?: string;
+  title: string | undefined | null;
+  description?: string;
+  price?: number;
+  id?: number | undefined | null;
+  type?: string;
 };
 function CategoryCard(this: any, props: CardProps) {
   return (
@@ -14,8 +16,8 @@ function CategoryCard(this: any, props: CardProps) {
       <Link
         href={
           props.type === "service"
-            ? "categoryService/" + props.categoryId
-            : "categoryProduct/" + props.categoryId
+            ? "/categoryService/" + props.id
+            : "/categoryProduct/" + props.id
         }
         underline="none"
         sx={{

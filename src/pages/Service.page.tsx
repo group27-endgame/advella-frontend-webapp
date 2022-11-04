@@ -130,28 +130,30 @@ export default function Service() {
 
     serviceService.getServiceById(Number(serviceId)).then((response) => {
       console.log(response);
-      serviceService.getServiceCategory(Number(serviceId)).then((cat) => {
-        let postedDateTime = new Date(response?.postedDateTime!);
-        const hours = Math.floor(response?.duration! / 60);
-        const minutes = response?.duration! % 60;
+      serviceService
+        .getServiceCategory(response?.serviceCategory?.serviceCategoryId!)
+        .then((cat) => {
+          let postedDateTime = new Date(response?.postedDateTime!);
+          const hours = Math.floor(response?.duration! / 60);
+          const minutes = response?.duration! % 60;
 
-        setTitle(response?.title!);
-        setDetail(response?.detail!);
-        setMoney(response?.moneyAmount!);
-        setpickUpLocation(response?.location!);
-        setStatus(response?.serviceStatus!);
-        setPostedTime(
-          postedDateTime.getDate() +
-            "/" +
-            (postedDateTime.getMonth() + 1) +
-            "/" +
-            postedDateTime.getFullYear()
-        );
+          setTitle(response?.title!);
+          setDetail(response?.detail!);
+          setMoney(response?.moneyAmount!);
+          setpickUpLocation(response?.location!);
+          setStatus(response?.serviceStatus!);
+          setPostedTime(
+            postedDateTime.getDate() +
+              "/" +
+              (postedDateTime.getMonth() + 1) +
+              "/" +
+              postedDateTime.getFullYear()
+          );
 
-        setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
+          setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
 
-        setCategory(cat!);
-      });
+          setCategory(cat!);
+        });
     });
   }, []);
 

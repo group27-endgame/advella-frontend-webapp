@@ -16,6 +16,7 @@ export default function CategoryService() {
 
   const serviceService: ServiceService = new ServiceService();
   const userService: UserService = new UserService();
+
   // eslint-disable-next-line
   useEffect(() => {
     let mounted: boolean = true;
@@ -75,12 +76,12 @@ export default function CategoryService() {
             return (
               <Grid item xs={6} md={4} lg={3} key={index}>
                 <ServiceCard
-                  id={index}
+                  id={name.serviceId}
                   image={"https://www.fillmurray.com/g/200/300"}
                   title={name.title}
                   description={name.detail}
                   price={name.moneyAmount}
-                  type={"product"}
+                  type={"service"}
                 />
               </Grid>
             );

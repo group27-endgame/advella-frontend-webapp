@@ -13,7 +13,7 @@ export default class Service {
   public location: string;
   public serviceNumberOfBids: number;
   public serviceNumberOfLikes: number;
-  public categoryService: CategoryService;
+  public serviceCategory: CategoryService;
   public serviceStatus: string;
   public users: User[];
   public posted: User;
@@ -29,7 +29,7 @@ export default class Service {
     location: string,
     serviceNumberOfBids: number,
     serviceNumberOfLikes: number,
-    categoryService: CategoryService,
+    serviceCategory: CategoryService,
     serviceStatus: string,
     users: User[],
     chatServices: ChatService[],
@@ -45,7 +45,7 @@ export default class Service {
     this.location = location;
     this.serviceNumberOfBids = serviceNumberOfBids;
     this.serviceNumberOfLikes = serviceNumberOfLikes;
-    this.categoryService = categoryService;
+    this.serviceCategory = serviceCategory;
     this.users = users;
     this.chatServices = chatServices;
     this.serviceStatus = serviceStatus;

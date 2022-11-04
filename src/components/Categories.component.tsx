@@ -52,7 +52,7 @@ function Categories() {
             return (
               <Grid item xs={6} md={4} lg={3} key={index}>
                 <CategoryCard
-                  categoryId={name.productCategoryId}
+                  id={name.productCategoryId}
                   image={"https://www.fillmurray.com/g/200/300"}
                   title={name.title}
                   type="product"
@@ -65,7 +65,7 @@ function Categories() {
             return (
               <Grid item xs={6} md={4} lg={3} key={index}>
                 <CategoryCard
-                  categoryId={name.serviceCategoryId}
+                  id={name.serviceCategoryId}
                   image={"https://www.fillmurray.com/g/200/300"}
                   title={name.title}
                   type="service"

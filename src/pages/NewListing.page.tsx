@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import ProductService from "../services/Product.service";
 import { useCookies } from "react-cookie";
 import getCurrentDate from "../utils/getCurrentDate";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
@@ -32,12 +33,14 @@ export default function NewListing() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState<number | null>(null);
   const [images, setImages] = useState([]);
-  const [hours, setHours] = useState("");
-  const [minutes, setMinutes] = useState("");
-  const [location, setLocation] = useState("");
+  const [hours, setHours] = useState<number | null>(null);
+  const [minutes, setMinutes] = useState<number | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [location, setLocation] = useState(null);
   const [deadline, setDeadline] = useState("");
+  const [productStatus, setProductStatus] = useState("Open");
 
   const [radioCategory, setRadioCategory] = useState("service");
 
@@ -62,12 +65,12 @@ export default function NewListing() {
     ServiceCategory[] | undefined
   >([]);
 
-  const [pickedProductCategory, setPickedProductCategory] = useState<
-    ProductCategory | string
-  >("");
-  const [pickedServiceCategory, setPickedServiceCategory] = useState<
-    ServiceCategory | undefined
-  >(undefined);
+  // const [pickedProductCategory, setPickedProductCategory] = useState<
+  //   ProductCategory | string
+  // >("");
+  // const [pickedServiceCategory, setPickedServiceCategory] = useState<
+  //   ServiceCategory | undefined
+  // >(undefined);
 
   const [productCategoryId, setProductCategoryId] = useState<
     number | undefined
@@ -154,25 +157,29 @@ export default function NewListing() {
   }, [radioCategory]);
 
   const handleClick = () => {
+    setDuration(hours! * 60 + minutes!);
+    console.log(duration);
+    console.log(location!);
     if (handleSubmit()) {
-      // productService
-      //   .addNewProduct(
-      //     title,
-      //     deadline,
-      //     price,
-      //     description,
-      //     location,
-      //     getCurrentDate()
-      //     // {categoryId: categoryValue.id }
-      //   )
-      //   .then((val) => {
-      //     console.log(val);
-      //     setTitle("");
-      //     navigate(`/product/${category?.productCategoryId}`);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      productService
+        .addNewProduct(
+          title,
+          deadline,
+          productStatus,
+          price!,
+          description,
+          location!,
+          getCurrentDate()
+          // {categoryId: categoryValue.id }
+        )
+        .then((val) => {
+          console.log(val);
+          setTitle("");
+          navigate(`/mylistings`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
   const radioButtonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -276,7 +283,7 @@ export default function NewListing() {
                 value={price}
                 error={priceError}
                 helperText={priceErrorMessage}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => setPrice(Number(e.target.value))}
               />
             </Grid>
 
@@ -312,7 +319,7 @@ export default function NewListing() {
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 99999 } }}
                   disabled={radioCategory === "product"}
-                  onChange={(e) => setHours(e.target.value)}
+                  onChange={(e) => setHours(Number(e.target.value))}
                   value={hours}
                 />
                 <TextField
@@ -323,7 +330,7 @@ export default function NewListing() {
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 99999 } }}
                   disabled={radioCategory === "product"}
-                  onChange={(e) => setMinutes(e.target.value)}
+                  onChange={(e) => setMinutes(Number(e.target.value))}
                   value={minutes}
                 />
               </Box>
@@ -331,18 +338,26 @@ export default function NewListing() {
           </Grid>
 
           <Grid container spacing={3}>
-            <Grid item xs={12}>
-              {" "}
-              <TextField
-                required
-                name="location"
-                label="Location"
-                sx={{ width: " 100%" }}
-                margin="normal"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                error={locationError}
-                helperText={locationErrorMessage}
+            <Grid item xs={12} sx={{ my: 1 }}>
+              <GooglePlacesAutocomplete
+                apiKey="AIzaSyCL9N2D1Rnli3pBRgURbN-nGq2yVm85QbE"
+                apiOptions={{ language: "dk", region: "dk" }}
+                selectProps={{
+                  location,
+                  onChange: (e: any) => {
+                    setLocation(e.label);
+                  },
+                  styles: {
+                    control: (provided: any) => ({
+                      ...provided,
+                      height: 52,
+                    }),
+                    menu: (provided: any) => ({
+                      ...provided,
+                      zIndex: 9999,
+                    }),
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6} sx={{ paddingTop: "0px !important" }}>
@@ -384,10 +399,6 @@ export default function NewListing() {
                   label="Category"
                   onChange={(event) => handleChange(event)}
                   defaultValue={`${defVal}`}
-                  renderValue={(el) => {
-                    console.log(el);
-                    return el;
-                  }}
                 >
                   {radioCategory === "product"
                     ? productCategories?.map((item) => (

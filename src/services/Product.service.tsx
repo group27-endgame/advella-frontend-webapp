@@ -7,7 +7,8 @@ export default class Product {
   public async addNewProduct(
     title: string,
     deadline: string,
-    moneyAmount: string,
+    productStatus: string,
+    moneyAmount: number,
     detail: string,
     pickUpLocation: string,
     postedDateTime: string
@@ -17,6 +18,7 @@ export default class Product {
       const response = await axios.post(`${apiURL}/api/products/new`, {
         deadline: deadline,
         title: title,
+        productStatus: productStatus,
         moneyAmount: moneyAmount,
         detail: detail,
         pickUpLocation: pickUpLocation,

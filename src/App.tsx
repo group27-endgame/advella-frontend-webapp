@@ -41,6 +41,7 @@ function App() {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
+      <div style={{paddingBottom: 150}} />
     </>
   );
 }

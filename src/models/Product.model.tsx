@@ -1,4 +1,4 @@
-import CategoryProduct from "./CategoryProduct.model";
+import ProductCategory from "./CategoryProduct.model";
 import ChatProduct from "./ChatProduct.model";
 import User from "./User.model";
 
@@ -12,9 +12,9 @@ export default class Product {
   public deadline: string | undefined;
   public productStatus: string | undefined;
   public productNumberOfBids: number | undefined;
-  public productCategory: CategoryProduct | undefined;
+  public productCategory: ProductCategory | undefined;
   public user: User[] | undefined;
-  public posted: string | undefined;
+  public posted: User | undefined;
   public chatProducts: ChatProduct[] | undefined;
 
   constructor(
@@ -27,8 +27,8 @@ export default class Product {
     deadline?: string,
     productNumberOfBids?: number,
     users?: User[],
-    productCategory?: CategoryProduct,
-    posted?: string,
+    productCategory?: ProductCategory,
+    posted?: User,
     chatProducts?: ChatProduct[],
     productStatus?: string
   ) {

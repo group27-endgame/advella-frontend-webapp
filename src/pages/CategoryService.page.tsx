@@ -78,10 +78,11 @@ export default function CategoryService() {
                 <ServiceCard
                   id={name.serviceId}
                   image={"https://www.fillmurray.com/g/200/300"}
-                  title={name.title}
-                  description={name.detail}
+                  serviceDescription={name.detail}
                   price={name.moneyAmount}
                   type={"service"}
+                  serviceTitle={name.title}
+                  servicePrice={name.moneyAmount}
                 />
               </Grid>
             );

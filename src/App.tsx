@@ -14,6 +14,7 @@ import MyListings from "./pages/MyListings.page";
 import ChatPage from "./pages/Chat.page";
 import CategoryProductPage from "./pages/CategoryProduct.page";
 import CategoryServicePage from "./pages/CategoryService.page";
+import SearchPage from "./pages/Search.page";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="/user/:id" element={<UserPage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/search/:searchedQuery" element={<SearchPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
       <div style={{paddingBottom: 150}} />

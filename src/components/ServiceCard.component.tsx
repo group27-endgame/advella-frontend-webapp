@@ -34,8 +34,13 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 type CardProps = {
+  serviceTitle?: string;
+  serviceDescription?: string;
+  servicePrice?: number;
+  serviceId?: number;
+
   image?: string;
-  title: string | undefined | null;
+  title?: string | undefined | null;
   description?: string;
   price?: number;
   id?: number;
@@ -87,8 +92,12 @@ export default function ServiceCard(this: any, props: CardProps) {
               )}
             </div>
           }
-          title={props.title}
-          subheader={"Price: " + props.price + " dkk"}
+          title={props.type === "product" ? props.title : props.serviceTitle}
+          subheader={
+            "Price: " +
+            `${props.type === "product" ? props.price : props.servicePrice}` +
+            " dkk"
+          }
         />
         <Link
           href={
@@ -113,7 +122,9 @@ export default function ServiceCard(this: any, props: CardProps) {
             sx={{ lineClamp: 3 }}
             className="line-clamp"
           >
-            {props.description}
+            {props.type === "product"
+              ? props.description
+              : props.serviceDescription}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>

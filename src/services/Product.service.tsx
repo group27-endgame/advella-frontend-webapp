@@ -1,8 +1,7 @@
 import axios from "axios";
 import { apiURL } from "../constants";
 import ProductModel from "../models/Product.model";
-// import ProductCategory from "../models/CategoryProduct.model";
-import CategoryProduct from "../models/CategoryProduct.model";
+import ProductCategory from "../models/CategoryProduct.model";
 export default class Product {
   public async addNewProduct(
     title: string,
@@ -11,10 +10,11 @@ export default class Product {
     moneyAmount: number,
     detail: string,
     pickUpLocation: string,
-    postedDateTime: string
-    // productCategory: ProductCategory
-  ): Promise<boolean> {
+    postedDateTime: string,
+    productCategory: ProductCategory
+  ): Promise<ProductModel | undefined> {
     try {
+      let product: ProductModel;
       const response = await axios.post(`${apiURL}/api/products/new`, {
         deadline: deadline,
         title: title,
@@ -23,18 +23,17 @@ export default class Product {
         detail: detail,
         pickUpLocation: pickUpLocation,
         postedDateTime: postedDateTime,
-        //productCategory: productCategory,
+        productCategory: productCategory,
       });
-      if (response.status === 200) {
-        console.log(response);
-        return true;
-      }
+      if (response.status !== 200) return undefined;
 
-      return false;
+      product = response.data;
+
+      return product;
     } catch (error) {
       console.error(error);
 
-      return false;
+      return undefined;
     }
   }
 
@@ -79,8 +78,8 @@ export default class Product {
     return productList;
   }
 
-  public async getProductCategories(): Promise<CategoryProduct[]> {
-    let categoryList: CategoryProduct[];
+  public async getProductCategories(): Promise<ProductCategory[]> {
+    let categoryList: ProductCategory[];
     try {
       const response = await axios.get(`${apiURL}/api/product-categories/all`);
       if (response.status !== 200) return [];
@@ -127,8 +126,8 @@ export default class Product {
 
   public async getProductCategory(
     categoryId: number
-  ): Promise<CategoryProduct | null> {
-    let category: CategoryProduct;
+  ): Promise<ProductCategory | null> {
+    let category: ProductCategory;
     try {
       const response = await axios.get(
         `${apiURL}/api/product-categories/${categoryId}`

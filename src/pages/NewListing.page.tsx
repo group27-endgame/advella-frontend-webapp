@@ -72,12 +72,8 @@ export default function NewListing() {
   //   ServiceCategory | undefined
   // >(undefined);
 
-  const [productCategoryId, setProductCategoryId] = useState<
-    number | undefined
-  >(undefined);
-  const [serviceCategoryId, setServiceCategoryId] = useState<
-    number | undefined
-  >(undefined);
+  const [productCategoryId, setProductCategoryId] = useState<number>(0);
+  const [serviceCategoryId, setServiceCategoryId] = useState<number>(0);
 
   const maxNumber = 69;
 
@@ -139,55 +135,65 @@ export default function NewListing() {
     // }
   };
 
-  const [defVal, setDefVal] = useState<number | undefined>(undefined);
-
   useEffect(() => {
     if (radioCategory === "product") {
       productService.getProductCategories().then((category) => {
-        console.log(category);
         setProductCategories(category);
       });
     } else {
       serviceService.getServiceCategories().then((response) => {
-        console.log(response[0]?.serviceCategoryId!);
         setServiceCategories(response);
-        setDefVal(response[0]?.serviceCategoryId!);
       });
     }
   }, [radioCategory]);
 
   const handleClick = () => {
     setDuration(hours! * 60 + minutes!);
-    console.log(duration);
-    console.log(location!);
+
     if (handleSubmit()) {
-      productService
-        .addNewProduct(
-          title,
-          deadline,
-          productStatus,
-          price!,
-          description,
-          location!,
-          getCurrentDate()
-          // {categoryId: categoryValue.id }
-        )
-        .then((val) => {
-          console.log(val);
-          setTitle("");
-          navigate(`/mylistings`);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if (radioCategory === "product") {
+        productService
+          .getProductCategory(productCategoryId)
+          .then((productResponse) => {
+            console.log(productResponse);
+            productService
+              .addNewProduct(
+                title,
+                deadline,
+                productStatus,
+                price!,
+                description,
+                location!,
+                getCurrentDate(),
+                productResponse!
+              )
+              .then((val) => {
+                console.log(val);
+                setTitle("");
+                // navigate(`/mylistings`);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          });
+      }
     }
   };
   const radioButtonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioCategory((event.target as HTMLInputElement).value);
+
+    setProductCategoryId(0);
+    setServiceCategoryId(0);
   };
 
-  const handleChange = (event: any) => {
-    console.log(event.target);
+  const handleChange = (event: SelectChangeEvent) => {
+    if (radioCategory === "service") {
+      setServiceCategoryId(Number(event.target.value));
+      console.log(serviceCategoryId);
+    } else {
+      setProductCategoryId(Number(event.target.value));
+      console.log(productCategoryId);
+    }
   };
 
   return (
@@ -345,6 +351,7 @@ export default function NewListing() {
                 selectProps={{
                   location,
                   onChange: (e: any) => {
+                    console.log(e);
                     setLocation(e.label);
                   },
                   styles: {
@@ -397,20 +404,13 @@ export default function NewListing() {
                       : serviceCategoryId?.toString()
                   }
                   label="Category"
-                  onChange={(event) => handleChange(event)}
-                  defaultValue={`${defVal}`}
+                  onChange={(e) => handleChange(e)}
                 >
                   {radioCategory === "product"
                     ? productCategories?.map((item) => (
                         <MenuItem
                           value={Number(item.productCategoryId)}
                           key={item.productCategoryId}
-                          onChange={() => {
-                            setServiceCategoryId(0);
-                            setProductCategoryId(
-                              Number(item.productCategoryId)
-                            );
-                          }}
                         >
                           {item.title}
                         </MenuItem>
@@ -419,12 +419,6 @@ export default function NewListing() {
                         <MenuItem
                           value={Number(item.serviceCategoryId)}
                           key={item.serviceCategoryId}
-                          onChange={() => {
-                            setProductCategoryId(0);
-                            setServiceCategoryId(
-                              Number(item.serviceCategoryId)
-                            );
-                          }}
                         >
                           {item.title}
                         </MenuItem>

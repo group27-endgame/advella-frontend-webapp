@@ -6,8 +6,17 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Link from "@mui/material/Link";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Landing() {
+  const [search, setSearch] = useState("");
+  let navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/search/${search.toString()}`);
+  };
+
   return (
     <>
       <Container maxWidth="xl">
@@ -64,8 +73,10 @@ function Landing() {
                     width: "100%",
                     maxWidth: "530px",
                   }}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
-                <Button variant="contained" size="large">
+                <Button variant="contained" size="large" onClick={handleClick}>
                   Search
                 </Button>
               </Box>

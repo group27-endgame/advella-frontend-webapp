@@ -11,6 +11,7 @@ import UserService from "../services/User.service";
 export default function CategoryProduct() {
   const [cookie] = useCookies(["token"]);
   const [products, setProducts] = useState<ProductModel[]>([]);
+  const [categoryName, setCategoryName] = useState("");
 
   const { categoryId } = useParams();
   const productService: ProductService = new ProductService();
@@ -23,7 +24,12 @@ export default function CategoryProduct() {
     productService.getProductsInCategory(categoryId).then((response) => {
       if (mounted) {
         setProducts(response);
-        console.log(response);
+
+        productService
+          .getProductCategory(Number(categoryId))
+          .then((response) => {
+            setCategoryName(response?.title!);
+          });
       }
     });
 
@@ -52,7 +58,7 @@ export default function CategoryProduct() {
                 lineHeight: { xs: "3rem", md: "5rem" },
               }}
             >
-              Listings
+              {categoryName}
             </Typography>
           </Grid>
           <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>

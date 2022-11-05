@@ -1,36 +1,36 @@
-import ProductCategory from "./CategoryProduct.model";
+import CategoryProduct from "./CategoryProduct.model";
 import ChatProduct from "./ChatProduct.model";
 import User from "./User.model";
 
 export default class Product {
-  public productId: number | undefined;
-  public title: string | undefined | null;
-  public detail: string | undefined;
-  public moneyAmount: number | undefined;
-  public pickUpLocation: string | undefined;
-  public postedDateTime: string | undefined;
-  public deadline: string | undefined;
-  public productStatus: string | undefined;
-  public productNumberOfBids: number | undefined;
-  public productCategory: ProductCategory | undefined;
-  public user: User[] | undefined;
-  public posted: User | undefined;
-  public chatProducts: ChatProduct[] | undefined;
+  public productId: number;
+  public title: string;
+  public detail: string;
+  public moneyAmount: number;
+  public pickUpLocation: string;
+  public postedDateTime: string;
+  public deadline: string;
+  public productStatus: string;
+  public productNumberOfBids: number;
+  public productCategory: CategoryProduct;
+  public user: User[];
+  public posted: User;
+  public chatProducts: ChatProduct[];
 
   constructor(
-    productId?: number,
-    title?: string,
-    detail?: string,
-    moneyAmount?: number,
-    pickUpLocation?: string,
-    postedDateTime?: string,
-    deadline?: string,
-    productNumberOfBids?: number,
-    users?: User[],
-    productCategory?: ProductCategory,
-    posted?: User,
-    chatProducts?: ChatProduct[],
-    productStatus?: string
+    productId: number,
+    title: string,
+    detail: string,
+    moneyAmount: number,
+    pickUpLocation: string,
+    postedDateTime: string,
+    deadline: string,
+    productNumberOfBids: number,
+    users: User[],
+    productCategory: CategoryProduct,
+    posted: User,
+    chatProducts: ChatProduct[],
+    productStatus: string
   ) {
     this.productId = productId;
     this.title = title;

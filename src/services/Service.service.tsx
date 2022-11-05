@@ -2,8 +2,47 @@ import axios from "axios";
 import { apiURL } from "../constants";
 import ServiceModel from "../models/Service.model";
 import CategoryService from "../models/CategoryService.model";
+import UserModel from "../models/User.model";
+import ServiceCategory from "../models/CategoryService.model";
 
 export default class Service {
+  public async addNewService(
+    title: string,
+    deadline: string,
+    serviceStatus: string,
+    moneyAmount: number,
+    detail: string,
+    location: string,
+    postedDateTime: string,
+    duration: number,
+    serviceCategory: ServiceCategory,
+    posted: UserModel
+  ): Promise<ServiceModel | undefined> {
+    try {
+      let service: ServiceModel;
+      const response = await axios.post(`${apiURL}/api/services/new`, {
+        title: title,
+        deadline: deadline,
+        serviceStatus: serviceStatus,
+        moneyAmount: moneyAmount,
+        detail: detail,
+        location: location,
+        postedDateTime: postedDateTime,
+        duration: duration,
+        serviceCategory: serviceCategory,
+        posted: posted,
+      });
+      if (response.status !== 200) return undefined;
+
+      service = response.data;
+
+      return service;
+    } catch (error) {
+      console.error(error);
+
+      return undefined;
+    }
+  }
   public async getAllCategories(): Promise<ServiceModel[]> {
     let serviceList: ServiceModel[];
     try {

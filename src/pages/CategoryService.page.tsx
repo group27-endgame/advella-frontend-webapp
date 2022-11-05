@@ -11,6 +11,7 @@ import UserService from "../services/User.service";
 export default function CategoryService() {
   const [cookie] = useCookies(["token"]);
   const [services, setServices] = useState<ServiceModel[]>([]);
+  const [categoryName, setCategoryName] = useState("");
 
   const { categoryId } = useParams();
 
@@ -24,6 +25,12 @@ export default function CategoryService() {
     serviceService.getServicesInCategory(categoryId).then((response) => {
       if (mounted) {
         setServices(response);
+
+        serviceService
+          .getServiceCategory(Number(categoryId))
+          .then((response) => {
+            setCategoryName(response?.title!);
+          });
       }
     });
 
@@ -52,7 +59,7 @@ export default function CategoryService() {
                 lineHeight: { xs: "3rem", md: "5rem" },
               }}
             >
-              Listings
+              {categoryName}
             </Typography>
           </Grid>
           <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>

@@ -2,6 +2,7 @@ import axios from "axios";
 import { apiURL } from "../constants";
 import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
+import UserModel from "../models/User.model";
 export default class Product {
   public async addNewProduct(
     title: string,
@@ -11,19 +12,21 @@ export default class Product {
     detail: string,
     pickUpLocation: string,
     postedDateTime: string,
-    productCategory: ProductCategory
+    productCategory: ProductCategory,
+    posted: UserModel
   ): Promise<ProductModel | undefined> {
     try {
       let product: ProductModel;
       const response = await axios.post(`${apiURL}/api/products/new`, {
-        deadline: deadline,
         title: title,
+        deadline: deadline,
         productStatus: productStatus,
         moneyAmount: moneyAmount,
         detail: detail,
         pickUpLocation: pickUpLocation,
         postedDateTime: postedDateTime,
         productCategory: productCategory,
+        posted: posted,
       });
       if (response.status !== 200) return undefined;
 

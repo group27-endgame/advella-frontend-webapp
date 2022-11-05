@@ -24,6 +24,7 @@ import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
 import ServiceCategory from "../models/CategoryService.model";
 import ServiceService from "../services/Service.service";
+import UserService from "../services/User.service";
 
 export default function NewListing() {
   const navigate = useNavigate();
@@ -40,7 +41,8 @@ export default function NewListing() {
   const [duration, setDuration] = useState<number | null>(null);
   const [location, setLocation] = useState(null);
   const [deadline, setDeadline] = useState("");
-  const [productStatus, setProductStatus] = useState("Open");
+  const [productStatus] = useState("Open");
+  const [serviceStatus] = useState("Open");
 
   const [radioCategory, setRadioCategory] = useState("service");
 
@@ -65,13 +67,6 @@ export default function NewListing() {
     ServiceCategory[] | undefined
   >([]);
 
-  // const [pickedProductCategory, setPickedProductCategory] = useState<
-  //   ProductCategory | string
-  // >("");
-  // const [pickedServiceCategory, setPickedServiceCategory] = useState<
-  //   ServiceCategory | undefined
-  // >(undefined);
-
   const [productCategoryId, setProductCategoryId] = useState<number>(0);
   const [serviceCategoryId, setServiceCategoryId] = useState<number>(0);
 
@@ -79,6 +74,7 @@ export default function NewListing() {
 
   const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
+  const userService: UserService = new UserService();
 
   const onChange = (
     imageList: ImageListType,
@@ -108,73 +104,82 @@ export default function NewListing() {
     setLocationErrorMessage("");
 
     return returnVal;
-
-    // if (radioValue === "service") {
-    //   console.log({
-    //     title: data.get("title"),
-    //     description: data.get("detail"),
-    //     listingType: radioValue,
-    //     price: data.get("price"),
-    //     date: data.get("date"),
-    //     images: images,
-    //     duration: duration,
-    //     location: data.get("location"),
-    //     category: category,
-    //   });
-    // } else {
-    //   console.log({
-    //     title: data.get("title"),
-    //     description: data.get("detail"),
-    //     listingType: radioValue,
-    //     price: data.get("price"),
-    //     date: data.get("date"),
-    //     images: images,
-    //     location: data.get("location"),
-    //     category: category,
-    //   });
-    // }
   };
 
   useEffect(() => {
     if (radioCategory === "product") {
       productService.getProductCategories().then((category) => {
         setProductCategories(category);
+        console.log(category);
       });
     } else {
       serviceService.getServiceCategories().then((response) => {
         setServiceCategories(response);
       });
     }
-  }, [radioCategory]);
+    setDuration(hours! * 60 + minutes!);
+  }, [radioCategory, hours, minutes]);
 
   const handleClick = () => {
-    setDuration(hours! * 60 + minutes!);
-
     if (handleSubmit()) {
       if (radioCategory === "product") {
         productService
           .getProductCategory(productCategoryId)
           .then((productResponse) => {
             console.log(productResponse);
-            productService
-              .addNewProduct(
-                title,
-                deadline,
-                productStatus,
-                price!,
-                description,
-                location!,
-                getCurrentDate(),
-                productResponse!
-              )
-              .then((val) => {
-                console.log(val);
-                setTitle("");
-                // navigate(`/mylistings`);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
+
+            userService.getCurrentUser(cookie.token).then((person) => {
+              productService
+                .addNewProduct(
+                  title,
+                  deadline,
+                  productStatus,
+                  price!,
+                  description,
+                  location!,
+                  getCurrentDate(),
+                  productResponse!,
+                  person!
+                )
+                .then((val) => {
+                  console.log(val);
+                  setTitle("");
+                  navigate(`/product/${val?.productId!}`);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            });
+          });
+      } else {
+        serviceService
+          .getServiceCategory(serviceCategoryId)
+          .then((serviceResponse) => {
+            console.log(serviceResponse);
+
+            userService.getCurrentUser(cookie.token).then((person) => {
+              serviceService
+                .addNewService(
+                  title,
+                  deadline,
+                  serviceStatus,
+                  price!,
+                  description,
+                  location!,
+                  getCurrentDate(),
+                  duration!,
+                  serviceResponse!,
+                  person!
+                )
+                .then((val) => {
+                  console.log(val);
+                  setTitle("");
+                  navigate(`/service/${val?.serviceId!}`);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            });
           });
       }
     }
@@ -189,10 +194,8 @@ export default function NewListing() {
   const handleChange = (event: SelectChangeEvent) => {
     if (radioCategory === "service") {
       setServiceCategoryId(Number(event.target.value));
-      console.log(serviceCategoryId);
     } else {
       setProductCategoryId(Number(event.target.value));
-      console.log(productCategoryId);
     }
   };
 

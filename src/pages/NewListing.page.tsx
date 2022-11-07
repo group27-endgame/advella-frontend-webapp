@@ -30,8 +30,6 @@ export default function NewListing() {
   const navigate = useNavigate();
   const [cookie, setCookie, removeCookie] = useCookies(["token"]);
 
-  const [products, setProducts] = useState<ProductModel[]>([]);
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | null>(null);
@@ -43,6 +41,7 @@ export default function NewListing() {
   const [deadline, setDeadline] = useState("");
   const [productStatus] = useState("Open");
   const [serviceStatus] = useState("Open");
+  const [postedDay, setPostedDay] = useState("");
 
   const [radioCategory, setRadioCategory] = useState("service");
 
@@ -110,7 +109,6 @@ export default function NewListing() {
     if (radioCategory === "product") {
       productService.getProductCategories().then((category) => {
         setProductCategories(category);
-        console.log(category);
       });
     } else {
       serviceService.getServiceCategories().then((response) => {
@@ -118,46 +116,44 @@ export default function NewListing() {
       });
     }
     setDuration(hours! * 60 + minutes!);
+    setPostedDay(Date.now().toString());
   }, [radioCategory, hours, minutes]);
 
   const handleClick = () => {
     if (handleSubmit()) {
       if (radioCategory === "product") {
-        productService
-          .getProductCategory(productCategoryId)
-          .then((productResponse) => {
-            console.log(productResponse);
+        // productService
+        //   .getProductCategory(productCategoryId)
+        //   .then((productResponse) => {
 
-            userService.getCurrentUser(cookie.token).then((person) => {
-              productService
-                .addNewProduct(
-                  title,
-                  deadline,
-                  productStatus,
-                  price!,
-                  description,
-                  location!,
-                  getCurrentDate(),
-                  productResponse!,
-                  person!
-                )
-                .then((val) => {
-                  console.log(val);
-                  setTitle("");
-                  navigate(`/product/${val?.productId!}`);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            });
+        productService
+          .addNewProduct(
+            title,
+            new Date(deadline).getTime(),
+            productStatus,
+            price!,
+            description,
+            location!,
+            postedDay!,
+            productCategoryId
+          )
+          .then((val) => {
+            console.log(val);
+            navigate(`/product/${val?.productId!}`);
+          })
+          .catch((err) => {
+            console.log(new Date(deadline).getTime());
+            console.log(err);
           });
+
+        // });
       } else {
         serviceService
           .getServiceCategory(serviceCategoryId)
           .then((serviceResponse) => {
-            console.log(serviceResponse);
-
             userService.getCurrentUser(cookie.token).then((person) => {
+              console.log(person);
+
               serviceService
                 .addNewService(
                   title,
@@ -166,14 +162,13 @@ export default function NewListing() {
                   price!,
                   description,
                   location!,
-                  getCurrentDate(),
+                  postedDay!,
                   duration!,
-                  serviceResponse!,
-                  person!
+                  serviceResponse!
                 )
                 .then((val) => {
                   console.log(val);
-                  setTitle("");
+                  console.log(postedDay);
                   navigate(`/service/${val?.serviceId!}`);
                 })
                 .catch((err) => {
@@ -350,7 +345,16 @@ export default function NewListing() {
             <Grid item xs={12} sx={{ my: 1 }}>
               <GooglePlacesAutocomplete
                 apiKey="AIzaSyCL9N2D1Rnli3pBRgURbN-nGq2yVm85QbE"
-                apiOptions={{ language: "dk", region: "dk" }}
+                apiOptions={{ language: "dk", region: "DK" }}
+                autocompletionRequest={{
+                  bounds: [
+                    { lat: 50, lng: 50 },
+                    { lat: 100, lng: 100 },
+                  ],
+                  componentRestrictions: {
+                    country: ["dk"],
+                  },
+                }}
                 selectProps={{
                   location,
                   onChange: (e: any) => {

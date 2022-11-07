@@ -15,8 +15,7 @@ export default class Service {
     location: string,
     postedDateTime: string,
     duration: number,
-    serviceCategory: ServiceCategory,
-    posted: UserModel
+    serviceCategory: ServiceCategory
   ): Promise<ServiceModel | undefined> {
     try {
       let service: ServiceModel;
@@ -30,7 +29,6 @@ export default class Service {
         postedDateTime: postedDateTime,
         duration: duration,
         serviceCategory: serviceCategory,
-        posted: posted,
       });
       if (response.status !== 200) return undefined;
 
@@ -139,5 +137,27 @@ export default class Service {
     }
 
     return category;
+  }
+
+  public async getServicesInPostedByUser(
+    userId: number
+  ): Promise<ServiceModel[]> {
+    let productList: ServiceModel[];
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/products/user/${userId}`,
+        {
+          params: { amount: 5 },
+        }
+      );
+      if (response.status !== 200) return [];
+
+      productList = response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+
+    return productList;
   }
 }

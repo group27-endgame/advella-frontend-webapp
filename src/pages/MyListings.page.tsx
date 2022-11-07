@@ -4,31 +4,28 @@ import ProductService from "../services/Product.service";
 import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
 import { useEffect } from "react";
+import ServiceService from "../services/Service.service";
 
 export default function MyListings() {
   const [cookie] = useCookies(["token"]);
 
-  var categories = [
-    "Housing",
-    "Electronics",
-    "Something",
-    " Kitchen",
-    "Housing",
-    "Electronics",
-    "Something",
-    " Kitchen",
-  ];
-
-  const service: ProductService = new ProductService();
+  const productService: ProductService = new ProductService();
+  const serviceService: ServiceService = new ServiceService();
   const userService: UserService = new UserService();
 
-  // let num: number | undefined = undefined;
   useEffect(() => {
     userService.getCurrentUser(cookie.token).then((response) => {
-      service
-        .getProductsInPostedByUser(cookie.token, response?.userId!)
+      console.log(response);
+      productService
+        .getProductsInPostedByUser(response?.userId!)
         .then((value) => {
           console.log(value);
+        });
+
+      serviceService
+        .getServicesInPostedByUser(response?.userId!)
+        .then((response) => {
+          console.log(response);
         });
     });
 
@@ -70,24 +67,7 @@ export default function MyListings() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={3}>
-          {categories.map(function (name, index) {
-            return (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                <ServiceCard
-                  id={index}
-                  image={"https://www.fillmurray.com/g/200/300"}
-                  title={" Category"}
-                  description={
-                    "Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti Lorem Ipsum is simply dummy text of the printing and typesetti"
-                  }
-                  price={0}
-                  type={"service"}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
+        <Grid container spacing={3}></Grid>
       </Container>
     </>
   );

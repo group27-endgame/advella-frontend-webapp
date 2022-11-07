@@ -36,6 +36,7 @@ export default function Service() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
   const [newBid, setNewBid] = useState<any | null>();
+  const [deadline, setDeadline] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
 
@@ -136,12 +137,14 @@ export default function Service() {
           let postedDateTime = new Date(response?.postedDateTime!);
           const hours = Math.floor(response?.duration! / 60);
           const minutes = response?.duration! % 60;
+          let deadline = new Date(response?.deadline!);
 
           setTitle(response?.title!);
           setDetail(response?.detail!);
           setMoney(response?.moneyAmount!);
           setpickUpLocation(response?.location!);
           setStatus(response?.serviceStatus!);
+          setDeadline(response?.deadline!);
           setPostedTime(
             postedDateTime.getDate() +
               "/" +
@@ -153,6 +156,16 @@ export default function Service() {
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
 
           setCategory(cat!);
+
+          setDeadline(
+            deadline.getDate() +
+              "/" +
+              (deadline.getMonth() + 1) +
+              "/" +
+              deadline.getFullYear()
+          );
+
+          console.log(postedTime);
         });
     });
   }, []);
@@ -466,6 +479,12 @@ export default function Service() {
                 Approximate duration:
               </Typography>
               <Typography ml={1}>{duration}</Typography>
+            </Box>
+
+            <Box display={"flex"} mb={1}>
+              {" "}
+              <Typography sx={{ opacity: 0.7 }}>Deadline:</Typography>
+              <Typography ml={1}>{deadline}</Typography>{" "}
             </Box>
             <Box display={"flex"} mb={1}>
               {" "}

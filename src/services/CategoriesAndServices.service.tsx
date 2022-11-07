@@ -20,4 +20,21 @@ export default class CategoriesAndServices {
 
     return productList;
   }
+
+  public async getProductsAndServicesLatest(): Promise<[]> {
+    let productList: [];
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/productsAndServices/latest`
+      );
+      if (response.status !== 200) return [];
+
+      productList = response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+
+    return productList;
+  }
 }

@@ -25,7 +25,7 @@ export default class Service {
     moneyAmount: number,
     duration: number,
     postedDateTime: string,
-    serviceDeadline: string,
+    deadline: string,
     location: string,
     serviceNumberOfBids: number,
     serviceNumberOfLikes: number,
@@ -41,7 +41,7 @@ export default class Service {
     this.moneyAmount = moneyAmount;
     this.duration = duration;
     this.postedDateTime = postedDateTime;
-    this.deadline = serviceDeadline;
+    this.deadline = deadline;
     this.location = location;
     this.serviceNumberOfBids = serviceNumberOfBids;
     this.serviceNumberOfLikes = serviceNumberOfLikes;

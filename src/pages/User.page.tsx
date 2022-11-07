@@ -3,18 +3,24 @@ import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
 import Rating from "@mui/material/Rating";
 import ServiceCard from "../components/ServiceCard.component";
-// import ProductService from "../services/Product.service";
-// import Product from "../models/Product.model";
-// import { useCookies } from "react-cookie";
+import ProductService from "../services/Product.service";
+import Product from "../models/Product.model";
+import { useCookies } from "react-cookie";
+import UserService from "../services/User.service";
 
 export default function User() {
-  const [letter, setLetter] = useState<string>();
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+  const [userName, setUsername] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
-    const userFirstLetter =
-      document.querySelector(".userName")?.textContent![0];
-    setLetter(userFirstLetter);
+    userService.getCurrentUser(cookie.token).then((resp) => {
+      setUsername(resp?.username!);
+      setDescription(resp?.description!);
+    });
   }, []);
+
+  const userService: UserService = new UserService();
 
   var categories = [
     "Housing",
@@ -41,7 +47,16 @@ export default function User() {
             margin: "auto",
           }}
         >
-          <Avatar sx={{ bgcolor: "#E67A35", color: "#fff" }}> {letter}</Avatar>
+          <Avatar
+            sx={{
+              bgcolor: "#E67A35",
+              color: "#fff",
+              textTransform: "upperCase",
+            }}
+          >
+            {" "}
+            {userName.charAt(0)}
+          </Avatar>
           <Box
             sx={{
               display: "flex",
@@ -53,7 +68,7 @@ export default function User() {
             }}
           >
             <Typography fontSize={20} className="userName">
-              Patrik Horny
+              {userName}
             </Typography>
             <Rating size="small" />
           </Box>
@@ -82,26 +97,15 @@ export default function User() {
             alignItems: "center",
             flexDirection: { xs: "column", sm: "row" },
             gap: { xs: "0.5rem", sm: "0rem" },
-            justifyContent: "center",
+
             maxWidth: "700px",
             margin: "auto",
-            textAlign: "justify",
+            textAlign: "left",
             mt: 4,
           }}
         >
           {" "}
-          <Typography>
-            {" "}
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Typography>
+          <Typography sx={{ ml: { sm: 7 } }}> {description}</Typography>
         </Box>
 
         <Grid

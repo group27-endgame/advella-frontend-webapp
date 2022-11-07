@@ -2,42 +2,37 @@ import axios from "axios";
 import { apiURL } from "../constants";
 import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
-import UserModel from "../models/User.model";
 export default class Product {
   public async addNewProduct(
     title: string,
-    deadline: string,
+    deadline: number,
     productStatus: string,
     moneyAmount: number,
     detail: string,
     pickUpLocation: string,
     postedDateTime: string,
-    productCategory: ProductCategory,
-    posted: UserModel
+    productCategory: number
   ): Promise<ProductModel | undefined> {
-    try {
-      let product: ProductModel;
-      const response = await axios.post(`${apiURL}/api/products/new`, {
-        title: title,
-        deadline: deadline,
-        productStatus: productStatus,
-        moneyAmount: moneyAmount,
-        detail: detail,
-        pickUpLocation: pickUpLocation,
-        postedDateTime: postedDateTime,
-        productCategory: productCategory,
-        posted: posted,
-      });
-      if (response.status !== 200) return undefined;
+    let product: ProductModel;
 
-      product = response.data;
+    const response = await axios.post(`${apiURL}/api/products/new`, {
+      title: title,
+      deadline: deadline,
+      productStatus: productStatus,
+      moneyAmount: moneyAmount,
+      detail: detail,
+      pickUpLocation: pickUpLocation,
+      postedDateTime: postedDateTime,
+      productCategory: { productCategoryId: productCategory },
+    });
 
-      return product;
-    } catch (error) {
-      console.error(error);
-
+    if (response.status !== 200) {
+      console.log(response.status);
       return undefined;
     }
+
+    product = response.data;
+    return product;
   }
 
   public async getProducts(token: string): Promise<ProductModel[]> {
@@ -58,7 +53,6 @@ export default class Product {
   }
 
   public async getProductsInPostedByUser(
-    token: string,
     userId: number
   ): Promise<ProductModel[]> {
     let productList: ProductModel[];
@@ -66,7 +60,6 @@ export default class Product {
       const response = await axios.get(
         `${apiURL}/api/products/user/${userId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
           params: { amount: 5 },
         }
       );

@@ -93,6 +93,7 @@ export default function Search() {
                   description={name.detail}
                   price={name.moneyAmount}
                   type={"product"}
+                  posted={name?.posted?.username}
                 />
               ) : (
                 <ServiceCard
@@ -103,6 +104,7 @@ export default function Search() {
                   type={"service"}
                   serviceTitle={name.title}
                   servicePrice={name.moneyAmount}
+                  posted={name?.posted?.username}
                 />
               )}
             </Grid>

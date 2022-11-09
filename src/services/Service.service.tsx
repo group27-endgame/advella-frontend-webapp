@@ -41,7 +41,7 @@ export default class Service {
           { type: "application/json" }
         )
       );
-      if (image) {
+      if (image !== undefined) {
         formData.append("image", image);
       }
 

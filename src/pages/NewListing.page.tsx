@@ -175,7 +175,7 @@ export default function NewListing() {
                   postedDay!,
                   duration!,
                   serviceResponse!,
-                  images[0].file
+                  images[0]?.file
                 )
                 .then((val) => {
                   navigate(`/service/${val?.serviceId!}`);

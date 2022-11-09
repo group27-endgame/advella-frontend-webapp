@@ -10,6 +10,7 @@ import ProductModel from "../models/Product.model";
 
 export default function MyListings() {
   const [cookie] = useCookies(["token"]);
+  const [image, setImage] = useState("");
   const [serviceList, setServiceList] = useState<ServiceModel[] | undefined>(
     []
   );
@@ -38,7 +39,6 @@ export default function MyListings() {
           console.log(response);
 
           setServiceList(response);
-          console.log(serviceList);
         });
     });
 
@@ -97,12 +97,12 @@ export default function MyListings() {
                 <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                   <ServiceCard
                     id={name.productId}
-                    image={"https://www.fillmurray.com/g/200/300"}
                     title={name.title}
                     description={name.detail}
                     price={name.moneyAmount}
                     type={"product"}
                     posted={name.posted.username}
+                    image={name.productImages[0]?.path}
                   />
                 </Grid>
               );
@@ -139,13 +139,13 @@ export default function MyListings() {
                 <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                   <ServiceCard
                     id={name.serviceId}
-                    image={"https://www.fillmurray.com/g/200/300"}
                     serviceDescription={name.detail}
                     price={name.service}
                     type={"service"}
                     serviceTitle={name.title}
                     posted={name.posted.username}
                     servicePrice={name.moneyAmount}
+                    image={name.serviceImages[0]?.path}
                   />
                 </Grid>
               );

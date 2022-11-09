@@ -151,8 +151,8 @@ export default function Service() {
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
-      setUsername(resp?.username!);
-      setUserId(resp?.userId!);
+      // setUsername(resp?.username!);
+      // setUserId(resp?.userId!);
 
       serviceService.getServiceById(Number(serviceId)).then((e) => {
         //console.log(e?.posted?.userId);
@@ -162,6 +162,8 @@ export default function Service() {
         //console.log(e?.posted.userId);
       });
     });
+
+    console.log(image);
   }, [status]);
 
   const style = {
@@ -215,7 +217,11 @@ export default function Service() {
         <Grid container spacing={6}>
           <Grid item xs={12} md={6}>
             <img
-              src={`https://api.advella.popal.dev/content${image}`}
+              src={
+                image
+                  ? `https://api.advella.popal.dev/content${image}`
+                  : require("../assets/images/service-placeholder.jpg")
+              }
               alt={title + " image"}
               style={{ width: "100%" }}
             />

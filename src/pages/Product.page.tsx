@@ -104,7 +104,6 @@ export default function Product() {
           );
 
           setCategory(cat!);
-          console.log(response?.productImages);
           if (response?.productImages) {
             setImage(response.productImages[0].path);
           }
@@ -209,7 +208,11 @@ export default function Product() {
         <Grid container spacing={6}>
           <Grid item xs={12} md={6}>
             <img
-              src={`https://api.advella.popal.dev/content${image}`}
+              src={
+                image
+                  ? `https://api.advella.popal.dev/content${image}`
+                  : require("../assets/images/product-placeholder.jpeg")
+              }
               alt={title + " image"}
               style={{ width: "100%" }}
             />

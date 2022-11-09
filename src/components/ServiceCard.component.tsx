@@ -100,11 +100,18 @@ export default function ServiceCard(this: any, props: CardProps) {
           <CardMedia
             component="img"
             height="194"
-            image={props.image}
+            image={
+              props.image
+                ? `https://api.advella.popal.dev/content${props.image}`
+                : props.type === "service"
+                ? require("../assets/images/service-placeholder.jpg")
+                : require("../assets/images/product-placeholder.jpeg")
+            }
             alt="Paella dish"
             sx={{ objectFit: "cover" }}
           />
         </Link>
+        <div>{props.image}</div>
 
         <CardContent>
           <Typography

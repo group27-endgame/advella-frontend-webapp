@@ -7,6 +7,7 @@ import ServiceCategory from "../models/CategoryService.model";
 
 export default class Service {
   public async addNewService(
+    token: string,
     title: string,
     deadline: string,
     serviceStatus: string,
@@ -19,17 +20,21 @@ export default class Service {
   ): Promise<ServiceModel | undefined> {
     try {
       let service: ServiceModel;
-      const response = await axios.post(`${apiURL}/api/services/new`, {
-        title: title,
-        deadline: deadline,
-        serviceStatus: serviceStatus,
-        moneyAmount: moneyAmount,
-        detail: detail,
-        location: location,
-        postedDateTime: postedDateTime,
-        duration: duration,
-        serviceCategory: serviceCategory,
-      });
+      const response = await axios.post(
+        `${apiURL}/api/services/new`,
+        {
+          title: title,
+          deadline: deadline,
+          serviceStatus: serviceStatus,
+          moneyAmount: moneyAmount,
+          detail: detail,
+          location: location,
+          postedDateTime: postedDateTime,
+          duration: duration,
+          serviceCategory: serviceCategory,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (response.status !== 200) return undefined;
 
       service = response.data;
@@ -145,7 +150,7 @@ export default class Service {
     let productList: ServiceModel[];
     try {
       const response = await axios.get(
-        `${apiURL}/api/products/user/${userId}`,
+        `${apiURL}/api/services/user/${userId}`,
         {
           params: { amount: 5 },
         }
@@ -159,5 +164,44 @@ export default class Service {
     }
 
     return productList;
+  }
+
+  public async closeServiceStatus(serviceId: number): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${apiURL}/api/services/closed/${serviceId}`
+      );
+      if (response.status !== 200) return false;
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+  public async openServiceStatus(serviceId: number): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${apiURL}/api/services/open/${serviceId}`
+      );
+      if (response.status !== 200) return false;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+
+    return true;
+  }
+  public async deleteService(token: string, serviceId: number): Promise<""> {
+    try {
+      const response = await axios.delete(
+        `${apiURL}/api/services/${serviceId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status !== 200) return "";
+      return "";
+    } catch (error) {
+      console.error(error);
+      return "";
+    }
   }
 }

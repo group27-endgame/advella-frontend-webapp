@@ -4,6 +4,7 @@ import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
 export default class Product {
   public async addNewProduct(
+    token: string,
     title: string,
     deadline: number,
     productStatus: string,
@@ -15,16 +16,20 @@ export default class Product {
   ): Promise<ProductModel | undefined> {
     let product: ProductModel;
 
-    const response = await axios.post(`${apiURL}/api/products/new`, {
-      title: title,
-      deadline: deadline,
-      productStatus: productStatus,
-      moneyAmount: moneyAmount,
-      detail: detail,
-      pickUpLocation: pickUpLocation,
-      postedDateTime: postedDateTime,
-      productCategory: { productCategoryId: productCategory },
-    });
+    const response = await axios.post(
+      `${apiURL}/api/products/new`,
+      {
+        title: title,
+        deadline: deadline,
+        productStatus: productStatus,
+        moneyAmount: moneyAmount,
+        detail: detail,
+        pickUpLocation: pickUpLocation,
+        postedDateTime: postedDateTime,
+        productCategory: { productCategoryId: productCategory },
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
     if (response.status !== 200) {
       console.log(response.status);
@@ -137,5 +142,46 @@ export default class Product {
     }
 
     return category;
+  }
+
+  public async closeProductStatus(productId: number): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${apiURL}/api/products/closed/${productId}`
+      );
+      if (response.status !== 200) return false;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+
+    return true;
+  }
+  public async openProductStatus(productId: number): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${apiURL}/api/products/open/${productId}`
+      );
+      if (response.status !== 200) return false;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+
+    return true;
+  }
+
+  public async deleteService(token: string, productId: number): Promise<""> {
+    try {
+      const response = await axios.delete(
+        `${apiURL}/api/products/${productId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status !== 200) return "";
+      return "";
+    } catch (error) {
+      console.error(error);
+      return "";
+    }
   }
 }

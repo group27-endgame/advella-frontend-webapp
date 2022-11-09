@@ -5,8 +5,10 @@ import ImageGallery from "react-image-gallery";
 import {
   Alert,
   Avatar,
+  Backdrop,
   Button,
   Divider,
+  Fade,
   IconButton,
   Link,
   ListItemIcon,
@@ -29,8 +31,16 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useParams } from "react-router-dom";
 import ServiceService from "../services/Service.service";
 import CategoryService from "../models/CategoryService.model";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
+import UserService from "../services/User.service";
+import ServiceModel from "../models/Service.model";
+import { servicesVersion } from "typescript";
 
 export default function Service() {
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+
   const [likeCLicked, setLikeClicked] = useState(false);
   const [likeAmount, setLikeAmount] = useState<number>(0);
   const [letter, setLetter] = useState<string>();
@@ -50,12 +60,19 @@ export default function Service() {
   const [pickUpLocation, setpickUpLocation] = useState("");
   const [postedTime, setPostedTime] = useState("");
   const [status, setStatus] = useState("");
+  const [username, setUsername] = useState("");
   const [category, setCategory] = useState<CategoryService | undefined>(
     undefined
   );
+  const navigate = useNavigate();
+
   const [duration, setDuration] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
+
+  const [isPostedUser, setIsPostedUser] = useState(false);
 
   const serviceService: ServiceService = new ServiceService();
+  const userService: UserService = new UserService();
   const { serviceId } = useParams();
 
   const handleLikeIconClick = () => {
@@ -124,6 +141,9 @@ export default function Service() {
     return num.toString().padStart(2, "0");
   }
 
+  const [serviceList, setServiceList] = useState<ServiceModel[] | undefined>(
+    []
+  );
   useEffect(() => {
     const userFirstLetter =
       document.querySelector(".userName")?.textContent![0];
@@ -168,7 +188,20 @@ export default function Service() {
           console.log(postedTime);
         });
     });
-  }, []);
+
+    userService.getCurrentUser(cookie.token).then((resp) => {
+      setUsername(resp?.username!);
+      setUserId(resp?.userId!);
+
+      serviceService.getServiceById(Number(serviceId)).then((e) => {
+        //console.log(e?.posted?.userId);
+        if (resp?.userId! === e?.posted?.userId) {
+          setIsPostedUser(true);
+        }
+        //console.log(e?.posted.userId);
+      });
+    });
+  }, [status]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -182,6 +215,38 @@ export default function Service() {
     zIndex: 5,
     background: "#fff",
   };
+
+  const closeService = () => {
+    serviceService.getServiceById(Number(serviceId)).then((resp) => {
+      serviceService.closeServiceStatus(resp?.serviceId!).then((ok) => {
+        console.log(ok);
+        setStatus("closed");
+      });
+    });
+  };
+
+  const openService = () => {
+    serviceService.getServiceById(Number(serviceId)).then((resp) => {
+      serviceService.openServiceStatus(resp?.serviceId!).then((ok) => {
+        console.log(ok);
+        setStatus("Open");
+      });
+    });
+  };
+
+  const deleteService = () => {
+    serviceService.getServiceById(Number(serviceId)).then((resp) => {
+      serviceService
+        .deleteService(cookie.token, resp?.serviceId!)
+        .then((ok) => {
+          navigate("/mylistings");
+        });
+    });
+  };
+  const [confirmModal, setConfirmModal] = React.useState(false);
+
+  const handleOpen = () => setConfirmModal(true);
+  const handleCloseConfirmModal = () => setConfirmModal(false);
 
   return (
     <>
@@ -203,19 +268,23 @@ export default function Service() {
               <Typography fontWeight={"bold"} sx={{ mb: 2 }}>
                 Service
               </Typography>
-              <Tooltip title="Edit listing">
-                <IconButton
-                  onClick={handleOptionsClick}
-                  size="small"
-                  sx={{ ml: 2 }}
-                  aria-controls={open ? "account-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  aria-label="settings"
-                >
-                  Edit
-                </IconButton>
-              </Tooltip>
+              {isPostedUser ? (
+                <Tooltip title="Edit listing">
+                  <IconButton
+                    onClick={handleOptionsClick}
+                    size="small"
+                    sx={{ ml: 2 }}
+                    aria-controls={open ? "account-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    aria-label="settings"
+                  >
+                    Edit
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                ""
+              )}
             </Box>
             <Typography
               fontWeight={"bold"}
@@ -235,12 +304,12 @@ export default function Service() {
               sx={{ textAlign: "left", alignItems: "flex-start" }}
               divider={<Divider sx={{ mb: 2 }} flexItem />}
             >
-              <Box
+              {/* <Box
                 sx={{ textTransform: "capitalize", pl: 0 }}
                 onClick={handleLikeIconClick}
               >
                 {/* // full thumnbs up icon, liked */}
-                {likeCLicked ? (
+              {/* {likeCLicked ? (
                   <Button
                     variant="text"
                     component="span"
@@ -264,11 +333,16 @@ export default function Service() {
                     {" "}
                     Likes {likeAmount}{" "}
                   </Button>
-                )}
-              </Box>
+                )} */}
+              {/* </Box>  */}
               <Typography variant="body1" color="initial" sx={{ mt: 1 }}>
                 Status:{" "}
-                <Typography component="span" color="initial" fontWeight={600}>
+                <Typography
+                  component="span"
+                  color="initial"
+                  fontWeight={600}
+                  textTransform="capitalize"
+                >
                   {status}
                 </Typography>
               </Typography>
@@ -376,6 +450,11 @@ export default function Service() {
                     defaultValue={currentBid}
                     onChange={(e) => setNewBid(e.target.value)}
                     sx={{ maxWidth: { md: "25%" } }}
+                    disabled={
+                      status === "closed" ||
+                      status === "Closed" ||
+                      cookie.token === undefined
+                    }
                   />{" "}
                   <Button
                     variant="contained"
@@ -386,6 +465,11 @@ export default function Service() {
                       maxWidth: { md: "50%" },
                     }}
                     type="submit"
+                    disabled={
+                      status === "closed" ||
+                      status === "Closed" ||
+                      cookie.token === undefined
+                    }
                   >
                     {" "}
                     <AttachMoneyIcon style={{ color: "white" }} />
@@ -406,7 +490,7 @@ export default function Service() {
             >
               <Avatar sx={{ bgcolor: "#E67A35", color: "#fff" }}>
                 {" "}
-                {letter}
+                {username.charAt(0).toUpperCase()}
               </Avatar>
               <Box
                 sx={{
@@ -418,8 +502,12 @@ export default function Service() {
                   alignItems: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography fontSize={20} className="userName">
-                  Patrik Horny
+                <Typography
+                  fontSize={20}
+                  className="userName"
+                  sx={{ textTransform: "capitalize" }}
+                >
+                  {username}
                 </Typography>
               </Box>
               <Box
@@ -437,7 +525,10 @@ export default function Service() {
                     textTransform: "capitalize",
                   }}
                 >
-                  <Link href="/user/1" sx={{ textDecoration: "none" }}>
+                  <Link
+                    href={"/user/" + userId}
+                    sx={{ textDecoration: "none" }}
+                  >
                     View profile
                   </Link>
                 </Button>
@@ -448,6 +539,7 @@ export default function Service() {
                     marginLeft: { sm: "auto" },
                     textTransform: "capitalize",
                   }}
+                  disabled={cookie.token === undefined}
                 >
                   <Link
                     href="/chat"
@@ -538,6 +630,7 @@ export default function Service() {
           open={open}
           onClose={handleClose}
           onClick={handleClose}
+          className="bid-modal"
           PaperProps={{
             elevation: 0,
             sx: {
@@ -567,17 +660,70 @@ export default function Service() {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          <MenuItem>Close bidding</MenuItem>
+          <MenuItem
+            onClick={
+              status === "open" || status === "Open"
+                ? closeService
+                : openService
+            }
+          >
+            {status === "open" || status === "Open"
+              ? "Close bidding"
+              : "Open bidding"}{" "}
+          </MenuItem>
 
           <Divider />
 
-          <MenuItem sx={{ color: "red" }}>
+          <MenuItem sx={{ color: "red" }} onClick={handleOpen}>
             <ListItemIcon>
               <DeleteForeverIcon fontSize="small" style={{ color: "red" }} />
             </ListItemIcon>
             Delete
           </MenuItem>
         </Menu>
+
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={confirmModal}
+          onClose={handleCloseConfirmModal}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 300,
+          }}
+        >
+          <Fade in={confirmModal}>
+            <Box sx={style} className="bid-modal">
+              <Typography
+                id="transition-modal-title"
+                variant="h6"
+                component="h2"
+                fontWeight={"bold"}
+              >
+                Do you really want to delete this listing?
+              </Typography>
+              <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+                After this you won't be able to recover this listing.
+              </Typography>
+              <Box display={"flex"} mt={2} gap={2}>
+                <Button variant="outlined" onClick={handleCloseConfirmModal}>
+                  Close
+                </Button>
+                <Button
+                  onClick={deleteService}
+                  startIcon={<DeleteIcon />}
+                  variant="contained"
+                  style={{
+                    backgroundColor: "red",
+                  }}
+                >
+                  Delete
+                </Button>
+              </Box>
+            </Box>
+          </Fade>
+        </Modal>
       </Container>
     </>
   );

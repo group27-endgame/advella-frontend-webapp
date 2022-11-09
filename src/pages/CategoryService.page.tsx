@@ -25,6 +25,7 @@ export default function CategoryService() {
     serviceService.getServicesInCategory(categoryId).then((response) => {
       if (mounted) {
         setServices(response);
+        console.log(response);
 
         serviceService
           .getServiceCategory(Number(categoryId))
@@ -34,9 +35,7 @@ export default function CategoryService() {
       }
     });
 
-    userService.getCurrentUser(cookie.token).then((response) => {
-      console.log(response);
-    });
+    userService.getCurrentUser(cookie.token).then((response) => {});
 
     return () => {
       mounted = false;
@@ -89,6 +88,7 @@ export default function CategoryService() {
                   price={name.moneyAmount}
                   type={"service"}
                   serviceTitle={name.title}
+                  posted={name?.posted?.username}
                   servicePrice={name.moneyAmount}
                 />
               </Grid>

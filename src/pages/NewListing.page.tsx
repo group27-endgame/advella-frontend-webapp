@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -17,14 +17,13 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useNavigate } from "react-router-dom";
 import ProductService from "../services/Product.service";
 import { useCookies } from "react-cookie";
-import getCurrentDate from "../utils/getCurrentDate";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
-import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
 import ServiceCategory from "../models/CategoryService.model";
 import ServiceService from "../services/Service.service";
 import UserService from "../services/User.service";
+import LocationService from "../services/Location.service";
 
 export default function NewListing() {
   const navigate = useNavigate();
@@ -74,6 +73,7 @@ export default function NewListing() {
   const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
   const userService: UserService = new UserService();
+  const locationService: LocationService = new LocationService();
 
   const onChange = (
     imageList: ImageListType,
@@ -104,6 +104,12 @@ export default function NewListing() {
 
     return returnVal;
   };
+  const inputRef = useRef();
+  const options = {
+    componentRestrictions: { country: "dk" },
+    fields: ["address_components", "geometry", "icon", "name"],
+    types: ["establishment"],
+  };
 
   useEffect(() => {
     if (radioCategory === "product") {
@@ -115,38 +121,42 @@ export default function NewListing() {
         setServiceCategories(response);
       });
     }
+
     setDuration(hours! * 60 + minutes!);
     setPostedDay(Date.now().toString());
+
+    const min = new Date().toISOString().split("T")[0];
+
+    document.getElementById("deadline")!.setAttribute("min", min);
   }, [radioCategory, hours, minutes]);
 
   const handleClick = () => {
     if (handleSubmit()) {
+      // locationService.getLocation("Horsens").then((resp) => {});
       if (radioCategory === "product") {
-        // productService
-        //   .getProductCategory(productCategoryId)
-        //   .then((productResponse) => {
-
         productService
-          .addNewProduct(
-            title,
-            new Date(deadline).getTime(),
-            productStatus,
-            price!,
-            description,
-            location!,
-            postedDay!,
-            productCategoryId
-          )
-          .then((val) => {
-            console.log(val);
-            navigate(`/product/${val?.productId!}`);
-          })
-          .catch((err) => {
-            console.log(new Date(deadline).getTime());
-            console.log(err);
-          });
+          .getProductCategory(productCategoryId)
+          .then((productResponse) => {
+            productService
+              .addNewProduct(
+                cookie.token,
+                title,
+                new Date(deadline).getTime(),
+                productStatus,
+                price!,
+                description,
+                location!,
+                postedDay!,
+                productCategoryId
+              )
 
-        // });
+              .then((val) => {
+                navigate(`/product/${val?.productId!}`);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          });
       } else {
         serviceService
           .getServiceCategory(serviceCategoryId)
@@ -156,6 +166,7 @@ export default function NewListing() {
 
               serviceService
                 .addNewService(
+                  cookie.token,
                   title,
                   deadline,
                   serviceStatus,
@@ -167,8 +178,6 @@ export default function NewListing() {
                   serviceResponse!
                 )
                 .then((val) => {
-                  console.log(val);
-                  console.log(postedDay);
                   navigate(`/service/${val?.serviceId!}`);
                 })
                 .catch((err) => {
@@ -193,6 +202,8 @@ export default function NewListing() {
       setProductCategoryId(Number(event.target.value));
     }
   };
+
+  const [terms, setTerms] = useState("");
 
   return (
     <Container component="main" maxWidth="sm">
@@ -356,9 +367,12 @@ export default function NewListing() {
                   },
                 }}
                 selectProps={{
+                  placeholder: "Selec your location",
+
                   location,
                   onChange: (e: any) => {
-                    console.log(e);
+                    setTerms(e.value.terms.slice(-1)[0].value);
+
                     setLocation(e.label);
                   },
                   styles: {

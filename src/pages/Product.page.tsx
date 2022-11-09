@@ -5,13 +5,20 @@ import ImageGallery from "react-image-gallery";
 import {
   Alert,
   Avatar,
+  Backdrop,
   Button,
   Divider,
+  Fade,
+  IconButton,
   Link,
+  ListItemIcon,
+  Menu,
+  MenuItem,
   Modal,
   Snackbar,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Box from "@mui/system/Box";
@@ -21,7 +28,12 @@ import { useEffect, useState } from "react";
 import React from "react";
 import ProductService from "../services/Product.service";
 import CategoryProduct from "../models/CategoryProduct.model";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import DeleteIcon from "@mui/icons-material/Delete";
 
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
+import UserService from "../services/User.service";
 export default function Product() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
@@ -31,6 +43,7 @@ export default function Product() {
   const [openModal, setOpenModal] = React.useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
@@ -41,9 +54,14 @@ export default function Product() {
   const [category, setCategory] = useState<CategoryProduct | undefined>(
     undefined
   );
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+
   const [status, setStatus] = useState("");
+  const [isPostedUser, setIsPostedUser] = useState(false);
 
   const productService: ProductService = new ProductService();
+  const userService: UserService = new UserService();
+
   const { productId } = useParams();
 
   const images = [
@@ -60,6 +78,8 @@ export default function Product() {
       thumbnail: "https://picsum.photos/id/1019/250/150/",
     },
   ];
+  const [userId, setUserId] = useState<number | null>(null);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const userFirstLetter =
@@ -99,7 +119,18 @@ export default function Product() {
           setCategory(cat!);
         });
     });
-  }, []);
+
+    userService.getCurrentUser(cookie.token).then((resp) => {
+      setUserName(resp?.username!);
+      setUserId(resp?.userId!);
+
+      productService.getProductById(Number(productId)).then((e) => {
+        if (resp?.userId! === e?.posted?.userId) {
+          setIsPostedUser(true);
+        }
+      });
+    });
+  }, [isPostedUser, status]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -138,6 +169,49 @@ export default function Product() {
     }
   };
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const closeService = () => {
+    productService.getProductById(Number(productId)).then((resp) => {
+      productService.closeProductStatus(resp?.productId!).then((ok) => {
+        console.log(ok);
+        setStatus("closed");
+      });
+    });
+  };
+  const openService = () => {
+    productService.getProductById(Number(productId)).then((resp) => {
+      productService.openProductStatus(resp?.productId!).then((ok) => {
+        console.log(ok);
+        setStatus("open");
+      });
+    });
+  };
+
+  const deleteService = () => {
+    productService.getProductById(Number(productId)).then((resp) => {
+      productService
+        .deleteService(cookie.token, resp?.productId!)
+        .then((ok) => {
+          navigate("/mylistings");
+        });
+    });
+  };
+
+  const [confirmModal, setConfirmModal] = React.useState(false);
+
+  const handleOpen = () => setConfirmModal(true);
+  const handleCloseConfirmModal = () => setConfirmModal(false);
+
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "3rem" }}>
@@ -154,9 +228,28 @@ export default function Product() {
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <Typography fontWeight={"bold"} sx={{ mb: 2 }}>
-              Product
-            </Typography>
+            <Box display={"flex"} justifyContent="space-between">
+              <Typography fontWeight={"bold"} sx={{ mb: 2 }}>
+                Product
+              </Typography>
+              {isPostedUser ? (
+                <Tooltip title="Edit listing">
+                  <IconButton
+                    onClick={handleOptionsClick}
+                    size="small"
+                    sx={{ ml: 2 }}
+                    aria-controls={open ? "account-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    aria-label="settings"
+                  >
+                    Edit
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                ""
+              )}
+            </Box>
             <Typography
               fontWeight={"bold"}
               margin="normal"
@@ -166,7 +259,7 @@ export default function Product() {
                 marginBottom: "1rem",
               }}
             >
-              {title}
+              {title}{" "}
             </Typography>
             <Divider sx={{ mb: 2 }} />
 
@@ -179,7 +272,12 @@ export default function Product() {
             >
               <Typography variant="body1" color="initial">
                 Status:{" "}
-                <Typography component="span" color="initial" fontWeight={600}>
+                <Typography
+                  component="span"
+                  color="initial"
+                  fontWeight={600}
+                  textTransform="capitalize"
+                >
                   {status}
                 </Typography>
               </Typography>
@@ -287,6 +385,11 @@ export default function Product() {
                     InputProps={{
                       inputProps: { min: { currentBid } },
                     }}
+                    disabled={
+                      status === "closed" ||
+                      status === "Closed" ||
+                      cookie.token === undefined
+                    }
                     sx={{ maxWidth: { md: "25%" } }}
                   />{" "}
                   <Button
@@ -298,6 +401,11 @@ export default function Product() {
                       maxWidth: { md: "50%" },
                     }}
                     type="submit"
+                    disabled={
+                      status === "closed" ||
+                      status === "Closed" ||
+                      cookie.token === undefined
+                    }
                   >
                     {" "}
                     <AttachMoneyIcon style={{ color: "white" }} />
@@ -435,6 +543,105 @@ export default function Product() {
             Your bid need to be higher than the current one
           </Alert>
         </Snackbar>
+
+        <Menu
+          anchorEl={anchorEl}
+          id="account-menu"
+          open={open}
+          onClose={handleClose}
+          onClick={handleClose}
+          className="bid-modal"
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              overflow: "visible",
+              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+              mt: 1.5,
+              "& .MuiAvatar-root": {
+                width: 32,
+                height: 32,
+                ml: -0.5,
+                mr: 1,
+              },
+              "&:before": {
+                content: '""',
+                display: "block",
+                position: "absolute",
+                top: 0,
+                right: 14,
+                width: 10,
+                height: 10,
+                bgcolor: "background.paper",
+                transform: "translateY(-50%) rotate(45deg)",
+                zIndex: 0,
+              },
+            },
+          }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        >
+          <MenuItem
+            onClick={
+              status === "open" || status === "Open"
+                ? closeService
+                : openService
+            }
+          >
+            {status === "open" || status === "Open"
+              ? "Close bidding"
+              : "Open bidding"}
+          </MenuItem>
+
+          <Divider />
+
+          <MenuItem sx={{ color: "red" }} onClick={handleOpen}>
+            <ListItemIcon>
+              <DeleteForeverIcon fontSize="small" style={{ color: "red" }} />
+            </ListItemIcon>
+            Delete
+          </MenuItem>
+        </Menu>
+
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={confirmModal}
+          onClose={handleCloseConfirmModal}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 300,
+          }}
+        >
+          <Fade in={confirmModal}>
+            <Box sx={style} className="bid-modal">
+              <Typography
+                id="transition-modal-title"
+                variant="h6"
+                component="h2"
+                fontWeight={"bold"}
+              >
+                Do you really want to delete this listing?
+              </Typography>
+              <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+                After this you won't be able to recover this listing.
+              </Typography>
+              <Box display={"flex"} mt={2} gap={2}>
+                <Button variant="outlined">Close</Button>
+                <Button
+                  onClick={deleteService}
+                  startIcon={<DeleteIcon />}
+                  variant="contained"
+                  style={{
+                    backgroundColor: "red",
+                  }}
+                >
+                  Delete
+                </Button>
+              </Box>
+            </Box>
+          </Fade>
+        </Modal>
       </Container>
     </>
   );

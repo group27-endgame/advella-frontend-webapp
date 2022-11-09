@@ -32,10 +32,10 @@ function Navbar() {
     };
 
   const signOut = () => {
-    console.log("click");
-
     removeCookie("token");
-    navigate("/");
+    setTimeout(() => {
+      navigate("/");
+    }, 200);
   };
 
   // mobile items in the drawer

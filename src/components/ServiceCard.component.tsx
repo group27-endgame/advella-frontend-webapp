@@ -9,6 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
+import { useCookies } from "react-cookie";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Link from "@mui/material/Link";
@@ -18,6 +19,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import { ListItemIcon } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import UserService from "../services/User.service";
+import ProductService from "../services/Product.service";
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
@@ -38,6 +41,7 @@ type CardProps = {
   serviceDescription?: string;
   servicePrice?: number;
   serviceId?: number;
+  posted?: string | null | undefined;
 
   image?: string;
   title?: string | undefined | null;
@@ -61,36 +65,23 @@ export default function ServiceCard(this: any, props: CardProps) {
     setAnchorEl(null);
   };
 
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+  const [userName, setUsername] = React.useState("");
+
+  const userService: UserService = new UserService();
+  const productService: ProductService = new ProductService();
+
   return (
     <React.Fragment>
-      <Card sx={{ height: "100%" }}>
+      <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <CardHeader
           className="title-line-clamp"
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              R
+              {props.posted !== undefined
+                ? props.posted?.charAt(0).toUpperCase()
+                : ""}
             </Avatar>
-          }
-          action={
-            <div>
-              {isLoggedIn ? (
-                <Tooltip title="Listing settings">
-                  <IconButton
-                    onClick={handleOptionsClick}
-                    size="small"
-                    sx={{ ml: 2 }}
-                    aria-controls={open ? "account-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                    aria-label="settings"
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                </Tooltip>
-              ) : (
-                " "
-              )}
-            </div>
           }
           title={props.type === "product" ? props.title : props.serviceTitle}
           subheader={
@@ -127,7 +118,7 @@ export default function ServiceCard(this: any, props: CardProps) {
               : props.serviceDescription}
           </Typography>
         </CardContent>
-        <CardActions disableSpacing>
+        <CardActions disableSpacing sx={{ mt: "auto" }}>
           <ExpandMore aria-label="show more" expand={false}>
             <Link
               sx={{ textDecoration: "none", fontSize: "18px" }}

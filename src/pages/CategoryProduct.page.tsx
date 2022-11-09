@@ -24,7 +24,6 @@ export default function CategoryProduct() {
     productService.getProductsInCategory(categoryId).then((response) => {
       if (mounted) {
         setProducts(response);
-
         productService
           .getProductCategory(Number(categoryId))
           .then((response) => {
@@ -88,6 +87,7 @@ export default function CategoryProduct() {
                   description={name.detail}
                   price={name.moneyAmount}
                   type={"product"}
+                  posted={name?.posted?.username}
                   categoryId={Number(categoryId)}
                 />
               </Grid>

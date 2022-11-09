@@ -25,6 +25,7 @@ export default function AllProducts() {
 
     productsAndServices.getProductsAndServicesLatest().then((e) => {
       setAll(e);
+      console.log(e);
     });
 
     return () => {
@@ -57,6 +58,7 @@ export default function AllProducts() {
                   description={name.detail}
                   price={name.moneyAmount}
                   type={"product"}
+                  posted={name?.posted?.username}
                 />
               ) : (
                 <ServiceCard
@@ -67,6 +69,7 @@ export default function AllProducts() {
                   type={"service"}
                   serviceTitle={name.title}
                   servicePrice={name.moneyAmount}
+                  posted={name?.posted?.username}
                 />
               )}
             </Grid>

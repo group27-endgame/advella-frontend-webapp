@@ -3,8 +3,7 @@ import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
 import Rating from "@mui/material/Rating";
 import ServiceCard from "../components/ServiceCard.component";
-import ProductService from "../services/Product.service";
-import Product from "../models/Product.model";
+
 import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
 

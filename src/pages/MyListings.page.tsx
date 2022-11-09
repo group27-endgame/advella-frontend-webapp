@@ -3,11 +3,19 @@ import ServiceCard from "../components/ServiceCard.component";
 import ProductService from "../services/Product.service";
 import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ServiceService from "../services/Service.service";
+import ServiceModel from "../models/Service.model";
+import ProductModel from "../models/Product.model";
 
 export default function MyListings() {
   const [cookie] = useCookies(["token"]);
+  const [serviceList, setServiceList] = useState<ServiceModel[] | undefined>(
+    []
+  );
+  const [productList, setProductList] = useState<ProductModel[] | undefined>(
+    []
+  );
 
   const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
@@ -20,12 +28,17 @@ export default function MyListings() {
         .getProductsInPostedByUser(response?.userId!)
         .then((value) => {
           console.log(value);
+          setProductList(value);
+          console.log(productList);
         });
 
       serviceService
         .getServicesInPostedByUser(response?.userId!)
         .then((response) => {
           console.log(response);
+
+          setServiceList(response);
+          console.log(serviceList);
         });
     });
 
@@ -67,7 +80,63 @@ export default function MyListings() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={3}></Grid>
+        <Typography
+          gutterBottom
+          sx={{
+            fontWeight: "900",
+            fontSize: { xs: "2rem" },
+            lineHeight: { xs: "3rem", md: "5rem" },
+          }}
+        >
+          Products{" "}
+        </Typography>
+        <Grid container spacing={3}>
+          {productList?.map((name: any, index: number) => {
+            return (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <ServiceCard
+                  id={name.productId}
+                  image={"https://www.fillmurray.com/g/200/300"}
+                  title={name.title}
+                  description={name.detail}
+                  price={name.moneyAmount}
+                  type={"product"}
+                  posted={name.posted.username}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
+
+        <Typography
+          gutterBottom
+          sx={{
+            fontWeight: "900",
+            fontSize: { xs: "2rem" },
+            lineHeight: { xs: "3rem", md: "5rem" },
+          }}
+        >
+          Services{" "}
+        </Typography>
+
+        <Grid container spacing={3}>
+          {serviceList?.map((name: any, index: number) => {
+            return (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <ServiceCard
+                  id={name.serviceId}
+                  image={"https://www.fillmurray.com/g/200/300"}
+                  serviceDescription={name.detail}
+                  price={name.service}
+                  type={"service"}
+                  serviceTitle={name.title}
+                  posted={name.posted.username}
+                  servicePrice={name.moneyAmount}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
       </Container>
     </>
   );

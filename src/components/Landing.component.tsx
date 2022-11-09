@@ -74,6 +74,9 @@ function Landing() {
                     maxWidth: "530px",
                   }}
                   value={search}
+                  onKeyDown={(e: any) =>
+                    e.keyCode === 13 ? handleClick() : null
+                  }
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <Button variant="contained" size="large" onClick={handleClick}>

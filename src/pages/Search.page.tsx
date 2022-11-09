@@ -45,20 +45,27 @@ export default function Search() {
       <Container maxWidth="xl" sx={{ my: "3rem" }}>
         <Grid
           container
-          sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}
+          sx={{
+            alignItems: " center",
+            justifyContent: " center",
+            mt: 8,
+            mb: 4,
+          }}
         >
           <Grid item xs={6}>
             <Typography
+              component={"span"}
               gutterBottom
               sx={{
                 fontWeight: "900",
-                fontSize: { xs: "2rem", md: "5rem" },
-                lineHeight: { xs: "3rem", md: "5rem" },
+                fontSize: { xs: "2rem", md: "3.5rem" },
+                lineHeight: { xs: "3rem", md: "3rem" },
               }}
             >
-              My listings
+              Results for: {param.searchedQuery}
             </Typography>
           </Grid>
+
           <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>
             <Link
               href="#"

@@ -52,19 +52,19 @@ export default function MyListings() {
           container
           sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}
         >
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Typography
               gutterBottom
               sx={{
                 fontWeight: "900",
-                fontSize: { xs: "2rem", md: "5rem" },
+                fontSize: { xs: "3rem", md: "5rem" },
                 lineHeight: { xs: "3rem", md: "5rem" },
               }}
             >
               My listings
             </Typography>
           </Grid>
-          <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>
+          {/* <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>
             <Link
               href="#"
               underline="none"
@@ -77,7 +77,7 @@ export default function MyListings() {
             >
               See more &gt;
             </Link>
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <Typography
@@ -91,21 +91,33 @@ export default function MyListings() {
           Products{" "}
         </Typography>
         <Grid container spacing={3}>
-          {productList?.map((name: any, index: number) => {
-            return (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                <ServiceCard
-                  id={name.productId}
-                  image={"https://www.fillmurray.com/g/200/300"}
-                  title={name.title}
-                  description={name.detail}
-                  price={name.moneyAmount}
-                  type={"product"}
-                  posted={name.posted.username}
-                />
-              </Grid>
-            );
-          })}
+          {productList?.length! > 0 ? (
+            productList?.map((name: any, index: number) => {
+              return (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  <ServiceCard
+                    id={name.productId}
+                    image={"https://www.fillmurray.com/g/200/300"}
+                    title={name.title}
+                    description={name.detail}
+                    price={name.moneyAmount}
+                    type={"product"}
+                    posted={name.posted.username}
+                  />
+                </Grid>
+              );
+            })
+          ) : (
+            <Grid item>
+              <Typography
+                sx={{
+                  fontSize: { xs: "1.2rem" },
+                }}
+              >
+                You haven't created any products
+              </Typography>
+            </Grid>
+          )}
         </Grid>
 
         <Typography
@@ -113,6 +125,7 @@ export default function MyListings() {
           sx={{
             fontWeight: "900",
             fontSize: { xs: "2rem" },
+            mt: 4,
             lineHeight: { xs: "3rem", md: "5rem" },
           }}
         >
@@ -120,22 +133,34 @@ export default function MyListings() {
         </Typography>
 
         <Grid container spacing={3}>
-          {serviceList?.map((name: any, index: number) => {
-            return (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                <ServiceCard
-                  id={name.serviceId}
-                  image={"https://www.fillmurray.com/g/200/300"}
-                  serviceDescription={name.detail}
-                  price={name.service}
-                  type={"service"}
-                  serviceTitle={name.title}
-                  posted={name.posted.username}
-                  servicePrice={name.moneyAmount}
-                />
-              </Grid>
-            );
-          })}
+          {serviceList?.length! > 0 ? (
+            serviceList?.map((name: any, index: number) => {
+              return (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  <ServiceCard
+                    id={name.serviceId}
+                    image={"https://www.fillmurray.com/g/200/300"}
+                    serviceDescription={name.detail}
+                    price={name.service}
+                    type={"service"}
+                    serviceTitle={name.title}
+                    posted={name.posted.username}
+                    servicePrice={name.moneyAmount}
+                  />
+                </Grid>
+              );
+            })
+          ) : (
+            <Grid item>
+              <Typography
+                sx={{
+                  fontSize: { xs: "1.2rem" },
+                }}
+              >
+                You haven't created any services
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </Container>
     </>

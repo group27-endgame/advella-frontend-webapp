@@ -1,7 +1,6 @@
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import "react-image-gallery/styles/css/image-gallery.css";
-import ImageGallery from "react-image-gallery";
 import {
   Alert,
   Avatar,
@@ -23,8 +22,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/system/Box";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+
 import { useEffect, useState } from "react";
 import React from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -35,15 +33,10 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserService from "../services/User.service";
-import ServiceModel from "../models/Service.model";
-import { servicesVersion } from "typescript";
 
 export default function Service() {
-  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookie] = useCookies(["token"]);
 
-  const [likeCLicked, setLikeClicked] = useState(false);
-  const [likeAmount, setLikeAmount] = useState<number>(0);
-  const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
   const [newBid, setNewBid] = useState<any | null>();
   const [deadline, setDeadline] = useState("");
@@ -65,6 +58,7 @@ export default function Service() {
     undefined
   );
   const navigate = useNavigate();
+  const [image, setImage] = useState("");
 
   const [duration, setDuration] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
@@ -74,20 +68,6 @@ export default function Service() {
   const serviceService: ServiceService = new ServiceService();
   const userService: UserService = new UserService();
   const { serviceId } = useParams();
-
-  const handleLikeIconClick = () => {
-    setLikeClicked(!likeCLicked);
-  };
-
-  const handleLikeClick = () => {
-    const getLike = likeAmount;
-    setLikeAmount(getLike + 1);
-  };
-
-  const handleDislikeClick = () => {
-    const getLike = likeAmount;
-    setLikeAmount(getLike - 1);
-  };
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -123,32 +103,11 @@ export default function Service() {
     }
   };
 
-  const images = [
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-    },
-  ];
   function padTo2Digits(num: any | "") {
     return num.toString().padStart(2, "0");
   }
 
-  const [serviceList, setServiceList] = useState<ServiceModel[] | undefined>(
-    []
-  );
   useEffect(() => {
-    const userFirstLetter =
-      document.querySelector(".userName")?.textContent![0];
-    setLetter(userFirstLetter);
-
     serviceService.getServiceById(Number(serviceId)).then((response) => {
       console.log(response);
       serviceService
@@ -173,6 +132,10 @@ export default function Service() {
               postedDateTime.getFullYear()
           );
 
+          if (response?.serviceImages) {
+            setImage(response.serviceImages[0].path);
+          }
+
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
 
           setCategory(cat!);
@@ -184,8 +147,6 @@ export default function Service() {
               "/" +
               deadline.getFullYear()
           );
-
-          console.log(postedTime);
         });
     });
 
@@ -253,14 +214,10 @@ export default function Service() {
       <Container maxWidth="xl" sx={{ marginTop: "3rem" }}>
         <Grid container spacing={6}>
           <Grid item xs={12} md={6}>
-            <ImageGallery
-              items={images}
-              lazyLoad
-              showFullscreenButton={false}
-              useBrowserFullscreen={false}
-              showPlayButton={false}
-              slideDuration={200}
-              showNav={true}
+            <img
+              src={`https://api.advella.popal.dev/content${image}`}
+              alt={title + " image"}
+              style={{ width: "100%" }}
             />
           </Grid>
           <Grid item xs={12} md={6}>

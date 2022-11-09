@@ -2,7 +2,6 @@ import axios from "axios";
 import { apiURL } from "../constants";
 import ServiceModel from "../models/Service.model";
 import CategoryService from "../models/CategoryService.model";
-import UserModel from "../models/User.model";
 import ServiceCategory from "../models/CategoryService.model";
 
 export default class Service {
@@ -16,24 +15,45 @@ export default class Service {
     location: string,
     postedDateTime: string,
     duration: number,
-    serviceCategory: ServiceCategory
+    serviceCategory: ServiceCategory,
+    image?: Blob
   ): Promise<ServiceModel | undefined> {
     try {
       let service: ServiceModel;
+      const formData = new FormData();
+
+      formData.append(
+        "newService",
+        new Blob(
+          [
+            JSON.stringify({
+              title: title,
+              deadline: deadline,
+              serviceStatus: serviceStatus,
+              moneyAmount: moneyAmount,
+              detail: detail,
+              location: location,
+              postedDateTime: postedDateTime,
+              duration: duration,
+              serviceCategory: serviceCategory,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
+      if (image) {
+        formData.append("image", image);
+      }
+
       const response = await axios.post(
         `${apiURL}/api/services/new`,
+        formData,
         {
-          title: title,
-          deadline: deadline,
-          serviceStatus: serviceStatus,
-          moneyAmount: moneyAmount,
-          detail: detail,
-          location: location,
-          postedDateTime: postedDateTime,
-          duration: duration,
-          serviceCategory: serviceCategory,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       if (response.status !== 200) return undefined;
 

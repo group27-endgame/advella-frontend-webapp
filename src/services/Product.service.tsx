@@ -12,24 +12,41 @@ export default class Product {
     detail: string,
     pickUpLocation: string,
     postedDateTime: string,
-    productCategory: number
+    productCategory: number,
+    image?: Blob
   ): Promise<ProductModel | undefined> {
     let product: ProductModel;
 
-    const response = await axios.post(
-      `${apiURL}/api/products/new`,
-      {
-        title: title,
-        deadline: deadline,
-        productStatus: productStatus,
-        moneyAmount: moneyAmount,
-        detail: detail,
-        pickUpLocation: pickUpLocation,
-        postedDateTime: postedDateTime,
-        productCategory: { productCategoryId: productCategory },
-      },
-      { headers: { Authorization: `Bearer ${token}` } }
+    const formData = new FormData();
+    formData.append(
+      "newProduct",
+      new Blob(
+        [
+          JSON.stringify({
+            title: title,
+            deadline: deadline,
+            productStatus: productStatus,
+            moneyAmount: moneyAmount,
+            detail: detail,
+            pickUpLocation: pickUpLocation,
+            postedDateTime: postedDateTime,
+            productCategory: { productCategoryId: productCategory },
+          }),
+        ],
+        { type: "application/json" }
+      )
     );
+
+    if (image) {
+      formData.append("image", image);
+    }
+
+    const response = await axios.post(`${apiURL}/api/products/new`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     if (response.status !== 200) {
       console.log(response.status);
@@ -160,7 +177,7 @@ export default class Product {
   public async openProductStatus(productId: number): Promise<boolean> {
     try {
       const response = await axios.post(
-        `${apiURL}/api/products/open/${productId}`
+        `${apiURL}/api/products/closed/${productId}`
       );
       if (response.status !== 200) return false;
     } catch (error) {

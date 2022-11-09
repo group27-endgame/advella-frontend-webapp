@@ -32,7 +32,7 @@ export default function NewListing() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | null>(null);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<ImageListType>([]);
   const [hours, setHours] = useState<number | null>(null);
   const [minutes, setMinutes] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
@@ -80,7 +80,7 @@ export default function NewListing() {
     addUpdateIndex: number[] | undefined
   ) => {
     console.log(imageList, addUpdateIndex);
-    setImages(imageList as never[]);
+    setImages(imageList);
   };
 
   const handleSubmit = () => {
@@ -147,7 +147,8 @@ export default function NewListing() {
                 description,
                 location!,
                 postedDay!,
-                productCategoryId
+                productCategoryId,
+                images[0].file
               )
 
               .then((val) => {
@@ -162,20 +163,19 @@ export default function NewListing() {
           .getServiceCategory(serviceCategoryId)
           .then((serviceResponse) => {
             userService.getCurrentUser(cookie.token).then((person) => {
-              console.log(person);
-
               serviceService
                 .addNewService(
                   cookie.token,
                   title,
-                  deadline,
+                  new Date(deadline).getTime().toString(),
                   serviceStatus,
                   price!,
                   description,
                   location!,
                   postedDay!,
                   duration!,
-                  serviceResponse!
+                  serviceResponse!,
+                  images[0].file
                 )
                 .then((val) => {
                   navigate(`/service/${val?.serviceId!}`);
@@ -450,7 +450,6 @@ export default function NewListing() {
           </Grid>
 
           <ImageUploading
-            multiple
             value={images}
             onChange={onChange}
             maxNumber={maxNumber}

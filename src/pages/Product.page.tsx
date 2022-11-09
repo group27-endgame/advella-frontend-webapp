@@ -44,6 +44,7 @@ export default function Product() {
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
   const navigate = useNavigate();
+  const [image, setImage] = useState("");
 
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
@@ -64,22 +65,8 @@ export default function Product() {
 
   const { productId } = useParams();
 
-  const images = [
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-    },
-  ];
   const [userId, setUserId] = useState<number | null>(null);
-  const [userName, setUserName] = useState("");
+  const [username, setUserName] = useState("");
 
   useEffect(() => {
     const userFirstLetter =
@@ -117,6 +104,10 @@ export default function Product() {
           );
 
           setCategory(cat!);
+          console.log(response?.productImages);
+          if (response?.productImages) {
+            setImage(response.productImages[0].path);
+          }
         });
     });
 
@@ -217,14 +208,10 @@ export default function Product() {
       <Container maxWidth="xl" sx={{ marginTop: "3rem" }}>
         <Grid container spacing={6}>
           <Grid item xs={12} md={6}>
-            <ImageGallery
-              items={images}
-              lazyLoad
-              showFullscreenButton={false}
-              useBrowserFullscreen={false}
-              showPlayButton={false}
-              slideDuration={200}
-              showNav={true}
+            <img
+              src={`https://api.advella.popal.dev/content${image}`}
+              alt={title + " image"}
+              style={{ width: "100%" }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -426,7 +413,7 @@ export default function Product() {
             >
               <Avatar sx={{ bgcolor: "#E67A35", color: "#fff" }}>
                 {" "}
-                {letter}
+                {username.charAt(0).toUpperCase()}
               </Avatar>
               <Box
                 sx={{
@@ -439,7 +426,7 @@ export default function Product() {
                 }}
               >
                 <Typography fontSize={20} className="userName">
-                  Patrik Horny
+                  {username}
                 </Typography>
               </Box>
               <Box

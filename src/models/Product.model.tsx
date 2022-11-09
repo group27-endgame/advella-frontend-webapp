@@ -1,5 +1,6 @@
 import CategoryProduct from "./CategoryProduct.model";
 import ChatProduct from "./ChatProduct.model";
+import { ImageProduct } from "./ImageProduct.model";
 import User from "./User.model";
 
 export default class Product {
@@ -16,6 +17,7 @@ export default class Product {
   public user: User[];
   public posted: User;
   public chatProducts: ChatProduct[];
+  public productImages: ImageProduct[];
 
   constructor(
     productId: number,
@@ -30,7 +32,8 @@ export default class Product {
     productCategory: CategoryProduct,
     posted: User,
     chatProducts: ChatProduct[],
-    productStatus: string
+    productStatus: string,
+    productImages: ImageProduct[]
   ) {
     this.productId = productId;
     this.title = title;
@@ -45,5 +48,6 @@ export default class Product {
     this.posted = posted;
     this.chatProducts = chatProducts;
     this.productStatus = productStatus;
+    this.productImages = productImages;
   }
 }

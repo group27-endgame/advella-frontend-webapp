@@ -29,7 +29,21 @@ function CategoryCard(this: any, props: CardProps) {
       >
         <Avatar
           alt="Remy Sharp"
-          src={props.image}
+          src={
+            props.title === "Books"
+              ? require("../assets/images/books.jpeg")
+              : props.title === "Technology"
+              ? require("../assets/images/technology.jpeg")
+              : props.title === "Laptops"
+              ? require("../assets/images/laptop.jpeg")
+              : props.title === "Phones"
+              ? require("../assets/images/phone.jpeg")
+              : props.title === "Lifestyle"
+              ? require("../assets/images/lifestyle.jpeg")
+              : props.title === "Marketing"
+              ? require("../assets/images/marketing.jpg")
+              : ""
+          }
           sx={{
             width: { xs: 150, sm: 300 },
             height: { xs: 150, sm: 300 },

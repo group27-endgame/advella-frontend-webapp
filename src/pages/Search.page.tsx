@@ -15,29 +15,8 @@ export default function Search() {
     categoriesAndServices
       .getCategoriesAndServices(param?.searchedQuery!)
       .then((response) => {
-        console.log(response);
         setProductsAndServices(response);
       });
-
-    // new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     resolve(() => {
-    //       categoriesAndServices
-    //         .getCategoriesAndServices(param?.searchedQuery!)
-    //         .then((response) => {
-    //           console.log(response);
-    //           setProductsAndServices((state: any) => ({ ...state, response }));
-    //           console.log(productsAndServices);
-    //         })
-    //         .catch((err) => {
-    //           console.log(err);
-    //         });
-    //       return () => {
-    //         console.log(productsAndServices);
-    //       };
-    //     });
-    //   }, 300);
-    // });
   }, []);
 
   return (
@@ -88,7 +67,7 @@ export default function Search() {
               {name.productId ? (
                 <ServiceCard
                   id={name.productId}
-                  image={"https://www.fillmurray.com/g/200/300"}
+                  image={name.image}
                   title={name.title}
                   description={name.detail}
                   price={name.moneyAmount}
@@ -98,7 +77,7 @@ export default function Search() {
               ) : (
                 <ServiceCard
                   id={name.serviceId}
-                  image={"https://www.fillmurray.com/g/200/300"}
+                  image={name.image}
                   serviceDescription={name.detail}
                   price={name.service}
                   type={"service"}

@@ -53,10 +53,9 @@ export default function Service() {
   const [pickUpLocation, setpickUpLocation] = useState("");
   const [postedTime, setPostedTime] = useState("");
   const [status, setStatus] = useState("");
-  const [username, setUsername] = useState("");
-  const [category, setCategory] = useState<CategoryService | undefined>(
-    undefined
-  );
+  const [username, setUserName] = useState("");
+  const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState<number | null>(null);
   const navigate = useNavigate();
   const [image, setImage] = useState("");
 
@@ -110,20 +109,32 @@ export default function Service() {
   useEffect(() => {
     serviceService.getServiceById(Number(serviceId)).then((response) => {
       console.log(response);
+      setUserName(response?.posted?.username!);
+
       serviceService
         .getServiceCategory(response?.serviceCategory?.serviceCategoryId!)
         .then((cat) => {
+          console.log(cat);
           let postedDateTime = new Date(response?.postedDateTime!);
           const hours = Math.floor(response?.duration! / 60);
           const minutes = response?.duration! % 60;
           let deadline = new Date(response?.deadline!);
+          setDeadline(
+            deadline.getDate() +
+              "/" +
+              (deadline.getMonth() + 1) +
+              "/" +
+              deadline.getFullYear()
+          );
 
           setTitle(response?.title!);
           setDetail(response?.detail!);
           setMoney(response?.moneyAmount!);
           setpickUpLocation(response?.location!);
           setStatus(response?.serviceStatus!);
-          setDeadline(response?.deadline!);
+          setCategory(cat?.title!);
+          setCategoryId(cat?.serviceCategoryId!);
+
           setPostedTime(
             postedDateTime.getDate() +
               "/" +
@@ -132,38 +143,22 @@ export default function Service() {
               postedDateTime.getFullYear()
           );
 
-          if (response?.serviceImages) {
-            setImage(response.serviceImages[0].path);
+          if (response?.serviceImages[0].path !== undefined) {
+            setImage(response?.serviceImages?.[0].path);
           }
 
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
-
-          setCategory(cat!);
-
-          setDeadline(
-            deadline.getDate() +
-              "/" +
-              (deadline.getMonth() + 1) +
-              "/" +
-              deadline.getFullYear()
-          );
         });
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
-      // setUsername(resp?.username!);
-      // setUserId(resp?.userId!);
-
       serviceService.getServiceById(Number(serviceId)).then((e) => {
-        //console.log(e?.posted?.userId);
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
+          setUserId(e?.posted?.userId);
         }
-        //console.log(e?.posted.userId);
       });
     });
-
-    console.log(image);
   }, [status]);
 
   const style = {
@@ -453,7 +448,7 @@ export default function Service() {
             >
               <Avatar sx={{ bgcolor: "#E67A35", color: "#fff" }}>
                 {" "}
-                {username.charAt(0).toUpperCase()}
+                {username?.charAt(0).toUpperCase()}
               </Avatar>
               <Box
                 sx={{
@@ -552,11 +547,8 @@ export default function Service() {
               <Typography sx={{ opacity: 0.7 }}>Category:</Typography>
               <Typography ml={1} color={"black"}>
                 {" "}
-                <Link
-                  href={`/categoryService/${category?.serviceCategoryId!}`}
-                  color={"#000"}
-                >
-                  {category?.title}
+                <Link href={`/categoryService/${categoryId}`} color={"#000"}>
+                  {category}
                 </Link>
               </Typography>
             </Box>

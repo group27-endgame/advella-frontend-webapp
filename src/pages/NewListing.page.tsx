@@ -24,6 +24,7 @@ import ServiceCategory from "../models/CategoryService.model";
 import ServiceService from "../services/Service.service";
 import UserService from "../services/User.service";
 import LocationService from "../services/Location.service";
+import FormHelperText from "@mui/material/FormHelperText";
 
 export default function NewListing() {
   const navigate = useNavigate();
@@ -46,17 +47,17 @@ export default function NewListing() {
 
   const [titleError, setTitleError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
-  const [listingTypeError, setListingTypeError] = useState(false);
   const [priceError, setPriceError] = useState(false);
   const [durationError, setDurationError] = useState(false);
+  const [categoryError, setCategoryError] = useState(false);
   const [locationError, setLocationError] = useState(false);
 
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
-  const [listingTypeErrorMessage, setListingTypeErrorMessage] = useState("");
   const [priceErrorMessage, setPriceErrorMessage] = useState("");
   const [durationErrorMessage, setDurationErrorMessage] = useState("");
   const [locationErrorMessage, setLocationErrorMessage] = useState("");
+  const [categoryErrorMessage, setCategoryErrorMessage] = useState("");
 
   const [productCategories, setProductCategories] = useState<
     ProductCategory[] | undefined
@@ -89,7 +90,6 @@ export default function NewListing() {
     setTitleError(false);
     setDescriptionError(false);
     setDurationError(false);
-    setListingTypeError(false);
     setPriceError(false);
     setDurationError(false);
     setLocationError(false);
@@ -97,21 +97,43 @@ export default function NewListing() {
     setTitleErrorMessage("");
     setDescriptionErrorMessage("");
     setDurationErrorMessage("");
-    setListingTypeErrorMessage("");
     setPriceErrorMessage("");
     setDurationErrorMessage("");
     setLocationErrorMessage("");
 
+    if (title.length < 1) {
+      setTitleError(true);
+      setTitleErrorMessage("Title should not be empty");
+      returnVal = false;
+    }
+
+    if (description.length < 1) {
+      setDescriptionError(true);
+      setDescriptionErrorMessage(
+        "You should write something about your listing"
+      );
+      returnVal = false;
+    }
+
+    console.log(productCategoryId);
+
+    if (productCategoryId === null) {
+      setCategoryError(true);
+      setCategoryErrorMessage("You must specify a product category");
+      returnVal = false;
+    }
+
+    if (location === null) {
+      setLocationError(true);
+      setLocationErrorMessage("You must specify a location");
+      returnVal = false;
+    }
+
     return returnVal;
-  };
-  const inputRef = useRef();
-  const options = {
-    componentRestrictions: { country: "dk" },
-    fields: ["address_components", "geometry", "icon", "name"],
-    types: ["establishment"],
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (radioCategory === "product") {
       productService.getProductCategories().then((category) => {
         setProductCategories(category);
@@ -132,7 +154,6 @@ export default function NewListing() {
 
   const handleClick = () => {
     if (handleSubmit()) {
-      // locationService.getLocation("Horsens").then((resp) => {});
       if (radioCategory === "product") {
         productService
           .getProductCategory(productCategoryId)
@@ -148,7 +169,7 @@ export default function NewListing() {
                 location!,
                 postedDay!,
                 productCategoryId,
-                images[0].file
+                images[0]?.file
               )
 
               .then((val) => {
@@ -380,14 +401,35 @@ export default function NewListing() {
                       ...provided,
                       height: 52,
                     }),
+
                     menu: (provided: any) => ({
                       ...provided,
                       zIndex: 9999,
+                    }),
+                    container: (provided: any) => ({
+                      ...provided,
+                      border: locationError ? "1px solid red" : "",
+                      color: locationError ? " red" : "",
                     }),
                   },
                 }}
               />
             </Grid>
+            {locationError ? (
+              <Grid
+                item
+                xs={12}
+                pl={4}
+                pt={0}
+                pb={4}
+                color={"red"}
+                textAlign={"left"}
+              >
+                {locationErrorMessage}
+              </Grid>
+            ) : (
+              ""
+            )}
             <Grid item xs={12} sm={6} sx={{ paddingTop: "0px !important" }}>
               {" "}
               <TextField
@@ -426,6 +468,7 @@ export default function NewListing() {
                   }
                   label="Category"
                   onChange={(e) => handleChange(e)}
+                  error={categoryError}
                 >
                   {radioCategory === "product"
                     ? productCategories?.map((item) => (
@@ -445,6 +488,13 @@ export default function NewListing() {
                         </MenuItem>
                       ))}
                 </Select>
+                {categoryErrorMessage ? (
+                  <FormHelperText variant="outlined" style={{ color: "red" }}>
+                    You need to specify a category
+                  </FormHelperText>
+                ) : (
+                  ""
+                )}
               </FormControl>
             </Grid>
           </Grid>

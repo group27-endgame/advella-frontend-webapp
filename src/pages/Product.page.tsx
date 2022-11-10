@@ -1,7 +1,6 @@
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import "react-image-gallery/styles/css/image-gallery.css";
-import ImageGallery from "react-image-gallery";
 import {
   Alert,
   Avatar,
@@ -69,12 +68,9 @@ export default function Product() {
   const [username, setUserName] = useState("");
 
   useEffect(() => {
-    const userFirstLetter =
-      document.querySelector(".userName")?.textContent![0];
-    setLetter(userFirstLetter);
-
     productService.getProductById(Number(productId)).then((response) => {
-      console.log(response);
+      console.log(response?.posted);
+      setUserName(response?.posted?.username!);
       productService
         .getProductCategory(response?.productCategory?.productCategoryId!)
         .then((cat) => {
@@ -111,12 +107,13 @@ export default function Product() {
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
-      setUserName(resp?.username!);
+      // setUserName(resp?.username!);
       setUserId(resp?.userId!);
 
       productService.getProductById(Number(productId)).then((e) => {
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
+          setUserId(e?.posted?.userId);
         }
       });
     });
@@ -181,7 +178,6 @@ export default function Product() {
   const openService = () => {
     productService.getProductById(Number(productId)).then((resp) => {
       productService.openProductStatus(resp?.productId!).then((ok) => {
-        console.log(ok);
         setStatus("open");
       });
     });
@@ -416,7 +412,7 @@ export default function Product() {
             >
               <Avatar sx={{ bgcolor: "#E67A35", color: "#fff" }}>
                 {" "}
-                {username.charAt(0).toUpperCase()}
+                {username?.charAt(0).toUpperCase()}
               </Avatar>
               <Box
                 sx={{
@@ -447,7 +443,10 @@ export default function Product() {
                     textTransform: "capitalize",
                   }}
                 >
-                  <Link href="/user/1" sx={{ textDecoration: "none" }}>
+                  <Link
+                    href={`/user/${userId}`}
+                    sx={{ textDecoration: "none" }}
+                  >
                     View profile
                   </Link>
                 </Button>

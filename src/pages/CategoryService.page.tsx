@@ -11,7 +11,6 @@ import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/system/Stack";
 
 export default function CategoryService() {
-  const [cookie] = useCookies(["token"]);
   const [services, setServices] = useState<ServiceModel[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -19,7 +18,6 @@ export default function CategoryService() {
   const { categoryId } = useParams();
 
   const serviceService: ServiceService = new ServiceService();
-  const userService: UserService = new UserService();
 
   // eslint-disable-next-line
   useEffect(() => {
@@ -39,8 +37,6 @@ export default function CategoryService() {
         setLoading(false);
       }
     });
-
-    userService.getCurrentUser(cookie.token).then((response) => {});
 
     return () => {
       setLoading(false);
@@ -71,7 +67,7 @@ export default function CategoryService() {
         {loading ? (
           <Grid container sx={{ alignItems: " center", mt: 8 }}>
             {Array.from({ length: 8 }, (_, i) => (
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={4} lg={3} key={i}>
                 <Stack spacing={1}>
                   {/* For variant="text", adjust the height via font-size */}
                   <Skeleton variant="text" sx={{ fontSize: "1rem" }} />

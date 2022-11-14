@@ -1,21 +1,17 @@
 import { useParams } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import ProductService from "../services/Product.service";
 import { useEffect, useState } from "react";
 import ProductModel from "../models/Product.model";
-import { Grid, Link, Skeleton, Stack, Typography } from "@mui/material";
+import { Grid, Skeleton, Stack, Typography } from "@mui/material";
 import ServiceCard from "../components/ServiceCard.component";
 import Container from "@mui/system/Container";
-import UserService from "../services/User.service";
 
 export default function CategoryProduct() {
-  const [cookie] = useCookies(["token"]);
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [categoryName, setCategoryName] = useState("");
 
   const { categoryId } = useParams();
   const productService: ProductService = new ProductService();
-  const userService: UserService = new UserService();
   const [loading, setLoading] = useState(true);
 
   // eslint-disable-next-line
@@ -34,10 +30,6 @@ export default function CategoryProduct() {
             setCategoryName(response?.title!);
           });
       }
-    });
-
-    userService.getCurrentUser(cookie.token).then((response) => {
-      // console.log(response);
     });
 
     return () => {
@@ -70,7 +62,7 @@ export default function CategoryProduct() {
         {loading ? (
           <Grid container sx={{ alignItems: " center", mt: 8 }}>
             {Array.from({ length: 8 }, (_, i) => (
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={4} lg={3} key={i}>
                 <Stack spacing={1}>
                   {/* For variant="text", adjust the height via font-size */}
                   <Skeleton variant="text" sx={{ fontSize: "1rem" }} />

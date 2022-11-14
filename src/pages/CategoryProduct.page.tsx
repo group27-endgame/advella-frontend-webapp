@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import ProductService from "../services/Product.service";
 import { useEffect, useState } from "react";
 import ProductModel from "../models/Product.model";
-import { Grid, Link, Typography } from "@mui/material";
+import { Grid, Link, Skeleton, Stack, Typography } from "@mui/material";
 import ServiceCard from "../components/ServiceCard.component";
 import Container from "@mui/system/Container";
 import UserService from "../services/User.service";
@@ -16,14 +16,18 @@ export default function CategoryProduct() {
   const { categoryId } = useParams();
   const productService: ProductService = new ProductService();
   const userService: UserService = new UserService();
+  const [loading, setLoading] = useState(true);
 
   // eslint-disable-next-line
   useEffect(() => {
     let mounted: boolean = true;
+    setLoading(true);
 
     productService.getProductsInCategory(categoryId).then((response) => {
       if (mounted) {
         setProducts(response);
+        setLoading(false);
+
         productService
           .getProductCategory(Number(categoryId))
           .then((response) => {
@@ -37,6 +41,8 @@ export default function CategoryProduct() {
     });
 
     return () => {
+      setLoading(false);
+
       mounted = false;
     };
   }, []);
@@ -48,7 +54,7 @@ export default function CategoryProduct() {
           container
           sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}
         >
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Typography
               gutterBottom
               sx={{
@@ -60,40 +66,45 @@ export default function CategoryProduct() {
               {categoryName}
             </Typography>
           </Grid>
-          <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>
-            <Link
-              href="#"
-              underline="none"
-              gutterBottom
-              sx={{
-                lineHeight: "5rem",
-                fontSize: " 20px",
-                marginLeft: " auto",
-              }}
-            >
-              See more &gt;
-            </Link>
-          </Grid>
         </Grid>
+        {loading ? (
+          <Grid container sx={{ alignItems: " center", mt: 8 }}>
+            {Array.from({ length: 8 }, (_, i) => (
+              <Grid item xs={12} md={4} lg={3}>
+                <Stack spacing={1}>
+                  {/* For variant="text", adjust the height via font-size */}
+                  <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
 
-        <Grid container spacing={2}>
-          {products.map(function (name, index) {
-            return (
-              <Grid item xs={6} md={4} lg={3} key={index}>
-                <ServiceCard
-                  id={name.productId}
-                  image={"https://www.fillmurray.com/g/200/300"}
-                  title={name?.title}
-                  description={name.detail}
-                  price={name.moneyAmount}
-                  type={"product"}
-                  posted={name?.posted?.username}
-                  categoryId={Number(categoryId)}
-                />
+                  {/* For other variants, adjust the size with `width` and `height` */}
+                  <Skeleton variant="circular" width={40} height={40} />
+                  <Skeleton variant="rectangular" width={210} height={60} />
+                  <Skeleton variant="rounded" width={210} height={60} />
+                </Stack>
               </Grid>
-            );
-          })}
-        </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <div>
+            <Grid container spacing={2}>
+              {products.map(function (name, index) {
+                return (
+                  <Grid item xs={12} md={4} lg={3} key={index}>
+                    <ServiceCard
+                      id={name.productId}
+                      image={name.productImages?.[0]?.path}
+                      title={name?.title}
+                      description={name.detail}
+                      price={name.moneyAmount}
+                      type={"product"}
+                      posted={name?.posted?.username}
+                      categoryId={Number(categoryId)}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </div>
+        )}
       </Container>
     </>
   );

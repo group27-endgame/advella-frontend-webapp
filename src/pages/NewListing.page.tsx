@@ -66,15 +66,18 @@ export default function NewListing() {
     ServiceCategory[] | undefined
   >([]);
 
-  const [productCategoryId, setProductCategoryId] = useState<number>(0);
-  const [serviceCategoryId, setServiceCategoryId] = useState<number>(0);
+  const [productCategoryId, setProductCategoryId] = useState<number | null>(
+    null
+  );
+  const [serviceCategoryId, setServiceCategoryId] = useState<number | null>(
+    null
+  );
 
   const maxNumber = 69;
 
   const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
   const userService: UserService = new UserService();
-  const locationService: LocationService = new LocationService();
 
   const onChange = (
     imageList: ImageListType,
@@ -93,6 +96,7 @@ export default function NewListing() {
     setPriceError(false);
     setDurationError(false);
     setLocationError(false);
+    setCategoryError(false);
 
     setTitleErrorMessage("");
     setDescriptionErrorMessage("");
@@ -100,6 +104,7 @@ export default function NewListing() {
     setPriceErrorMessage("");
     setDurationErrorMessage("");
     setLocationErrorMessage("");
+    setCategoryErrorMessage("");
 
     if (title.length < 1) {
       setTitleError(true);
@@ -115,17 +120,30 @@ export default function NewListing() {
       returnVal = false;
     }
 
-    console.log(productCategoryId);
-
-    if (productCategoryId === null) {
-      setCategoryError(true);
-      setCategoryErrorMessage("You must specify a product category");
-      returnVal = false;
+    if (radioCategory === "service") {
+      if (serviceCategoryId === null) {
+        setCategoryError(true);
+        setCategoryErrorMessage("You must specify a product category");
+        returnVal = false;
+      }
+    } else {
+      if (productCategoryId === null) {
+        setCategoryError(true);
+        setCategoryErrorMessage("You must specify a product category");
+        returnVal = false;
+      }
     }
+    console.log(productCategoryId);
 
     if (location === null) {
       setLocationError(true);
       setLocationErrorMessage("You must specify a location");
+      returnVal = false;
+    }
+
+    if (price === null) {
+      setPriceError(true);
+      setPriceErrorMessage("You must provide a price");
       returnVal = false;
     }
 
@@ -156,7 +174,7 @@ export default function NewListing() {
     if (handleSubmit()) {
       if (radioCategory === "product") {
         productService
-          .getProductCategory(productCategoryId)
+          .getProductCategory(productCategoryId!)
           .then((productResponse) => {
             productService
               .addNewProduct(
@@ -168,7 +186,7 @@ export default function NewListing() {
                 description,
                 location!,
                 postedDay!,
-                productCategoryId,
+                productCategoryId!,
                 images[0]?.file
               )
 
@@ -181,7 +199,7 @@ export default function NewListing() {
           });
       } else {
         serviceService
-          .getServiceCategory(serviceCategoryId)
+          .getServiceCategory(serviceCategoryId!)
           .then((serviceResponse) => {
             userService.getCurrentUser(cookie.token).then((person) => {
               serviceService
@@ -374,7 +392,7 @@ export default function NewListing() {
           </Grid>
 
           <Grid container spacing={3}>
-            <Grid item xs={12} sx={{ my: 1 }}>
+            <Grid item xs={12} sx={{ my: 1, p: 0 }}>
               <GooglePlacesAutocomplete
                 apiKey="AIzaSyCL9N2D1Rnli3pBRgURbN-nGq2yVm85QbE"
                 apiOptions={{ language: "dk", region: "DK" }}
@@ -408,8 +426,9 @@ export default function NewListing() {
                     }),
                     container: (provided: any) => ({
                       ...provided,
-                      border: locationError ? "1px solid red" : "",
+                      border: locationError ? "1.2px solid red" : "",
                       color: locationError ? " red" : "",
+                      borderRadius: "6px",
                     }),
                   },
                 }}
@@ -419,11 +438,12 @@ export default function NewListing() {
               <Grid
                 item
                 xs={12}
-                pl={4}
+                p={0}
                 pt={0}
-                pb={4}
-                color={"red"}
+                color={"#d32f2f"}
                 textAlign={"left"}
+                fontSize={"13px"}
+                style={{ padding: 0, paddingLeft: 35, paddingBottom: 20 }}
               >
                 {locationErrorMessage}
               </Grid>
@@ -469,6 +489,7 @@ export default function NewListing() {
                   label="Category"
                   onChange={(e) => handleChange(e)}
                   error={categoryError}
+                  sx={{ textAlign: "left" }}
                 >
                   {radioCategory === "product"
                     ? productCategories?.map((item) => (
@@ -489,7 +510,10 @@ export default function NewListing() {
                       ))}
                 </Select>
                 {categoryErrorMessage ? (
-                  <FormHelperText variant="outlined" style={{ color: "red" }}>
+                  <FormHelperText
+                    variant="outlined"
+                    style={{ color: "#d32f2f" }}
+                  >
                     You need to specify a category
                   </FormHelperText>
                 ) : (

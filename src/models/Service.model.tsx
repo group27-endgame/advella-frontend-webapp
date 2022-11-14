@@ -1,3 +1,4 @@
+import BidService from "./BidService.model";
 import CategoryService from "./CategoryService.model";
 import ChatService from "./ChatService.model";
 import { ImageService } from "./ImageService.model";
@@ -20,6 +21,7 @@ export default class Service {
   public posted: User;
   public chatServices: ChatService[];
   public serviceImages: ImageService[];
+  public bidServices: BidService[];
   constructor(
     serviceId: number,
     title: string,
@@ -36,7 +38,8 @@ export default class Service {
     users: User[],
     chatServices: ChatService[],
     posted: User,
-    serviceImages: ImageService[]
+    serviceImages: ImageService[],
+    bidServices: BidService[]
   ) {
     this.serviceId = serviceId;
     this.title = title;
@@ -54,5 +57,6 @@ export default class Service {
     this.serviceStatus = serviceStatus;
     this.posted = posted;
     this.serviceImages = serviceImages;
+    this.bidServices = bidServices;
   }
 }

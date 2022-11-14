@@ -21,17 +21,6 @@ export default function User() {
 
   const userService: UserService = new UserService();
 
-  var categories = [
-    "Housing",
-    "Electronics",
-    "Something",
-    " Kitchen",
-    "Housing",
-    "Electronics",
-    "Something",
-    " Kitchen",
-  ];
-
   return (
     <>
       <Container maxWidth="xl" sx={{ marginTop: "5rem" }}>
@@ -106,7 +95,7 @@ export default function User() {
           {" "}
           <Typography sx={{ ml: { sm: 7 } }}> {description}</Typography>
         </Box>
-
+        {/* 
         <Grid
           container
           sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}
@@ -156,7 +145,7 @@ export default function User() {
               </Grid>
             );
           })}
-        </Grid>
+        </Grid> */}
       </Container>
     </>
   );

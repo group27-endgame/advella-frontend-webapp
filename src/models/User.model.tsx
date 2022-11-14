@@ -1,3 +1,5 @@
+import BidProduct from "./BidProduct.model";
+import BidService from "./BidService.model";
 import ChatProduct from "./ChatProduct.model";
 import ChatService from "./ChatService.model";
 import Product from "./Product.model";
@@ -22,6 +24,8 @@ export default class User {
   public bidderChatProduct: ChatProduct[] | undefined;
   public postedChatProduct: ChatProduct[] | undefined;
   public postedChatService: ChatService[] | undefined;
+  public bidProducts: BidProduct[] | undefined;
+  public bidServices: BidService[] | undefined;
   constructor(
     userId?: number,
     email?: string,
@@ -39,7 +43,9 @@ export default class User {
     postedChatService?: ChatService[],
     postedChatProduct?: ChatProduct[],
     bidderChatService?: ChatService[],
-    bidderChatProduct?: ChatProduct[]
+    bidderChatProduct?: ChatProduct[],
+    bidProducts?: BidProduct[],
+    bidServices?: BidService[]
   ) {
     this.userId = userId;
     this.email = email;
@@ -58,5 +64,7 @@ export default class User {
     this.postedChatService = postedChatService;
     this.bidderChatProduct = bidderChatProduct;
     this.bidderChatService = bidderChatService;
+    this.bidProducts = bidProducts;
+    this.bidServices = bidServices;
   }
 }

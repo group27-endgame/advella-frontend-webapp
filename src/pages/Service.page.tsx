@@ -38,7 +38,7 @@ export default function Service() {
   const [cookie] = useCookies(["token"]);
 
   const [currentBid, setCurrentBid] = useState<any | null>(0);
-  const [newBid, setNewBid] = useState<any | null>();
+  const [newBid, setNewBid] = useState<number | null>(null);
   const [deadline, setDeadline] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
@@ -77,29 +77,6 @@ export default function Service() {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (newBid > currentBid) {
-      setCurrentBid(newBid);
-      setOpenSnackbar(true);
-      setTimeout(() => {
-        setOpenSnackbar(false);
-      }, 6000);
-      console.log(newBid);
-      console.log("bid:" + newBid);
-      console.log("current Bid" + currentBid);
-    } else {
-      console.log(newBid);
-      console.log("bid:" + newBid);
-      console.log("current Bid" + currentBid);
-      setOpenErrorSnackbar(true);
-      setTimeout(() => {
-        setOpenErrorSnackbar(false);
-      }, 6000);
-    }
   };
 
   function padTo2Digits(num: any | "") {
@@ -143,8 +120,8 @@ export default function Service() {
               postedDateTime.getFullYear()
           );
 
-          if (response?.serviceImages[0].path !== undefined) {
-            setImage(response?.serviceImages?.[0].path);
+          if (response?.serviceImages?.[0]?.path !== undefined) {
+            setImage(response?.serviceImages?.[0]?.path);
           }
 
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
@@ -156,10 +133,11 @@ export default function Service() {
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
           setUserId(e?.posted?.userId);
+          console.log(userId);
         }
       });
     });
-  }, [status]);
+  }, [status, newBid]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -205,6 +183,34 @@ export default function Service() {
 
   const handleOpen = () => setConfirmModal(true);
   const handleCloseConfirmModal = () => setConfirmModal(false);
+
+  const bid = () => {
+    serviceService.getServiceById(Number(serviceId)).then((resp) => {
+      serviceService
+        .bidProduct(cookie.token, newBid!, resp?.serviceId!)
+        .then((ok) => {
+          console.log(ok);
+          if (newBid! > currentBid) {
+            setCurrentBid(newBid);
+            setOpenSnackbar(true);
+            setTimeout(() => {
+              setOpenSnackbar(false);
+            }, 6000);
+            console.log(newBid);
+            console.log("bid:" + newBid);
+            console.log("current Bid" + currentBid);
+          } else {
+            console.log(newBid);
+            console.log("bid:" + newBid);
+            console.log("current Bid" + currentBid);
+            setOpenErrorSnackbar(true);
+            setTimeout(() => {
+              setOpenErrorSnackbar(false);
+            }, 6000);
+          }
+        });
+    });
+  };
 
   return (
     <>
@@ -313,9 +319,6 @@ export default function Service() {
                   width: "100%",
                   alignItems: "start",
                 }}
-                component="form"
-                onSubmit={handleSetNewBid}
-                noValidate
               >
                 <Box
                   display={"flex"}
@@ -323,7 +326,9 @@ export default function Service() {
                   alignContent={"center"}
                   sx={{ width: "100%" }}
                 >
-                  <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
+                  <Typography
+                    sx={{ display: "flex", flex: 1, mb: isPostedUser ? 0 : 3 }}
+                  >
                     Current bid:&nbsp;
                     <Typography fontWeight={"bold"} component={"span"}>
                       {currentBid}dkk
@@ -391,12 +396,12 @@ export default function Service() {
 
                 <Box
                   sx={{
-                    display: "flex",
                     flexDirection: { xs: "column", md: "row" },
                     flex: 1,
                     width: "100%",
                     gap: "1rem",
                   }}
+                  style={{ display: isPostedUser ? "none" : "flex" }}
                 >
                   <TextField
                     margin="none"
@@ -405,8 +410,8 @@ export default function Service() {
                     label="Bid amount"
                     name="bidAmount"
                     type="number"
-                    defaultValue={currentBid}
-                    onChange={(e) => setNewBid(e.target.value)}
+                    value={newBid}
+                    onChange={(e) => setNewBid(Number(e.target.value))}
                     sx={{ maxWidth: { md: "25%" } }}
                     disabled={
                       status === "closed" ||
@@ -422,6 +427,7 @@ export default function Service() {
                       background: "green",
                       maxWidth: { md: "50%" },
                     }}
+                    onClick={bid}
                     type="submit"
                     disabled={
                       status === "closed" ||

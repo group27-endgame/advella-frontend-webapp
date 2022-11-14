@@ -2,11 +2,21 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
-import React from "react";
+import React, { useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import {
+  Popper,
+  Grow,
+  Paper,
+  ClickAwayListener,
+  MenuList,
+  MenuItem,
+} from "@mui/material";
+import UserService from "../services/User.service";
 
 type Anchor = "right";
 
@@ -16,6 +26,9 @@ function Navbar() {
   const [state, setState] = React.useState({
     right: false,
   });
+  const [id, setId] = useState<number | null>(null);
+
+  const userService: UserService = new UserService();
 
   const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
@@ -89,6 +102,23 @@ function Navbar() {
 
           {cookie.token !== undefined ? (
             <Link
+              href={`user/${id}`}
+              width={"100%"}
+              sx={{
+                textDecoration: "none",
+                color: "black",
+                marginRight: "1rem",
+                width: "auto",
+              }}
+            >
+              {"My profile"}
+            </Link>
+          ) : (
+            ""
+          )}
+
+          {cookie.token !== undefined ? (
+            <Link
               href="/myListings"
               width={"100%"}
               sx={{
@@ -141,6 +171,47 @@ function Navbar() {
     </Box>
   );
 
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event: Event | React.SyntheticEvent) => {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event: React.KeyboardEvent) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpen(false);
+    } else if (event.key === "Escape") {
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current!.focus();
+    }
+
+    userService.getCurrentUser(cookie.token).then((response) => {
+      setId(response?.userId!);
+    });
+
+    prevOpen.current = open;
+  }, [open]);
+
   return (
     <>
       <Grid
@@ -153,6 +224,8 @@ function Navbar() {
         wrap="wrap"
         paddingY={2}
         paddingX={2}
+        position={"sticky"}
+        sx={{ top: 0, zIndex: 999999, backgroundColor: "white" }}
       >
         <Grid item xs={2}>
           <Link href="/">
@@ -162,10 +235,6 @@ function Navbar() {
               style={{ objectFit: "cover" }}
               alt="logo"
             />
-          </Link>
-          <Link href="/user/0" sx={{ fontSize: "3rem" }}>
-            {" "}
-            User
           </Link>
         </Grid>
         <Grid
@@ -181,27 +250,7 @@ function Navbar() {
         >
           {/* Sign in and out buttons */}
           {cookie.token !== undefined ? (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Link
-                sx={{
-                  textDecoration: "none",
-                  color: "black",
-                  marginRight: "1rem",
-                  width: "auto",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                }}
-                component="button"
-                onClick={signOut}
-              >
-                Sign out
-              </Link>
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ height: "35px", margin: "0 1.5rem" }}
-              />
-            </div>
+            ""
           ) : (
             <Link
               href="/signin"
@@ -220,18 +269,89 @@ function Navbar() {
           {/* My listings */}
 
           {cookie.token !== undefined ? (
-            <Link
-              href="/mylistings"
-              width={"100%"}
-              sx={{
-                textDecoration: "none",
-                color: "black",
-                marginRight: "1rem",
-                width: "auto",
-              }}
-            >
-              {"My listings"}
-            </Link>
+            <div>
+              <Button
+                startIcon={<DashboardIcon />}
+                ref={anchorRef}
+                id="composition-button"
+                aria-controls={open ? "composition-menu" : undefined}
+                aria-expanded={open ? "true" : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+                sx={{ color: "black" }}
+              >
+                Dashboard
+              </Button>
+              <Popper
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                placement="bottom-start"
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === "bottom-start"
+                          ? "left top"
+                          : "left bottom",
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList
+                          autoFocusItem={open}
+                          id="composition-menu"
+                          aria-labelledby="composition-button"
+                          onKeyDown={handleListKeyDown}
+                        >
+                          <MenuItem>
+                            <Link
+                              href={`user/${id}`}
+                              sx={{ textDecoration: "none", color: "black" }}
+                            >
+                              {" "}
+                              My profile
+                            </Link>
+                          </MenuItem>
+                          <MenuItem>
+                            <Link
+                              href="/mylistings"
+                              sx={{ textDecoration: "none", color: "black" }}
+                            >
+                              My listings
+                            </Link>
+                          </MenuItem>
+                          <MenuItem>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <Link
+                                sx={{
+                                  textDecoration: "none",
+                                  color: "black",
+                                  marginRight: "1rem",
+                                  width: "auto",
+                                  cursor: "pointer",
+                                  fontSize: "16px",
+                                }}
+                                component="button"
+                                onClick={signOut}
+                              >
+                                Sign out
+                              </Link>
+                            </div>
+                          </MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
           ) : (
             ""
           )}

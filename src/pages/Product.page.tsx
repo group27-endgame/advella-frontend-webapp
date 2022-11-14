@@ -33,10 +33,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/User.service";
+import User from "../models/User.model";
 export default function Product() {
   const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
-  const [newBid] = useState<any | null>();
+  const [newBid, setNewBid] = useState<number | null>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [openModal, setOpenModal] = React.useState(false);
@@ -66,15 +67,15 @@ export default function Product() {
 
   const [userId, setUserId] = useState<number | null>(null);
   const [username, setUserName] = useState("");
+  const [bidders, setBidders] = useState<User[] | null>(null);
 
   useEffect(() => {
     productService.getProductById(Number(productId)).then((response) => {
-      console.log(response?.posted);
+      console.log(response);
       setUserName(response?.posted?.username!);
       productService
         .getProductCategory(response?.productCategory?.productCategoryId!)
         .then((cat) => {
-          console.log(cat);
           let postedDateTime = new Date(response?.postedDateTime!);
           let deadline = new Date(response?.deadline!);
 
@@ -101,9 +102,18 @@ export default function Product() {
 
           setCategory(cat!);
           if (response?.productImages) {
-            setImage(response.productImages[0].path);
+            setImage(response?.productImages?.[0]?.path);
           }
         });
+
+      productService.getHighestBidder(Number(productId)).then((resp) => {
+        console.log(" highest bidder:" + resp);
+      });
+
+      productService.getAllBidders(Number(productId)).then((bidders) => {
+        console.log(bidders);
+        setBidders(bidders);
+      });
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
@@ -117,7 +127,9 @@ export default function Product() {
         }
       });
     });
-  }, [isPostedUser, status]);
+
+    console.log(newBid);
+  }, [isPostedUser, status, newBid]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -131,29 +143,6 @@ export default function Product() {
     p: 4,
     zIndex: 5,
     background: "#fff",
-  };
-
-  const handleSetNewBid = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (newBid > currentBid) {
-      setCurrentBid(newBid);
-      setOpenSnackbar(true);
-      setTimeout(() => {
-        setOpenSnackbar(false);
-      }, 6000);
-      console.log(newBid);
-      console.log("bid:" + newBid);
-      console.log("current Bid" + currentBid);
-    } else {
-      console.log(newBid);
-      console.log("bid:" + newBid);
-      console.log("current Bid" + currentBid);
-      setOpenErrorSnackbar(true);
-      setTimeout(() => {
-        setOpenErrorSnackbar(false);
-      }, 6000);
-    }
   };
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -170,7 +159,6 @@ export default function Product() {
   const closeService = () => {
     productService.getProductById(Number(productId)).then((resp) => {
       productService.closeProductStatus(resp?.productId!).then((ok) => {
-        console.log(ok);
         setStatus("closed");
       });
     });
@@ -187,9 +175,7 @@ export default function Product() {
     productService.getProductById(Number(productId)).then((resp) => {
       productService
         .deleteService(cookie.token, resp?.productId!)
-        .then((ok) => {
-          navigate("/mylistings");
-        });
+        .then((ok) => {});
     });
   };
 
@@ -197,6 +183,33 @@ export default function Product() {
 
   const handleOpen = () => setConfirmModal(true);
   const handleCloseConfirmModal = () => setConfirmModal(false);
+
+  const bid = () => {
+    productService.getProductById(Number(productId)).then((resp) => {
+      productService
+        .bidProduct(cookie.token, newBid!, resp?.productId!)
+        .then((ok) => {
+          if (newBid! > currentBid) {
+            setCurrentBid(newBid);
+            setOpenSnackbar(true);
+            setTimeout(() => {
+              setOpenSnackbar(false);
+            }, 6000);
+            console.log(newBid);
+            console.log("bid:" + newBid);
+            console.log("current Bid" + currentBid);
+          } else {
+            console.log(newBid);
+            console.log("bid:" + newBid);
+            console.log("current Bid" + currentBid);
+            setOpenErrorSnackbar(true);
+            setTimeout(() => {
+              setOpenErrorSnackbar(false);
+            }, 6000);
+          }
+        });
+    });
+  };
 
   return (
     <>
@@ -275,9 +288,6 @@ export default function Product() {
                   width: "100%",
                   alignItems: "start",
                 }}
-                component="form"
-                onSubmit={handleSetNewBid}
-                noValidate
               >
                 <Box
                   display={"flex"}
@@ -285,7 +295,9 @@ export default function Product() {
                   alignContent={"center"}
                   sx={{ width: "100%" }}
                 >
-                  <Typography sx={{ display: "flex", flex: 1, mb: 3 }}>
+                  <Typography
+                    sx={{ display: "flex", flex: 1, mb: isPostedUser ? 0 : 3 }}
+                  >
                     Current bid:&nbsp;
                     <Typography fontWeight={"bold"} component={"span"}>
                       {currentBid}dkk
@@ -324,28 +336,30 @@ export default function Product() {
                           Bidders
                         </Typography>
                         {/* loop through the bidders */}
-
-                        <Box
-                          display={"flex"}
-                          alignItems="center"
-                          sx={{ flexDirection: { xs: "column", sm: "row" } }}
-                          gap={2}
-                        >
-                          <Avatar></Avatar>
-                          <Box display={"flex"}>
-                            <Typography>Janko - &#8203;</Typography>
-                            <Typography fontWeight={"bold"}>30dkk</Typography>
-                          </Box>
-                          <Button
-                            variant="contained"
-                            sx={{
-                              ml: { sm: "auto" },
-                              textTransform: "capitalize",
-                            }}
+                        {/* 
+                        {bidders?.map((item, index) => {
+                          <Box
+                            display={"flex"}
+                            alignItems="center"
+                            sx={{ flexDirection: { xs: "column", sm: "row" } }}
+                            gap={2}
                           >
-                            Message
-                          </Button>
-                        </Box>
+                            <Avatar></Avatar>
+                            <Box display={"flex"}>
+                              <Typography>{item.username} - &#8203;</Typography>
+                              <Typography fontWeight={"bold"}>30dkk</Typography>
+                            </Box>
+                            <Button
+                              variant="contained"
+                              sx={{
+                                ml: { sm: "auto" },
+                                textTransform: "capitalize",
+                              }}
+                            >
+                              Message
+                            </Button>
+                          </Box>;
+                        })} */}
                       </Stack>
                     </Box>
                   </Box>
@@ -353,11 +367,11 @@ export default function Product() {
 
                 <Box
                   sx={{
-                    display: "flex",
                     flexDirection: { xs: "column", md: "row" },
                     flex: 1,
                     width: "100%",
                     gap: "1rem",
+                    display: isPostedUser ? "none" : "flex",
                   }}
                 >
                   <TextField
@@ -376,6 +390,9 @@ export default function Product() {
                       status === "Closed" ||
                       cookie.token === undefined
                     }
+                    onChange={(e) => {
+                      setNewBid(Number(e.target.value));
+                    }}
                     sx={{ maxWidth: { md: "25%" } }}
                   />{" "}
                   <Button
@@ -392,6 +409,7 @@ export default function Product() {
                       status === "Closed" ||
                       cookie.token === undefined
                     }
+                    onClick={bid}
                   >
                     {" "}
                     <AttachMoneyIcon style={{ color: "white" }} />

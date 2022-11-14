@@ -224,4 +224,30 @@ export default class Service {
       return "";
     }
   }
+
+  public async bidProduct(
+    token: string,
+    amount: number,
+    productId: number
+  ): Promise<boolean> {
+    try {
+      const params = new URLSearchParams();
+      params.append("amount", amount.toString());
+
+      const response = await axios.post(
+        `${apiURL}/api/users/bid/service/${productId}`,
+        params,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status !== 200) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 }

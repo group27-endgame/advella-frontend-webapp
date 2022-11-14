@@ -7,11 +7,14 @@ import { Grid, Link, Typography } from "@mui/material";
 import ServiceCard from "../components/ServiceCard.component";
 import Container from "@mui/system/Container";
 import UserService from "../services/User.service";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/system/Stack";
 
 export default function CategoryService() {
   const [cookie] = useCookies(["token"]);
   const [services, setServices] = useState<ServiceModel[]>([]);
   const [categoryName, setCategoryName] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const { categoryId } = useParams();
 
@@ -21,7 +24,7 @@ export default function CategoryService() {
   // eslint-disable-next-line
   useEffect(() => {
     let mounted: boolean = true;
-
+    setLoading(true);
     serviceService.getServicesInCategory(categoryId).then((response) => {
       if (mounted) {
         setServices(response);
@@ -32,12 +35,15 @@ export default function CategoryService() {
           .then((response) => {
             setCategoryName(response?.title!);
           });
+
+        setLoading(false);
       }
     });
 
     userService.getCurrentUser(cookie.token).then((response) => {});
 
     return () => {
+      setLoading(false);
       mounted = false;
     };
   }, []);
@@ -49,7 +55,7 @@ export default function CategoryService() {
           container
           sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}
         >
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <Typography
               gutterBottom
               sx={{
@@ -61,40 +67,45 @@ export default function CategoryService() {
               {categoryName}
             </Typography>
           </Grid>
-          <Grid item xs={6} sx={{ textAlign: " end", paddingRight: "16px" }}>
-            <Link
-              href="#"
-              underline="none"
-              gutterBottom
-              sx={{
-                lineHeight: "5rem",
-                fontSize: " 20px",
-                marginLeft: " auto",
-              }}
-            >
-              See more &gt;
-            </Link>
-          </Grid>
         </Grid>
+        {loading ? (
+          <Grid container sx={{ alignItems: " center", mt: 8 }}>
+            {Array.from({ length: 8 }, (_, i) => (
+              <Grid item xs={12} md={4} lg={3}>
+                <Stack spacing={1}>
+                  {/* For variant="text", adjust the height via font-size */}
+                  <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
 
-        <Grid container spacing={2}>
-          {services.map(function (name, index) {
-            return (
-              <Grid item xs={6} md={4} lg={3} key={index}>
-                <ServiceCard
-                  id={name.serviceId}
-                  image={"https://www.fillmurray.com/g/200/300"}
-                  serviceDescription={name.detail}
-                  price={name.moneyAmount}
-                  type={"service"}
-                  serviceTitle={name.title}
-                  posted={name?.posted?.username}
-                  servicePrice={name.moneyAmount}
-                />
+                  {/* For other variants, adjust the size with `width` and `height` */}
+                  <Skeleton variant="circular" width={40} height={40} />
+                  <Skeleton variant="rectangular" width={210} height={60} />
+                  <Skeleton variant="rounded" width={210} height={60} />
+                </Stack>
               </Grid>
-            );
-          })}
-        </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <div>
+            <Grid container spacing={2}>
+              {services.map(function (name, index) {
+                return (
+                  <Grid item xs={12} md={4} lg={3} key={index}>
+                    <ServiceCard
+                      id={name.serviceId}
+                      image={name.serviceImages?.[0]?.path}
+                      serviceDescription={name.detail}
+                      price={name.moneyAmount}
+                      type={"service"}
+                      serviceTitle={name.title}
+                      posted={name?.posted?.username}
+                      servicePrice={name.moneyAmount}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </div>
+        )}
       </Container>
     </>
   );

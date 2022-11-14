@@ -2,6 +2,7 @@ import axios from "axios";
 import { apiURL } from "../constants";
 import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
+import UserModel from "../models/User.model";
 export default class Product {
   public async addNewProduct(
     token: string,
@@ -199,6 +200,61 @@ export default class Product {
     } catch (error) {
       console.error(error);
       return "";
+    }
+  }
+  public async bidProduct(
+    token: string,
+    amount: number,
+    productId: number
+  ): Promise<boolean> {
+    try {
+      const params = new URLSearchParams();
+      params.append("amount", amount.toString());
+
+      const response = await axios.post(
+        `${apiURL}/api/users/bid/product/${productId}`,
+        params,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.status !== 200) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+  public async getAllBidders(productId: number): Promise<UserModel[] | null> {
+    let user: UserModel[];
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/products/bidders/${productId}`,
+        {}
+      );
+      if (response.status !== 200) return null;
+      user = response.data;
+      return user;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+  public async getHighestBidder(productId: number): Promise<UserModel | null> {
+    let user: UserModel;
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/products/bidders/highest/${productId}`,
+        {}
+      );
+      if (response.status !== 200) return null;
+      user = response.data;
+      return user;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   }
 }

@@ -146,6 +146,7 @@ export default function SignUp() {
             error={emailError}
             helperText={emailErrorMessage}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e: any) => (e.keyCode === 13 ? handleClick() : null)}
           />
           <TextField
             margin="normal"
@@ -160,6 +161,7 @@ export default function SignUp() {
             error={descriptionError}
             helperText={descriptionErrorMessage}
             onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={(e: any) => (e.keyCode === 13 ? handleClick() : null)}
           />
 
           <Button

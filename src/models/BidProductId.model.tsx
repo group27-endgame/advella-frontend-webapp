@@ -1,1 +1,4 @@
-export interface BidProductId {}
+export interface BidProductId {
+  user: number;
+  product: number;
+}

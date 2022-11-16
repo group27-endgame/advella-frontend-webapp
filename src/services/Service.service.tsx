@@ -3,12 +3,13 @@ import { apiURL } from "../constants";
 import ServiceModel from "../models/Service.model";
 import CategoryService from "../models/CategoryService.model";
 import ServiceCategory from "../models/CategoryService.model";
+import UserModel from "../models/User.model";
 
 export default class Service {
   public async addNewService(
     token: string,
     title: string,
-    deadline: string,
+    deadline: number,
     serviceStatus: string,
     moneyAmount: number,
     detail: string,
@@ -248,6 +249,37 @@ export default class Service {
     } catch (error) {
       console.error(error);
       return false;
+    }
+  }
+
+  public async getAllBidders(serviceId: number): Promise<UserModel[] | null> {
+    let user: UserModel[];
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/services/bidders/${serviceId}`,
+        {}
+      );
+      if (response.status !== 200) return null;
+      user = response.data;
+      return user;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+  public async getHighestBidder(serviceId: number): Promise<UserModel | null> {
+    let user: UserModel;
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/services/bidders/highest/${serviceId}`,
+        {}
+      );
+      if (response.status !== 200) return null;
+      user = response.data;
+      return user;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   }
 }

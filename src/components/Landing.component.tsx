@@ -14,7 +14,9 @@ function Landing() {
   let navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/search/${search.toString()}`);
+    if (search.length > 0) {
+      navigate(`/search/${search.toString()}`);
+    }
   };
 
   return (

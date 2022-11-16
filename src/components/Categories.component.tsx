@@ -24,7 +24,6 @@ function Categories() {
 
     serviceService.getServiceCategories().then((response) => {
       if (mounted) {
-        console.log(response);
         setService(response);
       }
     });

@@ -34,8 +34,9 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/User.service";
 import User from "../models/User.model";
+import { red } from "@mui/material/colors";
+
 export default function Product() {
-  const [letter, setLetter] = useState<string>();
   const [currentBid, setCurrentBid] = useState<any | null>(0);
   const [newBid, setNewBid] = useState<number | null>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -55,7 +56,7 @@ export default function Product() {
   const [category, setCategory] = useState<CategoryProduct | undefined>(
     undefined
   );
-  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookie] = useCookies(["token"]);
 
   const [status, setStatus] = useState("");
   const [isPostedUser, setIsPostedUser] = useState(false);
@@ -68,10 +69,22 @@ export default function Product() {
   const [userId, setUserId] = useState<number | null>(null);
   const [username, setUserName] = useState("");
   const [bidders, setBidders] = useState<User[] | null>(null);
+  const [highestBidder, setHighestBidder] = useState<User | null>(null);
 
   useEffect(() => {
     productService.getProductById(Number(productId)).then((response) => {
-      console.log(response);
+      let array: any = [];
+
+      response?.bidProducts.forEach((element) => {
+        array.push(element.amount);
+        const max1 = array.reduce(
+          (op: number, item: number) => (op = op > item ? op : item),
+          0
+        );
+
+        setCurrentBid(max1);
+      });
+
       setUserName(response?.posted?.username!);
       productService
         .getProductCategory(response?.productCategory?.productCategoryId!)
@@ -107,11 +120,10 @@ export default function Product() {
         });
 
       productService.getHighestBidder(Number(productId)).then((resp) => {
-        console.log(" highest bidder:" + resp);
+        setHighestBidder(resp);
       });
 
       productService.getAllBidders(Number(productId)).then((bidders) => {
-        console.log(bidders);
         setBidders(bidders);
       });
     });
@@ -127,8 +139,6 @@ export default function Product() {
         }
       });
     });
-
-    console.log(newBid);
   }, [isPostedUser, status, newBid]);
 
   const style = {
@@ -163,10 +173,11 @@ export default function Product() {
       });
     });
   };
+
   const openService = () => {
     productService.getProductById(Number(productId)).then((resp) => {
       productService.openProductStatus(resp?.productId!).then((ok) => {
-        setStatus("open");
+        setStatus("Open");
       });
     });
   };
@@ -175,7 +186,9 @@ export default function Product() {
     productService.getProductById(Number(productId)).then((resp) => {
       productService
         .deleteService(cookie.token, resp?.productId!)
-        .then((ok) => {});
+        .then((ok) => {
+          navigate("/mylistings");
+        });
     });
   };
 
@@ -185,30 +198,24 @@ export default function Product() {
   const handleCloseConfirmModal = () => setConfirmModal(false);
 
   const bid = () => {
-    productService.getProductById(Number(productId)).then((resp) => {
-      productService
-        .bidProduct(cookie.token, newBid!, resp?.productId!)
-        .then((ok) => {
-          if (newBid! > currentBid) {
+    if (newBid! > currentBid) {
+      productService.getProductById(Number(productId)).then((resp) => {
+        productService
+          .bidProduct(cookie.token, newBid!, resp?.productId!)
+          .then((ok) => {
             setCurrentBid(newBid);
             setOpenSnackbar(true);
             setTimeout(() => {
               setOpenSnackbar(false);
             }, 6000);
-            console.log(newBid);
-            console.log("bid:" + newBid);
-            console.log("current Bid" + currentBid);
-          } else {
-            console.log(newBid);
-            console.log("bid:" + newBid);
-            console.log("current Bid" + currentBid);
-            setOpenErrorSnackbar(true);
-            setTimeout(() => {
-              setOpenErrorSnackbar(false);
-            }, 6000);
-          }
-        });
-    });
+          });
+      });
+    } else {
+      setOpenErrorSnackbar(true);
+      setTimeout(() => {
+        setOpenErrorSnackbar(false);
+      }, 6000);
+    }
   };
 
   return (
@@ -253,8 +260,8 @@ export default function Product() {
               fontWeight={"bold"}
               margin="normal"
               sx={{
-                fontSize: { xs: "3rem" },
-                lineHeight: { xs: "3rem" },
+                fontSize: { xs: "1.5rem", sm: "3rem" },
+                lineHeight: { sm: "3rem" },
                 marginBottom: "1rem",
               }}
             >
@@ -303,18 +310,27 @@ export default function Product() {
                       {currentBid}dkk
                     </Typography>
                   </Typography>
-
-                  <Button
-                    variant="text"
-                    sx={{
-                      p: "0 !important",
-                      height: "fit-content !important",
-                      textTransform: "capitalize",
-                    }}
-                    onClick={handleOpenModal}
-                  >
-                    See Bidders
-                  </Button>
+                  {cookie.token !== undefined ? (
+                    <Button
+                      variant="text"
+                      sx={{
+                        p: "0 !important",
+                        height: "fit-content !important",
+                        textTransform: "capitalize",
+                      }}
+                      onClick={handleOpenModal}
+                    >
+                      See Bidders
+                    </Button>
+                  ) : (
+                    <Link
+                      href="/signin"
+                      sx={{ textDecoration: "none", fontSize: 15 }}
+                    >
+                      {" "}
+                      See bidders
+                    </Link>
+                  )}
                 </Box>
 
                 <Modal
@@ -322,6 +338,7 @@ export default function Product() {
                   onClose={handleCloseModal}
                   aria-labelledby="modal-modal-title"
                   aria-describedby="modal-modal-description"
+                  sx={{ overflowY: "scroll" }}
                 >
                   <Box sx={style} className="bid-modal">
                     <Box display={"flex"} flexDirection="column">
@@ -335,31 +352,114 @@ export default function Product() {
                         >
                           Bidders
                         </Typography>
-                        {/* loop through the bidders */}
-                        {/* 
-                        {bidders?.map((item, index) => {
-                          <Box
-                            display={"flex"}
-                            alignItems="center"
-                            sx={{ flexDirection: { xs: "column", sm: "row" } }}
-                            gap={2}
-                          >
-                            <Avatar></Avatar>
-                            <Box display={"flex"}>
-                              <Typography>{item.username} - &#8203;</Typography>
-                              <Typography fontWeight={"bold"}>30dkk</Typography>
-                            </Box>
-                            <Button
-                              variant="contained"
+                        {/* highest bidder */}
+                        {highestBidder != null ? (
+                          <div>
+                            <Box
+                              display={"flex"}
+                              alignItems="center"
                               sx={{
-                                ml: { sm: "auto" },
-                                textTransform: "capitalize",
+                                flexDirection: { xs: "column", sm: "row" },
                               }}
+                              gap={2}
                             >
-                              Message
-                            </Button>
-                          </Box>;
-                        })} */}
+                              <Avatar
+                                sx={{
+                                  textTransform: "uppercase",
+                                  bgcolor: red[500],
+                                }}
+                              >
+                                {" "}
+                                {highestBidder?.username?.charAt(0)}
+                              </Avatar>
+                              <Box display={"flex"}>
+                                <Typography sx={{ fontWeight: "bold" }}>
+                                  {" "}
+                                  {highestBidder?.username} - &#8203;
+                                </Typography>
+                                <Typography fontWeight={"bold"}>
+                                  {currentBid}dkk
+                                </Typography>
+                              </Box>
+                              <Button
+                                variant="contained"
+                                sx={{
+                                  ml: { sm: "auto" },
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                <Link
+                                  href={`/user/${highestBidder?.userId}`}
+                                  sx={{
+                                    color: "white",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  Message
+                                </Link>
+                              </Button>
+                            </Box>
+                          </div>
+                        ) : (
+                          <Box pt={0}>No bids found</Box>
+                        )}
+                        <Divider />
+
+                        {/* loop through the bidders */}
+                        {}
+                        {bidders?.map((item, index) => {
+                          return (
+                            <Box
+                              key={index}
+                              display={
+                                item.userId === highestBidder?.userId
+                                  ? "none"
+                                  : "flex"
+                              }
+                              alignItems="center"
+                              sx={{
+                                flexDirection: { xs: "column", sm: "row" },
+                              }}
+                              gap={2}
+                            >
+                              <Avatar
+                                sx={{
+                                  textTransform: "uppercase",
+                                  bgcolor: red[500],
+                                }}
+                              >
+                                {item.username?.charAt(0)}
+                              </Avatar>
+                              <Box display={"flex"}>
+                                <Typography>
+                                  {item.username} - &#8203;
+                                </Typography>
+                                <Typography>
+                                  {item.bidProducts?.map((it, ind) => {
+                                    return (
+                                      <div key={ind}>
+                                        {Number(it.id.product) ===
+                                        Number(productId)
+                                          ? it.amount + "dkk"
+                                          : ""}
+                                      </div>
+                                    );
+                                  })}
+                                </Typography>
+                              </Box>
+                              <Button
+                                variant="contained"
+                                sx={{
+                                  ml: { sm: "auto" },
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                Message
+                              </Button>
+                              <Divider sx={{ display: { sm: "none" } }} />
+                            </Box>
+                          );
+                        })}
                       </Stack>
                     </Box>
                   </Box>
@@ -509,7 +609,10 @@ export default function Product() {
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Deadline:</Typography>
-              <Typography ml={1}>{productDeadline}</Typography>{" "}
+              <Typography ml={1}>
+                {" "}
+                {productDeadline === "1/1/1970" ? "Not set" : productDeadline}
+              </Typography>{" "}
             </Box>
             <Box display={"flex"}>
               {" "}
@@ -557,7 +660,6 @@ export default function Product() {
           open={open}
           onClose={handleClose}
           onClick={handleClose}
-          className="bid-modal"
           PaperProps={{
             elevation: 0,
             sx: {
@@ -634,7 +736,9 @@ export default function Product() {
                 After this you won't be able to recover this listing.
               </Typography>
               <Box display={"flex"} mt={2} gap={2}>
-                <Button variant="outlined">Close</Button>
+                <Button variant="outlined" onClick={handleCloseConfirmModal}>
+                  Close
+                </Button>
                 <Button
                   onClick={deleteService}
                   startIcon={<DeleteIcon />}

@@ -25,7 +25,6 @@ export default function AllProducts() {
 
     productsAndServices.getProductsAndServicesLatest().then((e) => {
       setAll(e);
-      console.log(e);
     });
 
     return () => {

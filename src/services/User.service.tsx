@@ -58,4 +58,15 @@ export default class User {
 
     return user;
   }
+
+  public async getUserById(userId: string): Promise<UserModel | undefined> {
+    let user: UserModel;
+    const response = await axios.get(`${apiURL}/api/users/${userId}`, {});
+
+    if (response.status !== 200) return undefined;
+
+    user = response.data;
+
+    return user;
+  }
 }

@@ -178,7 +178,7 @@ export default class Product {
   public async openProductStatus(productId: number): Promise<boolean> {
     try {
       const response = await axios.post(
-        `${apiURL}/api/products/closed/${productId}`
+        `${apiURL}/api/products/open/${productId}`
       );
       if (response.status !== 200) return false;
     } catch (error) {

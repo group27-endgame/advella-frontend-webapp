@@ -9,18 +9,14 @@ import Avatar from "@mui/material/Avatar";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-import { useCookies } from "react-cookie";
 
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Link from "@mui/material/Link";
-import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import { ListItemIcon } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import UserService from "../services/User.service";
-import ProductService from "../services/Product.service";
+
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
@@ -50,26 +46,16 @@ type CardProps = {
   id?: number;
   type?: string;
   categoryId?: number | undefined | null;
+  username?: string | null | undefined;
 };
 
 export default function ServiceCard(this: any, props: CardProps) {
-  const isLoggedIn = true;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  const handleOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
-  const [userName, setUsername] = React.useState("");
-
-  const userService: UserService = new UserService();
-  const productService: ProductService = new ProductService();
 
   return (
     <React.Fragment>
@@ -77,9 +63,14 @@ export default function ServiceCard(this: any, props: CardProps) {
         <CardHeader
           className="title-line-clamp"
           avatar={
-            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+            <Avatar
+              sx={{ bgcolor: red[500], textTransform: "uppercase" }}
+              aria-label="recipe"
+            >
               {props.posted !== undefined
                 ? props.posted?.charAt(0).toUpperCase()
+                : props.username?.charAt(0).toUpperCase()
+                ? props.username?.charAt(0).toUpperCase()
                 : ""}
             </Avatar>
           }

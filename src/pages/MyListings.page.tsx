@@ -10,13 +10,16 @@ import ProductModel from "../models/Product.model";
 
 export default function MyListings() {
   const [cookie] = useCookies(["token"]);
-  const [image, setImage] = useState("");
   const [serviceList, setServiceList] = useState<ServiceModel[] | undefined>(
     []
   );
   const [productList, setProductList] = useState<ProductModel[] | undefined>(
     []
   );
+
+  const [username, setName] = useState("");
+
+  const [posted, setPosted] = useState<number | null>(null);
 
   const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
@@ -25,6 +28,8 @@ export default function MyListings() {
   useEffect(() => {
     userService.getCurrentUser(cookie.token).then((response) => {
       console.log(response);
+      setName(response?.username!);
+      setPosted(posted);
       productService
         .getProductsInPostedByUser(response?.userId!)
         .then((value) => {
@@ -103,6 +108,7 @@ export default function MyListings() {
                     type={"product"}
                     posted={name.posted.username}
                     image={name.productImages[0]?.path}
+                    username={username}
                   />
                 </Grid>
               );
@@ -146,6 +152,7 @@ export default function MyListings() {
                     posted={name.posted.username}
                     servicePrice={name.moneyAmount}
                     image={name.serviceImages[0]?.path}
+                    username={username}
                   />
                 </Grid>
               );

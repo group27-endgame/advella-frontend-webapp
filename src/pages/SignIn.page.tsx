@@ -122,6 +122,7 @@ export default function SignIn() {
             value={password}
             error={passwordError}
             helperText={passwordErrorMessage}
+            onKeyDown={(e: any) => (e.keyCode === 13 ? handleClick() : null)}
             onChange={(e) => setPassword(e.target.value)}
           />
 

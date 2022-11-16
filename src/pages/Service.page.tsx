@@ -28,11 +28,12 @@ import React from "react";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useParams } from "react-router-dom";
 import ServiceService from "../services/Service.service";
-import CategoryService from "../models/CategoryService.model";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UserService from "../services/User.service";
+import User from "../models/User.model";
+import { red } from "@mui/material/colors";
 
 export default function Service() {
   const [cookie] = useCookies(["token"]);
@@ -83,15 +84,28 @@ export default function Service() {
     return num.toString().padStart(2, "0");
   }
 
+  const [bidders, setBidders] = useState<User[] | null>(null);
+  const [highestBidder, setHighestBidder] = useState<User | null>(null);
+
   useEffect(() => {
     serviceService.getServiceById(Number(serviceId)).then((response) => {
-      console.log(response);
+      let array: any = [];
+
+      response?.bidServices.forEach((element) => {
+        array.push(element.amount);
+        const max1 = array.reduce(
+          (op: number, item: number) => (op = op > item ? op : item),
+          0
+        );
+
+        setCurrentBid(max1);
+      });
+
       setUserName(response?.posted?.username!);
 
       serviceService
         .getServiceCategory(response?.serviceCategory?.serviceCategoryId!)
         .then((cat) => {
-          console.log(cat);
           let postedDateTime = new Date(response?.postedDateTime!);
           const hours = Math.floor(response?.duration! / 60);
           const minutes = response?.duration! % 60;
@@ -126,10 +140,19 @@ export default function Service() {
 
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
         });
+      serviceService.getHighestBidder(Number(serviceId)).then((resp) => {
+        setHighestBidder(resp);
+      });
+
+      serviceService.getAllBidders(Number(serviceId)).then((bidders) => {
+        setBidders(bidders);
+      });
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
       serviceService.getServiceById(Number(serviceId)).then((e) => {
+        setUserId(e?.posted?.userId!);
+
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
           setUserId(e?.posted?.userId);
@@ -155,7 +178,6 @@ export default function Service() {
   const closeService = () => {
     serviceService.getServiceById(Number(serviceId)).then((resp) => {
       serviceService.closeServiceStatus(resp?.serviceId!).then((ok) => {
-        console.log(ok);
         setStatus("closed");
       });
     });
@@ -164,7 +186,6 @@ export default function Service() {
   const openService = () => {
     serviceService.getServiceById(Number(serviceId)).then((resp) => {
       serviceService.openServiceStatus(resp?.serviceId!).then((ok) => {
-        console.log(ok);
         setStatus("Open");
       });
     });
@@ -185,31 +206,24 @@ export default function Service() {
   const handleCloseConfirmModal = () => setConfirmModal(false);
 
   const bid = () => {
-    serviceService.getServiceById(Number(serviceId)).then((resp) => {
-      serviceService
-        .bidProduct(cookie.token, newBid!, resp?.serviceId!)
-        .then((ok) => {
-          console.log(ok);
-          if (newBid! > currentBid) {
+    if (newBid! > currentBid) {
+      serviceService.getServiceById(Number(serviceId)).then((resp) => {
+        serviceService
+          .bidProduct(cookie.token, newBid!, resp?.serviceId!)
+          .then((ok) => {
             setCurrentBid(newBid);
             setOpenSnackbar(true);
             setTimeout(() => {
               setOpenSnackbar(false);
             }, 6000);
-            console.log(newBid);
-            console.log("bid:" + newBid);
-            console.log("current Bid" + currentBid);
-          } else {
-            console.log(newBid);
-            console.log("bid:" + newBid);
-            console.log("current Bid" + currentBid);
-            setOpenErrorSnackbar(true);
-            setTimeout(() => {
-              setOpenErrorSnackbar(false);
-            }, 6000);
-          }
-        });
-    });
+          });
+      });
+    } else {
+      setOpenErrorSnackbar(true);
+      setTimeout(() => {
+        setOpenErrorSnackbar(false);
+      }, 6000);
+    }
   };
 
   return (
@@ -335,17 +349,27 @@ export default function Service() {
                     </Typography>
                   </Typography>
 
-                  <Button
-                    variant="text"
-                    sx={{
-                      p: "0 !important",
-                      height: "fit-content !important",
-                      textTransform: "capitalize",
-                    }}
-                    onClick={handleOpenModal}
-                  >
-                    See Bidders
-                  </Button>
+                  {cookie.token !== undefined ? (
+                    <Button
+                      variant="text"
+                      sx={{
+                        p: "0 !important",
+                        height: "fit-content !important",
+                        textTransform: "capitalize",
+                      }}
+                      onClick={handleOpenModal}
+                    >
+                      See Bidders
+                    </Button>
+                  ) : (
+                    <Link
+                      href="/signin"
+                      sx={{ textDecoration: "none", fontSize: 15 }}
+                    >
+                      {" "}
+                      See bidders
+                    </Link>
+                  )}
                 </Box>
 
                 <Modal
@@ -353,6 +377,7 @@ export default function Service() {
                   onClose={handleCloseModal}
                   aria-labelledby="modal-modal-title"
                   aria-describedby="modal-modal-description"
+                  sx={{ overflowY: "scroll" }}
                 >
                   <Box sx={style} className="bid-modal">
                     <Box display={"flex"} flexDirection="column">
@@ -366,34 +391,118 @@ export default function Service() {
                         >
                           Bidders
                         </Typography>
-                        {/* loop through the bidders */}
+                        {/* highest bidder */}
+                        {highestBidder != null ? (
+                          <div>
+                            <Box
+                              display={"flex"}
+                              alignItems="center"
+                              sx={{
+                                flexDirection: { xs: "column", sm: "row" },
+                              }}
+                              gap={2}
+                            >
+                              <Avatar
+                                sx={{
+                                  textTransform: "uppercase",
+                                  bgcolor: red[500],
+                                }}
+                              >
+                                {" "}
+                                {highestBidder?.username?.charAt(0)}
+                              </Avatar>
+                              <Box display={"flex"}>
+                                <Typography sx={{ fontWeight: "bold" }}>
+                                  {" "}
+                                  {highestBidder?.username} - &#8203;
+                                </Typography>
+                                <Typography fontWeight={"bold"}>
+                                  {currentBid}dkk
+                                </Typography>
+                              </Box>
+                              <Button
+                                variant="contained"
+                                sx={{
+                                  ml: { sm: "auto" },
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                <Link
+                                  href={`/user/${highestBidder?.userId}`}
+                                  sx={{
+                                    color: "white",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  Message
+                                </Link>
+                              </Button>
+                            </Box>
+                          </div>
+                        ) : (
+                          <Box pt={0}>No bids found</Box>
+                        )}
+                        <Divider />
 
-                        <Box
-                          display={"flex"}
-                          alignItems="center"
-                          sx={{ flexDirection: { xs: "column", sm: "row" } }}
-                          gap={2}
-                        >
-                          <Avatar></Avatar>
-                          <Box display={"flex"}>
-                            <Typography>Janko - &#8203;</Typography>
-                            <Typography fontWeight={"bold"}>30dkk</Typography>
-                          </Box>
-                          <Button
-                            variant="contained"
-                            sx={{
-                              ml: { sm: "auto" },
-                              textTransform: "capitalize",
-                            }}
-                          >
-                            Message
-                          </Button>
-                        </Box>
+                        {/* loop through the bidders */}
+                        {}
+                        {bidders?.map((item, index) => {
+                          return (
+                            <Box
+                              key={index}
+                              display={
+                                item.userId === highestBidder?.userId
+                                  ? "none"
+                                  : "flex"
+                              }
+                              alignItems="center"
+                              sx={{
+                                flexDirection: { xs: "column", sm: "row" },
+                              }}
+                              gap={2}
+                            >
+                              <Avatar
+                                sx={{
+                                  textTransform: "uppercase",
+                                  bgcolor: red[500],
+                                }}
+                              >
+                                {item.username?.charAt(0)}
+                              </Avatar>
+                              <Box display={"flex"}>
+                                <Typography>
+                                  {item.username} - &#8203;
+                                </Typography>
+                                <Typography>
+                                  {item.bidProducts?.map((it, ind) => {
+                                    return (
+                                      <div key={ind}>
+                                        {Number(it.id.product) ===
+                                        Number(serviceId)
+                                          ? it.amount + "dkk"
+                                          : ""}
+                                      </div>
+                                    );
+                                  })}
+                                </Typography>
+                              </Box>
+                              <Button
+                                variant="contained"
+                                sx={{
+                                  ml: { sm: "auto" },
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                Message
+                              </Button>
+                              <Divider sx={{ display: { sm: "none" } }} />
+                            </Box>
+                          );
+                        })}
                       </Stack>
                     </Box>
                   </Box>
                 </Modal>
-
                 <Box
                   sx={{
                     flexDirection: { xs: "column", md: "row" },
@@ -534,13 +643,17 @@ export default function Service() {
               <Typography sx={{ opacity: 0.7 }}>
                 Approximate duration:
               </Typography>
-              <Typography ml={1}>{duration}</Typography>
+              <Typography ml={1}>
+                {duration === "00:00 hours" ? "Not set" : duration}
+              </Typography>
             </Box>
 
             <Box display={"flex"} mb={1}>
               {" "}
               <Typography sx={{ opacity: 0.7 }}>Deadline:</Typography>
-              <Typography ml={1}>{deadline}</Typography>{" "}
+              <Typography ml={1}>
+                {deadline === "1/1/1970" ? "Not set" : deadline}
+              </Typography>{" "}
             </Box>
             <Box display={"flex"} mb={1}>
               {" "}
@@ -591,7 +704,6 @@ export default function Service() {
           open={open}
           onClose={handleClose}
           onClick={handleClose}
-          className="bid-modal"
           PaperProps={{
             elevation: 0,
             sx: {

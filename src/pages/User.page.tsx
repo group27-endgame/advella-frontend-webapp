@@ -6,15 +6,21 @@ import ServiceCard from "../components/ServiceCard.component";
 
 import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
+import UserModel from "../models/User.model";
+import { responsiveProperty } from "@mui/material/styles/cssUtils";
+import { useParams } from "react-router-dom";
 
 export default function User() {
   const [cookie, setCookie, removeCookie] = useCookies(["token"]);
   const [userName, setUsername] = useState("");
   const [description, setDescription] = useState("");
+  const [user, setUser] = useState<UserModel | undefined>();
+  const { id } = useParams();
 
   useEffect(() => {
-    userService.getCurrentUser(cookie.token).then((resp) => {
-      setUsername(resp?.username!);
+    userService.getUserById(id!).then((resp) => {
+      console.log(resp);
+      setUser(resp);
       setDescription(resp?.description!);
     });
   }, []);
@@ -43,7 +49,7 @@ export default function User() {
             }}
           >
             {" "}
-            {userName.charAt(0)}
+            {user?.username!.charAt(0)}
           </Avatar>
           <Box
             sx={{
@@ -56,7 +62,7 @@ export default function User() {
             }}
           >
             <Typography fontSize={20} className="userName">
-              {userName}
+              {user?.username}
             </Typography>
             <Rating size="small" />
           </Box>

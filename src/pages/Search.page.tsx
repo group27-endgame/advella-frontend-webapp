@@ -26,7 +26,7 @@ export default function Search() {
       .getCategoriesAndServices(param?.searchedQuery!)
       .then((response) => {
         setLoading(false);
-
+        console.log(response);
         setProductsAndServices(response);
       });
     return () => {
@@ -63,7 +63,7 @@ export default function Search() {
         {loading ? (
           <Grid container sx={{ alignItems: " center", mt: 8 }}>
             {Array.from({ length: 8 }, (_, i) => (
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={4} lg={3} key={i}>
                 <Stack spacing={1}>
                   {/* For variant="text", adjust the height via font-size */}
                   <Skeleton variant="text" sx={{ fontSize: "1rem" }} />

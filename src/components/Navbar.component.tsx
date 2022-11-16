@@ -17,6 +17,8 @@ import {
   MenuItem,
 } from "@mui/material";
 import UserService from "../services/User.service";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 
 type Anchor = "right";
 
@@ -109,8 +111,12 @@ function Navbar() {
                 color: "black",
                 marginRight: "1rem",
                 width: "auto",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
               }}
             >
+              <AccountBoxIcon />
               {"My profile"}
             </Link>
           ) : (
@@ -126,8 +132,12 @@ function Navbar() {
                 color: "black",
                 marginRight: "1rem",
                 width: "auto",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
               }}
             >
+              <ListAltIcon />
               {"My listings"}
             </Link>
           ) : (
@@ -225,7 +235,7 @@ function Navbar() {
         paddingY={2}
         paddingX={2}
         position={"sticky"}
-        sx={{ top: 0, zIndex: 999999, backgroundColor: "white" }}
+        sx={{ top: 0, zIndex: 999, backgroundColor: "white" }}
       >
         <Grid item xs={2}>
           <Link href="/">
@@ -310,18 +320,30 @@ function Navbar() {
                         >
                           <MenuItem>
                             <Link
-                              href={`user/${id}`}
-                              sx={{ textDecoration: "none", color: "black" }}
+                              href={`/user/${id}`}
+                              sx={{
+                                textDecoration: "none",
+                                color: "black",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
                             >
-                              {" "}
-                              My profile
+                              <AccountBoxIcon /> My profile
                             </Link>
                           </MenuItem>
                           <MenuItem>
                             <Link
                               href="/mylistings"
-                              sx={{ textDecoration: "none", color: "black" }}
+                              sx={{
+                                textDecoration: "none",
+                                color: "black",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
                             >
+                              <ListAltIcon />
                               My listings
                             </Link>
                           </MenuItem>

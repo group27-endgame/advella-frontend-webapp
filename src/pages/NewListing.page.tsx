@@ -77,7 +77,6 @@ export default function NewListing() {
 
   const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
-  const userService: UserService = new UserService();
 
   const onChange = (
     imageList: ImageListType,
@@ -201,28 +200,26 @@ export default function NewListing() {
         serviceService
           .getServiceCategory(serviceCategoryId!)
           .then((serviceResponse) => {
-            userService.getCurrentUser(cookie.token).then((person) => {
-              serviceService
-                .addNewService(
-                  cookie.token,
-                  title,
-                  new Date(deadline).getTime().toString(),
-                  serviceStatus,
-                  price!,
-                  description,
-                  location!,
-                  postedDay!,
-                  duration!,
-                  serviceResponse!,
-                  images[0]?.file
-                )
-                .then((val) => {
-                  navigate(`/service/${val?.serviceId!}`);
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            });
+            serviceService
+              .addNewService(
+                cookie.token,
+                title,
+                new Date(deadline).getTime(),
+                serviceStatus,
+                price!,
+                description,
+                location!,
+                postedDay!,
+                duration!,
+                serviceResponse!,
+                images[0]?.file
+              )
+              .then((val) => {
+                navigate(`/service/${val?.serviceId!}`);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           });
       }
     }
@@ -406,7 +403,7 @@ export default function NewListing() {
                   },
                 }}
                 selectProps={{
-                  placeholder: "Selec your location",
+                  placeholder: "Select your location*",
 
                   location,
                   onChange: (e: any) => {
@@ -427,7 +424,6 @@ export default function NewListing() {
                     container: (provided: any) => ({
                       ...provided,
                       border: locationError ? "1.2px solid red" : "",
-                      color: locationError ? " red" : "",
                       borderRadius: "6px",
                     }),
                   },
@@ -454,7 +450,6 @@ export default function NewListing() {
               {" "}
               <TextField
                 id="deadline"
-                required
                 name="deadline"
                 label="Due deadline"
                 type="date"

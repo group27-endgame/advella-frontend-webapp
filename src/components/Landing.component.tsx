@@ -43,15 +43,15 @@ function Landing() {
                   lineHeight: { xs: "3rem", md: "5rem" },
                 }}
               >
-                Shop and sell on our circular marketplace
+                Post and sell on our circular marketplace
               </Typography>
 
               <Typography
                 gutterBottom
                 sx={{ fontSize: "20px", marginBottom: "2rem" }}
               >
-                Share services between each other and make the life easier for
-                yourself
+                Share services, sell products between each other and make the
+                life easier for yourself
               </Typography>
 
               <Box

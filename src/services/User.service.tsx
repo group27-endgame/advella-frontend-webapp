@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiURL } from "../constants";
+import { apiURL } from "../constants/constants";
 import UserModel from "../models/User.model";
 // import UserModel from "../models/User.model";
 export default class User {

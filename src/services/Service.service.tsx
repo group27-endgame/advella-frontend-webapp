@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiURL } from "../constants";
+import { apiURL } from "../constants/constants";
 import ServiceModel from "../models/Service.model";
 import CategoryService from "../models/CategoryService.model";
 import ServiceCategory from "../models/CategoryService.model";

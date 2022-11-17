@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiURL } from "../constants";
+import { apiURL } from "../constants/constants";
 import ProductModel from "../models/Product.model";
 import ProductCategory from "../models/CategoryProduct.model";
 import UserModel from "../models/User.model";

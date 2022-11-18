@@ -56,7 +56,9 @@ export default class Service {
           },
         }
       );
-      if (response.status !== 200) return undefined;
+      if (response.status !== 200) {
+        return undefined;
+      }
 
       service = response.data;
 
@@ -82,12 +84,10 @@ export default class Service {
     return serviceList;
   }
 
-  public async getServices(token: string): Promise<ServiceModel[]> {
+  public async getServices(): Promise<ServiceModel[]> {
     let serviceList: ServiceModel[];
     try {
-      const response = await axios.get(`${apiURL}/api/services`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`${apiURL}/api/services`, {});
       if (response.status !== 200) return [];
 
       serviceList = response.data;

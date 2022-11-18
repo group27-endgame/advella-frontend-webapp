@@ -8,7 +8,6 @@ import ServiceCard from "./ServiceCard.component";
 
 export default function AllProducts() {
   const [, setProductList] = useState<Product[]>([]);
-  const [cookie] = useCookies(["token"]);
   const [all, setAll] = useState([]);
 
   const productService: ProductService = new ProductService();
@@ -17,7 +16,7 @@ export default function AllProducts() {
   useEffect(() => {
     let mounted: boolean = true;
 
-    productService.getProducts(cookie.token).then((movies) => {
+    productService.getProducts().then((movies) => {
       if (mounted) {
         setProductList(movies);
       }

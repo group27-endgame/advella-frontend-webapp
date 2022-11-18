@@ -120,12 +120,20 @@ export default function Product() {
         });
 
       productService.getHighestBidder(Number(productId)).then((resp) => {
-        setHighestBidder(resp);
+        if (resp !== null) {
+          setHighestBidder(resp);
+        }
       });
 
       productService.getAllBidders(Number(productId)).then((bidders) => {
-        setBidders(bidders);
+        if (bidders !== null) {
+          setBidders(bidders);
+        }
       });
+    });
+
+    productService.getProductById(Number(productId)).then((e) => {
+      setUserId(e?.posted?.userId!);
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
@@ -139,7 +147,7 @@ export default function Product() {
         }
       });
     });
-  }, [isPostedUser, status, newBid]);
+  }, [isPostedUser, status, newBid, highestBidder]);
 
   const style = {
     position: "absolute" as "absolute",

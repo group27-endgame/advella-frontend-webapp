@@ -126,7 +126,7 @@ export default function NewListing() {
         returnVal = false;
       }
     } else {
-      if (productCategoryId === null) {
+      if (productCategoryId === null || productCategoryId === undefined) {
         setCategoryError(true);
         setCategoryErrorMessage("You must specify a product category");
         returnVal = false;
@@ -190,6 +190,7 @@ export default function NewListing() {
               )
 
               .then((val) => {
+                console.log(val);
                 navigate(`/product/${val?.productId!}`);
               })
               .catch((err) => {
@@ -227,8 +228,8 @@ export default function NewListing() {
   const radioButtonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioCategory((event.target as HTMLInputElement).value);
 
-    setProductCategoryId(0);
-    setServiceCategoryId(0);
+    setProductCategoryId(null);
+    setServiceCategoryId(null);
   };
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -477,9 +478,9 @@ export default function NewListing() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={
-                    radioCategory === "product"
-                      ? productCategoryId?.toString()
-                      : serviceCategoryId?.toString()
+                    radioCategory === "service"
+                      ? serviceCategoryId?.toString()
+                      : productCategoryId?.toString()
                   }
                   label="Category"
                   onChange={(e) => handleChange(e)}

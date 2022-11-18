@@ -47,10 +47,10 @@ function Navbar() {
     };
 
   const signOut = () => {
-    removeCookie("token");
-    setTimeout(() => {
-      navigate("/");
-    }, 200);
+    removeCookie("token", { path: "/" });
+    console.log(removeCookie("token"));
+
+    navigate("/");
   };
 
   // mobile items in the drawer
@@ -145,23 +145,23 @@ function Navbar() {
           )}
 
           {cookie.token !== undefined ? (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Link
-                href="/"
-                width={"100%"}
-                sx={{
-                  textDecoration: "none",
-                  color: "black",
-                  marginRight: "1rem",
-                  width: "auto",
-                  fontSize: "16px",
-                }}
-                component="button"
-                onClick={signOut}
-              >
-                {"Sign Out"}
-              </Link>
-            </div>
+            <Link
+              href="/"
+              width={"100%"}
+              sx={{
+                textDecoration: "none",
+                color: "black",
+                marginRight: "1rem",
+                width: "auto",
+                fontSize: "16px",
+                display: "flex",
+                alignItems: "center",
+              }}
+              component="button"
+              onClick={signOut}
+            >
+              {"Sign Out"}
+            </Link>
           ) : (
             <Link
               href="/signin"

@@ -16,54 +16,62 @@ export default class Product {
     productCategory: number,
     image?: Blob
   ): Promise<ProductModel | undefined> {
-    let product: ProductModel;
+    try {
+      let product: ProductModel;
 
-    const formData = new FormData();
-    formData.append(
-      "newProduct",
-      new Blob(
-        [
-          JSON.stringify({
-            title: title,
-            deadline: deadline,
-            productStatus: productStatus,
-            moneyAmount: moneyAmount,
-            detail: detail,
-            pickUpLocation: pickUpLocation,
-            postedDateTime: postedDateTime,
-            productCategory: { productCategoryId: productCategory },
-          }),
-        ],
-        { type: "application/json" }
-      )
-    );
+      const formData = new FormData();
+      formData.append(
+        "newProduct",
+        new Blob(
+          [
+            JSON.stringify({
+              title: title,
+              deadline: deadline,
+              productStatus: productStatus,
+              moneyAmount: moneyAmount,
+              detail: detail,
+              pickUpLocation: pickUpLocation,
+              postedDateTime: postedDateTime,
+              productCategory: { productCategoryId: productCategory },
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
 
-    if (image) {
-      formData.append("image", image);
-    }
+      if (image !== undefined) {
+        formData.append("image", image);
+      }
 
-    const response = await axios.post(`${apiURL}/api/products/new`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+      const response = await axios.post(
+        `${apiURL}/api/products/new`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-    if (response.status !== 200) {
-      console.log(response.status);
+      if (response.status !== 200) {
+        return undefined;
+      }
+
+      product = response.data;
+      console.log(product);
+      return product;
+    } catch (error) {
+      console.error(error);
+
       return undefined;
     }
-
-    product = response.data;
-    return product;
   }
 
-  public async getProducts(token: string): Promise<ProductModel[]> {
+  public async getProducts(): Promise<ProductModel[]> {
     let productList: ProductModel[];
     try {
-      const response = await axios.get(`${apiURL}/api/products`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`${apiURL}/api/products`, {});
       if (response.status !== 200) return [];
 
       productList = response.data;

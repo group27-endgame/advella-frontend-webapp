@@ -16,26 +16,19 @@ export default function CategoryProduct() {
 
   // eslint-disable-next-line
   useEffect(() => {
-    let mounted: boolean = true;
     setLoading(true);
 
     productService.getProductsInCategory(categoryId).then((response) => {
-      if (mounted) {
-        setProducts(response);
-        setLoading(false);
+      setProducts(response);
+      setLoading(false);
 
-        productService
-          .getProductCategory(Number(categoryId))
-          .then((response) => {
-            setCategoryName(response?.title!);
-          });
-      }
+      productService.getProductCategory(Number(categoryId)).then((response) => {
+        setCategoryName(response?.title!);
+      });
     });
 
     return () => {
       setLoading(false);
-
-      mounted = false;
     };
   }, []);
 

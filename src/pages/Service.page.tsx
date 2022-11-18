@@ -141,11 +141,15 @@ export default function Service() {
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
         });
       serviceService.getHighestBidder(Number(serviceId)).then((resp) => {
-        setHighestBidder(resp);
+        if (resp !== null || resp !== undefined) {
+          setHighestBidder(resp);
+        }
       });
 
       serviceService.getAllBidders(Number(serviceId)).then((bidders) => {
-        setBidders(bidders);
+        if (bidders !== null || bidders !== undefined) {
+          setBidders(bidders);
+        }
       });
     });
 
@@ -160,7 +164,7 @@ export default function Service() {
         }
       });
     });
-  }, [status, newBid]);
+  }, [isPostedUser, status, newBid, highestBidder]);
 
   const style = {
     position: "absolute" as "absolute",

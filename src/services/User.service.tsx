@@ -48,13 +48,18 @@ export default class User {
 
   public async getCurrentUser(token: string): Promise<UserModel | undefined> {
     let user: UserModel;
-    const response = await axios.get(`${apiURL}/api/users/currentUser`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const response = await axios.get(`${apiURL}/api/users/currentUser`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    if (response.status !== 200) return undefined;
+      if (response.status !== 200) return undefined;
 
-    user = response.data;
+      user = response.data;
+    } catch (err) {
+      console.log(err);
+      return undefined;
+    }
 
     return user;
   }

@@ -1,17 +1,17 @@
 import axios from "axios";
 import { apiURL } from "../constants/constants";
-
+import ChatMessage from "../models/ChatMessage.model";
 export default class Chat {
-  public async findMessage(id: number): Promise<[]> {
-    let rep: [];
+  public async findMessage(id: number): Promise<ChatMessage | undefined> {
+    let rep: ChatMessage;
     try {
       const response = await axios.get(`${apiURL}/messages/${id}`);
-      if (response.status !== 200) return [];
+      if (response.status !== 200) return undefined;
 
       rep = response.data;
     } catch (error) {
       console.error(error);
-      return [];
+      return undefined;
     }
 
     return rep;
@@ -19,8 +19,8 @@ export default class Chat {
   public async findChatMessages(
     recipientId: number,
     senderId: number
-  ): Promise<[]> {
-    let rep: [];
+  ): Promise<ChatMessage[] | undefined> {
+    let rep: ChatMessage[];
     try {
       const response = await axios.get(
         `${apiURL}/messages/${senderId}/${recipientId}`
@@ -30,7 +30,7 @@ export default class Chat {
       rep = response.data;
     } catch (error) {
       console.error(error);
-      return [];
+      return undefined;
     }
 
     return rep;

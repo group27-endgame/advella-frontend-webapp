@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Product from "../models/Product.model";
 import ProductService from "../services/Product.service";
-import { useCookies } from "react-cookie";
 import { Container, Typography, Grid } from "@mui/material";
 import CategoriesAndServices from "../services/CategoriesAndServices.service";
 import ServiceCard from "./ServiceCard.component";

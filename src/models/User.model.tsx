@@ -1,10 +1,11 @@
 import BidProduct from "./BidProduct.model";
 import BidService from "./BidService.model";
-import ChatProduct from "./ChatProduct.model";
-import ChatService from "./ChatService.model";
+
 import Product from "./Product.model";
 import Rating from "./Rating.model";
 import Service from "./Service.model";
+import ChatMessage from "./ChatMessage.model";
+import ChatRoom from "./ChatRoom.model";
 
 export default class User {
   public userId: number | undefined;
@@ -20,12 +21,12 @@ export default class User {
   public ratings: Rating[] | undefined;
   public postedService: Service[] | undefined;
   public postedProduct: Product[] | undefined;
-  public bidderChatService: ChatService[] | undefined;
-  public bidderChatProduct: ChatProduct[] | undefined;
-  public postedChatProduct: ChatProduct[] | undefined;
-  public postedChatService: ChatService[] | undefined;
   public bidProducts: BidProduct[] | undefined;
   public bidServices: BidService[] | undefined;
+  public receivedChatRoom: ChatRoom | undefined;
+  public receivedMessage: ChatMessage | undefined;
+  public sendChatRoom: ChatRoom | undefined;
+  public sendMessages: ChatMessage[] | undefined;
   constructor(
     userId?: number,
     email?: string,
@@ -40,12 +41,12 @@ export default class User {
     postedService?: Service[],
     postedProduct?: Product[],
     registrationDateTime?: string,
-    postedChatService?: ChatService[],
-    postedChatProduct?: ChatProduct[],
-    bidderChatService?: ChatService[],
-    bidderChatProduct?: ChatProduct[],
     bidProducts?: BidProduct[],
-    bidServices?: BidService[]
+    bidServices?: BidService[],
+    receivedChatRoom?: ChatRoom,
+    receivedMessage?: ChatMessage,
+    sendChatRoom?: ChatRoom,
+    sendMessages?: ChatMessage[]
   ) {
     this.userId = userId;
     this.email = email;
@@ -60,11 +61,11 @@ export default class User {
     this.postedService = postedService;
     this.registrationDateTime = registrationDateTime;
     this.postedProduct = postedProduct;
-    this.postedChatProduct = postedChatProduct;
-    this.postedChatService = postedChatService;
-    this.bidderChatProduct = bidderChatProduct;
-    this.bidderChatService = bidderChatService;
     this.bidProducts = bidProducts;
     this.bidServices = bidServices;
+    this.receivedChatRoom = receivedChatRoom;
+    this.receivedMessage = receivedMessage;
+    this.sendChatRoom = sendChatRoom;
+    this.sendMessages = sendMessages;
   }
 }

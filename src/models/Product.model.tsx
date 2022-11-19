@@ -1,6 +1,5 @@
 import BidProduct from "./BidProduct.model";
 import CategoryProduct from "./CategoryProduct.model";
-import ChatProduct from "./ChatProduct.model";
 import { ImageProduct } from "./ImageProduct.model";
 import User from "./User.model";
 
@@ -17,7 +16,6 @@ export default class Product {
   public productCategory: CategoryProduct;
   public user: User[];
   public posted: User;
-  public chatProducts: ChatProduct[];
   public productImages: ImageProduct[];
   public bidProducts: BidProduct[];
 
@@ -33,7 +31,6 @@ export default class Product {
     users: User[],
     productCategory: CategoryProduct,
     posted: User,
-    chatProducts: ChatProduct[],
     productStatus: string,
     productImages: ImageProduct[],
     bidProducts: BidProduct[]
@@ -49,7 +46,6 @@ export default class Product {
     this.user = users;
     this.productCategory = productCategory;
     this.posted = posted;
-    this.chatProducts = chatProducts;
     this.productStatus = productStatus;
     this.productImages = productImages;
     this.bidProducts = bidProducts;

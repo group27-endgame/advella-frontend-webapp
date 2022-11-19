@@ -94,3 +94,20 @@ code {
   height: 56px !important;
 }
 
+.chat-bar{
+  position: fixed !important;
+  bottom: 0;
+  right: 0;
+  left: 0% !important;
+  width: 75% !important;
+  left: auto !important;
+}
+
+@media (max-width:556px) {
+  .chat-bar{
+    left:0;
+    width: 100% !important;
+
+  }
+}
+

@@ -39,11 +39,11 @@ function App() {
         <Route path="/service/:serviceId" element={<ServicePage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="/user/:id" element={<UserPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat/:id" element={<ChatPage />} />
         <Route path="/search/:searchedQuery" element={<SearchPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
-      <div style={{paddingBottom: 150}} />
+      <div style={{ paddingBottom: 150 }} />
     </>
   );
 }

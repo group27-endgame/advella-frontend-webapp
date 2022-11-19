@@ -48,7 +48,6 @@ function Navbar() {
 
   const signOut = () => {
     removeCookie("token", { path: "/" });
-    console.log(removeCookie("token"));
 
     navigate("/");
   };
@@ -216,7 +215,9 @@ function Navbar() {
     }
 
     userService.getCurrentUser(cookie.token).then((response) => {
-      setId(response?.userId!);
+      if (response !== undefined) {
+        setId(response?.userId!);
+      }
     });
 
     prevOpen.current = open;
@@ -245,6 +246,9 @@ function Navbar() {
               style={{ objectFit: "cover" }}
               alt="logo"
             />
+          </Link>
+          <Link href="/chat/1" sx={{ fontSize: "4rem" }}>
+            chat
           </Link>
         </Grid>
         <Grid

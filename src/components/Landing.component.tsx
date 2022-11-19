@@ -8,7 +8,6 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import Link from "@mui/material/Link";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { StompSessionProvider, useSubscription } from "react-stomp-hooks";
 
 function Landing() {
   const [search, setSearch] = useState("");
@@ -19,17 +18,6 @@ function Landing() {
       navigate(`/search/${search.toString()}`);
     }
   };
-
-  function SubscribingComponent() {
-    const [lastMessage, setLastMessage] = useState("No message received yet");
-
-    useSubscription("/topic/test", (message) => setLastMessage(message.body));
-    return (
-      <>
-        <div>Last Message: {lastMessage}</div>
-      </>
-    );
-  }
 
   return (
     <>

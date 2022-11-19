@@ -85,7 +85,13 @@ export default function User() {
                       textTransform: "capitalize",
                     }}
                   >
-                    Message
+                    <Link
+                      href={`/chat/${id}`}
+                      sx={{ color: "white", textDecoration: "none" }}
+                    >
+                      {" "}
+                      Message
+                    </Link>
                   </Button>
                 )}
               </Box>

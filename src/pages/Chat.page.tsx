@@ -10,6 +10,7 @@ import {
   Divider,
   TextField,
   Fab,
+  Button,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ChatService from "../services/Chat.service";
@@ -17,7 +18,11 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import UserService from "../services/User.service";
 import { useCookies } from "react-cookie";
-import { StompSessionProvider, useSubscription } from "react-stomp-hooks";
+import {
+  StompSessionProvider,
+  useSubscription,
+  useStompClient,
+} from "react-stomp-hooks";
 
 const Chat = () => {
   const [cookie] = useCookies(["token"]);
@@ -42,18 +47,51 @@ const Chat = () => {
 
   let clientRef = useRef(null);
 
-  function SubscribingComponent() {
+  function SendingMessages() {
+    const [input, setInput] = useState("");
     const [lastMessage, setLastMessage] = useState("No message received yet");
 
-    //Subscribe to /topic/test, and use handler for all received messages
-    //Note that all subscriptions made through the library are automatically removed when their owning component gets unmounted.
-    //If the STOMP connection itself is lost they are however restored on reconnect.
-    //You can also supply an array as the first parameter, which will subscribe to all destinations in the array
-    useSubscription(`/user/${id}/queue/messages`, (message: any) =>
+    //Get Instance of StompClient
+    //This is the StompCLient from @stomp/stompjs
+    //Note: This will be undefined if the client is currently not connected
+    const stompClient = useStompClient();
+    useSubscription(`/user/${id}/queue/messages`, (message) =>
       setLastMessage(message.body)
     );
 
-    return <div>Last Message: {lastMessage}</div>;
+    const sendMessage = () => {
+      if (stompClient) {
+        //Send Message
+        stompClient.publish({
+          destination: "/app/echo",
+          body: "Echo " + input,
+        });
+      } else {
+        //Handle error
+      }
+    };
+
+    return (
+      <Grid container direction="row" spacing={3}>
+        <Grid item>
+          <Button variant={"contained"} onClick={sendMessage}>
+            Send Message
+          </Button>
+        </Grid>
+        <Grid item>
+          <TextField
+            variant="standard"
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+          />
+        </Grid>
+        <Grid item>
+          <Typography variant={"body1"}>
+            Last Message received: {lastMessage}
+          </Typography>
+        </Grid>
+      </Grid>
+    );
   }
 
   return (
@@ -65,7 +103,7 @@ const Chat = () => {
         }}
         //All options supported by @stomp/stompjs can be used here
       >
-        <SubscribingComponent />
+        <SendingMessages />
       </StompSessionProvider>{" "}
       {/* left sidebar */}
       <Grid container>
@@ -184,18 +222,20 @@ const Chat = () => {
 
           {/* bottom for sending message */}
           <Grid container style={{ padding: "20px" }} className="chat-bar">
-            <Grid item xs={10} sm={11}>
+            {/* <Grid item xs={10} sm={11}>
               <TextField
                 id="outlined-basic-email"
                 label="Type Something"
                 fullWidth
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
               />
             </Grid>
             <Grid xs={2} sm={1} sx={{ textAlign: "right" }}>
               <Fab color="primary" aria-label="add">
-                <SendIcon />
+                <SendIcon onClick={sendMessage} />
               </Fab>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
       </Grid>

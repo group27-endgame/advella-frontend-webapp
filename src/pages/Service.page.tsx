@@ -59,6 +59,7 @@ export default function Service() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const navigate = useNavigate();
   const [image, setImage] = useState("");
+  const [newHighestBidder, setNewHighestBidder] = useState(false);
 
   const [duration, setDuration] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
@@ -164,7 +165,7 @@ export default function Service() {
         }
       });
     });
-  }, [isPostedUser, status, newBid, highestBidder]);
+  }, [isPostedUser, status, newBid, highestBidder, newHighestBidder]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -211,6 +212,7 @@ export default function Service() {
 
   const bid = () => {
     if (newBid! > currentBid) {
+      setNewHighestBidder(true);
       serviceService.getServiceById(Number(serviceId)).then((resp) => {
         serviceService
           .bidProduct(cookie.token, newBid!, resp?.serviceId!)

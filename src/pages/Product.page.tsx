@@ -46,6 +46,7 @@ export default function Product() {
   const handleCloseModal = () => setOpenModal(false);
   const navigate = useNavigate();
   const [image, setImage] = useState("");
+  const [newHighestBidder, setNewHighestBidder] = useState(false);
 
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
@@ -147,7 +148,7 @@ export default function Product() {
         }
       });
     });
-  }, [isPostedUser, status, newBid, highestBidder]);
+  }, [isPostedUser, status, newBid, highestBidder, newHighestBidder]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -207,6 +208,7 @@ export default function Product() {
 
   const bid = () => {
     if (newBid! > currentBid) {
+      setNewHighestBidder(true);
       productService.getProductById(Number(productId)).then((resp) => {
         productService
           .bidProduct(cookie.token, newBid!, resp?.productId!)

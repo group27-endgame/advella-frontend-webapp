@@ -1,19 +1,20 @@
 import { useParams } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 import ServiceModel from "../models/Service.model";
 import ServiceService from "../services/Service.service";
-import { Grid, Link, Typography } from "@mui/material";
+import { Box, Grid, Link, TextField, Typography } from "@mui/material";
 import ServiceCard from "../components/ServiceCard.component";
 import Container from "@mui/system/Container";
-import UserService from "../services/User.service";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/system/Stack";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function CategoryService() {
   const [services, setServices] = useState<ServiceModel[]>([]);
+  const [servicesCopy, setServicesCopy] = useState<ServiceModel[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [search] = useState("");
 
   const { categoryId } = useParams();
 
@@ -26,6 +27,7 @@ export default function CategoryService() {
     serviceService.getServicesInCategory(categoryId).then((response) => {
       if (mounted) {
         setServices(response);
+        setServicesCopy(response);
         console.log(response);
 
         serviceService
@@ -42,27 +44,56 @@ export default function CategoryService() {
       setLoading(false);
       mounted = false;
     };
-  }, []);
+  }, [search]);
+
+  const arraySearch = (array: any, keyword: any) => {
+    const searchTerm = keyword.toLowerCase();
+    return array.filter((value: any) => {
+      return value.title.toLowerCase().match(new RegExp(searchTerm, "g"));
+    });
+  };
+
+  const handleOnChange = async (e: any) => {
+    let value = e.target.value;
+    if (value.length > 0) {
+      let search = await arraySearch(services, value);
+      setServices(search);
+    } else {
+      setServices(servicesCopy);
+    }
+  };
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ textAlign: " left", mb: 10 }}>
+      <Container maxWidth="xl" sx={{ textAlign: " left", mb: 10, mt: 10 }}>
         <Grid
-          container
-          sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}
+          item
+          xs={12}
+          display="flex"
+          alignItems={{ xs: "start", sm: "center" }}
+          justifyContent="space-between"
+          flexDirection={{ xs: "column", sm: "row" }}
+          mb={1}
         >
-          <Grid item xs={12}>
-            <Typography
-              gutterBottom
-              sx={{
-                fontWeight: "900",
-                fontSize: { xs: "2rem", md: "5rem" },
-                lineHeight: { xs: "3rem", md: "5rem" },
-              }}
-            >
-              {categoryName}
-            </Typography>
-          </Grid>
+          <Typography
+            gutterBottom
+            sx={{
+              fontWeight: "900",
+              fontSize: { xs: "2rem", md: "5rem" },
+              lineHeight: { xs: "3rem", md: "5rem" },
+            }}
+          >
+            {categoryName}
+          </Typography>
+          <Box display={"flex"} alignItems={"center"} gap={2}>
+            <TextField
+              onChange={handleOnChange}
+              label={"Search for " + categoryName.toLowerCase()}
+              size="small"
+            />
+
+            <SearchIcon />
+          </Box>
         </Grid>
         {loading ? (
           <Grid container sx={{ alignItems: " center", mt: 8 }}>
@@ -83,22 +114,29 @@ export default function CategoryService() {
         ) : (
           <div>
             <Grid container spacing={2}>
-              {services.map(function (name, index) {
-                return (
-                  <Grid item xs={12} md={4} lg={3} key={index}>
-                    <ServiceCard
-                      id={name.serviceId}
-                      image={name.serviceImages?.[0]?.path}
-                      serviceDescription={name.detail}
-                      price={name.moneyAmount}
-                      type={"service"}
-                      serviceTitle={name.title}
-                      posted={name?.posted?.username}
-                      servicePrice={name.moneyAmount}
-                    />
-                  </Grid>
-                );
-              })}
+              {services.length === 0 ? (
+                <Grid item xs={12}>
+                  {" "}
+                  Item not found
+                </Grid>
+              ) : (
+                services.map(function (name, index) {
+                  return (
+                    <Grid item xs={12} md={4} lg={3} key={index}>
+                      <ServiceCard
+                        id={name.serviceId}
+                        image={name.serviceImages?.[0]?.path}
+                        serviceDescription={name.detail}
+                        price={name.moneyAmount}
+                        type={"service"}
+                        serviceTitle={name.title}
+                        posted={name?.posted?.username}
+                        servicePrice={name.moneyAmount}
+                      />
+                    </Grid>
+                  );
+                })
+              )}
             </Grid>
           </div>
         )}

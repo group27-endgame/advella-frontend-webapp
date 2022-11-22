@@ -533,7 +533,13 @@ export default function NewListing() {
               dragProps,
             }) => (
               <>
-                <div className="upload__image-wrapper">
+                <div
+                  className="upload__image-wrapper"
+                  style={{
+                    pointerEvents: images.length > 0 ? "none" : "auto",
+                    opacity: images.length > 0 ? "0.3" : "1",
+                  }}
+                >
                   <svg
                     width="27"
                     height="27"
@@ -565,6 +571,9 @@ export default function NewListing() {
                     }
                   />
                 </div>
+                <Box mb={4} fontSize={12}>
+                  You can upload only 1 image*
+                </Box>
                 <Grid container spacing={4}>
                   {imageList.map((image, index) => (
                     <Grid

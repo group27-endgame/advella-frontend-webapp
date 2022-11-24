@@ -91,6 +91,7 @@ export default function Service() {
   useEffect(() => {
     serviceService.getServiceById(Number(serviceId)).then((response) => {
       let array: any = [];
+      console.log(response);
 
       response?.bidServices.forEach((element) => {
         array.push(element.amount);
@@ -605,7 +606,7 @@ export default function Service() {
                   }}
                 >
                   <Link
-                    href={"/user/" + userId}
+                    href={`/user/${userId}`}
                     sx={{ textDecoration: "none" }}
                   >
                     View profile

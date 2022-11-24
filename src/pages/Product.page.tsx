@@ -70,6 +70,7 @@ export default function Product() {
   const [userId, setUserId] = useState<number | null>(null);
   const [username, setUserName] = useState("");
   const [bidders, setBidders] = useState<User[] | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [highestBidder, setHighestBidder] = useState<User | null>(null);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function Product() {
 
         setCurrentBid(max1);
       });
-
+      setUser(response?.posted!);
       setUserName(response?.posted?.username!);
       productService
         .getProductCategory(response?.productCategory?.productCategoryId!)
@@ -134,17 +135,13 @@ export default function Product() {
     });
 
     productService.getProductById(Number(productId)).then((e) => {
-      setUserId(e?.posted?.userId!);
-    });
+      userService.getCurrentUser(cookie.token).then((resp) => {
+        setUserId(e?.posted?.userId!);
 
-    userService.getCurrentUser(cookie.token).then((resp) => {
-      // setUserName(resp?.username!);
-      setUserId(resp?.userId!);
-
-      productService.getProductById(Number(productId)).then((e) => {
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
           setUserId(e?.posted?.userId);
+          console.log(userId);
         }
       });
     });
@@ -227,6 +224,8 @@ export default function Product() {
       }, 6000);
     }
   };
+
+  const addUserToChatList = () => {};
 
   return (
     <>
@@ -464,7 +463,15 @@ export default function Product() {
                                   textTransform: "capitalize",
                                 }}
                               >
-                                Message
+                                <Link
+                                  href={`/chat/${userId}`}
+                                  sx={{
+                                    color: "white",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  Message
+                                </Link>
                               </Button>
                               <Divider sx={{ display: { sm: "none" } }} />
                             </Box>
@@ -587,8 +594,12 @@ export default function Product() {
                   }}
                 >
                   <Link
-                    href="/chat"
-                    sx={{ textDecoration: "none", color: "white" }}
+                    href={`/chat/${userId}`}
+                    sx={{
+                      color: "white",
+                      textDecoration: "none",
+                    }}
+                    onClick={addUserToChatList}
                   >
                     Message
                   </Link>

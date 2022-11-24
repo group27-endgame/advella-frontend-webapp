@@ -63,7 +63,7 @@ export default function CategoryProduct() {
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ textAlign: " left", mb: 10, mt: 10 }}>
+      <Container maxWidth="xl" sx={{ textAlign: " left", mb: 10 }}>
         <Grid
           container
           sx={{ alignItems: " center", justifyContent: " center", mt: 8 }}

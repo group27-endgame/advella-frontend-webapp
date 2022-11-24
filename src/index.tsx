@@ -4,13 +4,43 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
+import { RecoilRoot } from "recoil";
+import { recoilPersist } from "recoil-persist";
+
+import { atom } from "recoil";
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+const { persistAtom } = recoilPersist({
+  key: "recoil-persist",
+  storage: sessionStorage,
+});
+
+export const chatMessages = atom({
+  key: "chatMessages",
+  default: [],
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const chatActiveContact = atom({
+  key: "chatActiveContact",
+  default: [],
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const userList = atom({
+  key: "userList",
+  default: [],
+});
+
 root.render(
   <React.StrictMode>
     <Router>
-      <App />
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
     </Router>
   </React.StrictMode>
 );

@@ -10,8 +10,6 @@ import {
   Divider,
   TextField,
   Fab,
-  Button,
-  Box,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ChatService from "../services/Chat.service";
@@ -24,9 +22,18 @@ import {
   useSubscription,
   useStompClient,
 } from "react-stomp-hooks";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { chatMessages, chatActiveContact, userList } from "../index";
+import { red } from "@mui/material/colors";
+
+import ChatMessage from "../models/ChatMessage.model";
+import User from "../models/User.model";
 
 const Chat = () => {
   const [cookie] = useCookies(["token"]);
+  const [currentUserInChat, setCurrentUserInChat] = useState<User | undefined>(
+    undefined
+  );
 
   const chatService: ChatService = new ChatService();
   const userService: UserService = new UserService();
@@ -37,16 +44,11 @@ const Chat = () => {
 
   const [user, setUser] = useState("");
 
-  // useEffect(() => {
-  //   userService.getCurrentUser(cookie.token).then((user) => {
-  //     setCurrentuser(user?.userId!);
-  //     chatService.findChatMessages(user?.userId!, Number(id)).then((chat) => {
-  //       // console.log(chat);
-  //     });
-  //   });
-  // }, []);
-
-  let clientRef = useRef(null);
+  useEffect(() => {
+    userService.getUserById(id?.toString()!).then((user) => {
+      setCurrentUserInChat(user);
+    });
+  }, []);
 
   return (
     <div style={{}}>
@@ -71,6 +73,9 @@ const Chat = () => {
         onDisconnect={() => {
           console.log("Disconnected");
         }}
+        onChangeState={(e) => {
+          console.log(e);
+        }}
 
         //All options supported by @stomp/stompjs can be used here
       >
@@ -86,12 +91,14 @@ const Chat = () => {
             <List>
               <ListItem button key="RemySharp">
                 <ListItemIcon>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="https://material-ui.com/static/images/avatar/1.jpg"
-                  />
+                  <Avatar alt="Remy Sharp" sx={{ bgcolor: red[500] }}>
+                    {" "}
+                    {currentUserInChat?.username?.charAt(0)}
+                  </Avatar>
                 </ListItemIcon>
-                <ListItemText primary="John Wick"></ListItemText>
+                <ListItemText
+                  primary={currentUserInChat?.username}
+                ></ListItemText>
               </ListItem>
             </List>
             <Divider />
@@ -189,7 +196,7 @@ const Chat = () => {
                 </Typography>
               </Grid>
               <SendingMessages />
-              <Subscribing />
+              {/* <Subscribing /> */}
             </Grid>
           </Grid>
         </Grid>
@@ -202,26 +209,101 @@ export default Chat;
 
 export function SendingMessages() {
   const { id } = useParams();
+  const [cookie] = useCookies(["token"]);
 
   const [lastMessage, setLastMessage] = useState("No message received yet");
   const [input, setInput] = useState("");
+  const chatService: ChatService = new ChatService();
+  const userService: UserService = new UserService();
+  const [messages, setMessages] = useRecoilState(chatMessages);
+  const [activeContact, setActiveContact] = useRecoilState(chatActiveContact);
+  const [users, setUsers] = useRecoilState(userList);
+  const [contacts, setContacts] = useState([]);
+  const [sender, setSender] = useState<User | undefined>(undefined);
+
+  const user: User = new User(
+    102,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  );
 
   //Get Instance of StompClient
   //This is the StompCLient from @stomp/stompjs
   //Note: This will be undefined if the client is currently not connected
   const stompClient = useStompClient();
 
-  useSubscription(`/user/${id}/queue/messages`, (message) =>
-    setLastMessage(message.body)
-  );
+  // const loadContacts = userService.then((users) =>
+  // users.map((contact) =>
+  //   countNewMessages(contact.id, currentUser.id).then((count) => {
+  //     contact.newMessages = count;
+  //     return contact;
+  //   })
+  // )
+
+  useEffect(() => {
+    if (id === undefined) {
+      return;
+    }
+
+    userService.getCurrentUser(cookie.token).then((resp) => {
+      setSender(user);
+      chatService.findChatMessages(user?.userId!, Number(id)).then((msgs) => {
+        setMessages(msgs);
+      });
+    });
+  }, [id]);
+
+  useSubscription(`/user/${user.userId}/queue/messages`, (message) => {
+    const notification = JSON.parse(message.body);
+    const active = user.userId;
+
+    if (active === notification.senderId) {
+      chatService.findMessage(notification.id).then((response) => {
+        const newMessages = JSON.parse(
+          sessionStorage.getItem("recoil-persist")!
+        ).chatMessages;
+
+        console.log(response);
+
+        newMessages.push(response);
+        setMessages(newMessages);
+      });
+    } else {
+      console.log(" you have a new message from: " + notification.senderName);
+    }
+  });
 
   const sendMessage = () => {
+    const message: ChatMessage = new ChatMessage(
+      input,
+      "",
+      sender,
+      sender,
+      "DELIVERED",
+      ""
+    );
     if (stompClient && input !== "") {
       //Send Message
 
       stompClient.publish({
         destination: "/app/chat",
-        body: "Echo " + JSON.stringify(input),
+        headers: {},
+        body: JSON.stringify(message),
       });
 
       setInput("");
@@ -250,21 +332,4 @@ export function SendingMessages() {
       <Grid> {lastMessage}</Grid>
     </>
   );
-}
-
-export function Subscribing() {
-  const [lastMessage, setLastMessage] = useState("No message received yet");
-  const { id } = useParams();
-
-  //Subscribe to /topic/test, and use handler for all received messages
-  //Note that all subscriptions made through the library are automatically removed when their owning component gets unmounted.
-  //If the STOMP connection itself is lost they are however restored on reconnect.
-  //You can also supply an array as the first parameter, which will subscribe to all destinations in the array
-  useSubscription(
-    `/user/${id}/queue/messages`,
-    (message) => console.log(message.body)
-    //setLastMessage(message.body)
-  );
-
-  return <Box>Last Message: {lastMessage}</Box>;
 }

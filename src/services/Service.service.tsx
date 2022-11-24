@@ -282,4 +282,21 @@ export default class Service {
       return null;
     }
   }
+  public async getPosterOfService(
+    serviceId: number
+  ): Promise<UserModel | null> {
+    let user: UserModel;
+    try {
+      const response = await axios.get(
+        `${apiURL}/api/services/posted/${serviceId}`,
+        {}
+      );
+      if (response.status !== 200) return null;
+      user = response.data;
+      return user;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
 }

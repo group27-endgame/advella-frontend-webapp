@@ -87,33 +87,40 @@ export function SendingMessages() {
   const [users, setUsers] = useRecoilState(userList);
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
-
-  // const user: User = new User(
-  //   102,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined,
-  //   undefined
-  // );
+  const [active, setActive] = useState<User | undefined>(undefined);
+  const [recipient, setRecipient] = useState<User | undefined>(undefined);
 
   const stompClient = useStompClient();
+
+  const createUser = (userId: number) => {
+    const user: User = new User(
+      userId,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
+
+    return user;
+  };
 
   useEffect(() => {
     userService.getUserById(id?.toString()!).then((user) => {
       setCurrentUserInChat(user);
+      setActive(createUser(user?.userId!));
     });
   }, []);
 
@@ -123,43 +130,42 @@ export function SendingMessages() {
     }
 
     userService.getCurrentUser(cookie.token).then((resp) => {
-      setCurrentUser(resp);
+      setCurrentUser(createUser(resp?.userId!));
+
       chatService.findChatMessages(resp?.userId!, Number(id)).then((msgs) => {
+        console.log(msgs);
         setMessages(msgs);
       });
     });
   }, [id]);
 
-  useSubscription(
-    `/user/${currentUserInChat?.userId}/queue/messages`,
-    (message) => {
-      const notification = JSON.parse(message.body);
-      const active = currentUser?.userId;
+  useSubscription(`/user/${currentUser?.userId}/queue/messages`, (message) => {
+    const notification = JSON.parse(message.body);
 
-      console.log(message);
+    //active = 102
+    //notification = 107
 
-      if (active === notification.senderId) {
-        console.log(notification.senderId);
-        chatService.findMessage(notification.id).then((response) => {
-          const newMessages = JSON.parse(
-            sessionStorage.getItem("recoil-persist")!
-          ).chatMessages;
+    if (active?.userId === notification.senderId) {
+      chatService.findMessage(notification.id).then((response) => {
+        console.log(response);
+        const newMessages = JSON.parse(
+          sessionStorage.getItem("recoil-persist")!
+        ).chatMessages;
 
-          newMessages.push(response);
-          setMessages(newMessages);
-        });
-      } else {
-        console.log(" you have a new message from: " + notification.senderName);
-      }
+        newMessages.push(response);
+        setMessages(newMessages);
+      });
+    } else {
+      console.log(" you have a new message from: " + notification.senderName);
     }
-  );
+  });
 
   const sendMessage = () => {
     const message: ChatMessage = new ChatMessage(
       input,
       "",
       currentUser,
-      currentUserInChat,
+      createUser(currentUserInChat?.userId!),
       "DELIVERED",
       ""
     );
@@ -173,9 +179,9 @@ export function SendingMessages() {
         body: JSON.stringify(message),
       });
 
-      // const newMessages = [...messages];
-      // newMessages.push(message);
-      // setMessages(newMessages);
+      const newMessages = [...messages];
+      newMessages.push(message);
+      setMessages(newMessages);
 
       setInput("");
     } else {
@@ -277,7 +283,7 @@ export function SendingMessages() {
                       <Typography
                         sx={{ fontSize: 12, textTransform: "capitalize" }}
                       >
-                        {currentUser?.username}
+                        {msg?.username}
                       </Typography>
                     </Grid>
 
@@ -290,7 +296,7 @@ export function SendingMessages() {
                     <Grid item xs={12}>
                       <ListItemText
                         sx={{ textAlign: "right" }}
-                        secondary="09:30"
+                        secondary={msg.sentTime}
                       ></ListItemText>
                     </Grid>
                   </Grid>
@@ -299,7 +305,7 @@ export function SendingMessages() {
             })}
 
             {/*  receipient message */}
-            <ListItem key="2">
+            {/* <ListItem key="2">
               <Grid container>
                 <Grid item xs={12} sx={{ textAlign: "left", fontSize: "10px" }}>
                   <Typography sx={{ fontSize: 12 }}>Pato</Typography>
@@ -318,7 +324,7 @@ export function SendingMessages() {
                   ></ListItemText>
                 </Grid>
               </Grid>
-            </ListItem>
+            </ListItem> */}
           </List>
 
           {/* bottom for sending message className="chat-bar" */}

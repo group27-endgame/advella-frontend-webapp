@@ -247,9 +247,9 @@ function Navbar() {
               alt="logo"
             />
           </Link>
-          <Link href="/chat/1" sx={{ fontSize: "4rem" }}>
+          {/* <Link href="/chat/1" sx={{ fontSize: "4rem" }}>
             chat
-          </Link>
+          </Link> */}
         </Grid>
         <Grid
           item

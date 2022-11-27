@@ -11,15 +11,15 @@ export default class ChatMessage {
   constructor(
     chatContent?: string,
     chatId?: string,
-    chatMessageRecipient?: User,
     chatMessageSender?: User,
+    chatMessageRecipient?: User,
     chatStatus?: string,
     id?: string
   ) {
     this.chatContent = chatContent;
     this.chatId = chatId;
-    this.chatMessageRecipient = chatMessageRecipient;
     this.chatMessageSender = chatMessageSender;
+    this.chatMessageRecipient = chatMessageRecipient;
     this.chatStatus = chatStatus;
     this.id = id;
   }

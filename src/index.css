@@ -111,3 +111,19 @@ code {
   }
 }
 
+.right-text{
+  max-width: fit-content;
+  margin-left: auto;
+  background: #1876D2;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color:white;
+}
+.left-text{
+  max-width: fit-content;
+  margin-right: auto;
+  background: #e6e6e6;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+

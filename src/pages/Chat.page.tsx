@@ -34,6 +34,7 @@ import ChatMessage from "../models/ChatMessage.model";
 import User from "../models/User.model";
 import ChatRoom from "../models/ChatRoom.model";
 import Link from "@mui/material/Link";
+// @ts-ignore
 import ScrollToBottom from "react-scroll-to-bottom";
 import { css } from "@emotion/css";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";

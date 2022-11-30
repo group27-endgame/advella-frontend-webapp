@@ -1,6 +1,7 @@
 import axios from "axios";
 import { apiURL } from "../constants/constants";
 import ChatMessage from "../models/ChatMessage.model";
+import ChatRoom from "../models/ChatRoom.model";
 export default class Chat {
   public async findMessage(id: number): Promise<ChatMessage | undefined> {
     let rep: ChatMessage;
@@ -50,6 +51,22 @@ export default class Chat {
     } catch (error) {
       console.error(error);
       return null;
+    }
+
+    return rep;
+  }
+  public async getUsersChatRoom(
+    userId: number
+  ): Promise<ChatRoom[] | undefined> {
+    let rep: ChatRoom[];
+    try {
+      const response = await axios.get(`${apiURL}/api/chatrooms/${userId}`);
+      if (response.status !== 200) return undefined;
+
+      rep = response.data;
+    } catch (error) {
+      console.error(error);
+      return undefined;
     }
 
     return rep;

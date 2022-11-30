@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/css": "^11.10.5",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@fontsource/roboto": "^4.5.8",
@@ -26,6 +27,7 @@
     "react-images-uploading": "^3.1.7",
     "react-router-dom": "^6.4.0",
     "react-scripts": "5.0.1",
+    "react-scroll-to-bottom": "^4.2.0",
     "react-stomp": "^5.1.0",
     "react-stomp-hooks": "^2.1.0",
     "recoil": "^0.7.6",
@@ -58,5 +60,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-scroll-to-bottom": "^4.2.0"
   }
 }

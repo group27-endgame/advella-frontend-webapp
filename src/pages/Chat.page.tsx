@@ -10,6 +10,9 @@ import {
   Divider,
   TextField,
   Fab,
+  Button,
+  Box,
+  Drawer,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ChatService from "../services/Chat.service";
@@ -17,17 +20,24 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import UserService from "../services/User.service";
 import { useCookies } from "react-cookie";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   StompSessionProvider,
   useSubscription,
   useStompClient,
 } from "react-stomp-hooks";
 import { useRecoilState } from "recoil";
-import { chatMessages, chatActiveContact, userList } from "../index";
+import { chatMessages } from "../index";
 import { red } from "@mui/material/colors";
 
 import ChatMessage from "../models/ChatMessage.model";
 import User from "../models/User.model";
+import ChatRoom from "../models/ChatRoom.model";
+import Link from "@mui/material/Link";
+import ScrollToBottom from "react-scroll-to-bottom";
+import { css } from "@emotion/css";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import React from "react";
 
 const Chat = () => {
   const [currentUserInChat, setCurrentUserInChat] = useState<User | undefined>(
@@ -38,29 +48,14 @@ const Chat = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
     userService.getUserById(id?.toString()!).then((user) => {
       setCurrentUserInChat(user);
     });
   }, []);
-
   return (
-    <div style={{ marginTop: "1rem", height: "calc(100vh - 90px)" }}>
-      {/* <SendingMessages /> */}
-      {/* left sidebar */}
-
-      {/* right sidebar */}
+    <div>
       <StompSessionProvider
         url={"https://api.advella.popal.dev/ws"}
-        debug={(str) => {
-          console.log(str);
-        }}
-        onConnect={() => {
-          console.log("connected");
-        }}
-        onDisconnect={() => {
-          console.log("Disconnected");
-        }}
 
         //All options supported by @stomp/stompjs can be used here
       >
@@ -78,17 +73,20 @@ export function SendingMessages() {
   const [currentUserInChat, setCurrentUserInChat] = useState<User | undefined>(
     undefined
   );
-  const [lastMessage, setLastMessage] = useState("No message received yet");
   const [input, setInput] = useState("");
   const chatService: ChatService = new ChatService();
   const userService: UserService = new UserService();
   const [messages, setMessages] = useRecoilState(chatMessages);
-  const [activeContact, setActiveContact] = useRecoilState(chatActiveContact);
-  const [users, setUsers] = useRecoilState(userList);
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState<ChatRoom[] | undefined>(undefined);
+  const [contactsCopy, setContactsCopy] = useState<ChatRoom[] | undefined>(
+    undefined
+  );
   const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
   const [active, setActive] = useState<User | undefined>(undefined);
-  const [recipient, setRecipient] = useState<User | undefined>(undefined);
+  const [myName, setMyName] = useState("");
+
+  const [newNotification, setNewNotification] = useState(false);
+  const [senderName, setSenderName] = useState("");
 
   const stompClient = useStompClient();
 
@@ -117,37 +115,77 @@ export function SendingMessages() {
     return user;
   };
 
+  const [height, setHeight] = useState(0);
+
   useEffect(() => {
+    const height = window.innerHeight - 250;
+    setHeight(height);
     userService.getUserById(id?.toString()!).then((user) => {
       setCurrentUserInChat(user);
       setActive(createUser(user?.userId!));
     });
   }, []);
+  const ROOT_CSS = css({
+    height: height,
+  });
+
+  const arraySearch = (array: any, keyword: any) => {
+    const searchTerm = keyword.toLowerCase();
+    return array.filter((value: any) => {
+      return value.chatRecipient.username
+        .toLowerCase()
+        .match(new RegExp(searchTerm, "g"));
+    });
+  };
+
+  const handleOnChange = async (e: any) => {
+    let value = e.target.value;
+    if (value.length > 0) {
+      let search = await arraySearch(contacts, value);
+      setContacts(search);
+    } else {
+      setContacts(contactsCopy);
+    }
+  };
+
+  const [search] = useState("");
 
   useEffect(() => {
-    if (id === undefined) {
-      return;
-    }
+    document!.querySelector("footer")!.style.display = "none";
 
     userService.getCurrentUser(cookie.token).then((resp) => {
       setCurrentUser(createUser(resp?.userId!));
 
-      chatService.findChatMessages(resp?.userId!, Number(id)).then((msgs) => {
-        console.log(msgs);
-        setMessages(msgs);
+      chatService.getUsersChatRoom(resp?.userId!).then((us) => {
+        setContacts(us);
+        setContactsCopy(us);
+      });
+      setMyName(resp?.username!);
+
+      chatService.findChatMessages(resp?.userId!, Number(id)).then((first) => {
+        const array1 = Array.from(first!);
+        chatService
+          .findChatMessages(Number(id), resp?.userId!)
+          .then((second) => {
+            const array2 = Array.from(second!);
+            const temporary = [...array1, ...array2];
+            temporary.sort((a, b) => {
+              if (a?.sentTime! > b?.sentTime!) return 1;
+              if (a?.sentTime! < b?.sentTime!) return -1;
+              return 0;
+            });
+
+            console.log(temporary);
+            setMessages(temporary);
+          });
       });
     });
-  }, [id]);
+  }, [id, search]);
 
   useSubscription(`/user/${currentUser?.userId}/queue/messages`, (message) => {
     const notification = JSON.parse(message.body);
-
-    //active = 102
-    //notification = 107
-
     if (active?.userId === notification.senderId) {
       chatService.findMessage(notification.id).then((response) => {
-        console.log(response);
         const newMessages = JSON.parse(
           sessionStorage.getItem("recoil-persist")!
         ).chatMessages;
@@ -156,6 +194,8 @@ export function SendingMessages() {
         setMessages(newMessages);
       });
     } else {
+      setNewNotification(true);
+      setSenderName(notification.senderName);
       console.log(" you have a new message from: " + notification.senderName);
     }
   });
@@ -167,12 +207,14 @@ export function SendingMessages() {
       currentUser,
       createUser(currentUserInChat?.userId!),
       "DELIVERED",
-      ""
+      "",
+      Date.now().toString()
     );
+
+    console.log(message);
     if (stompClient && input !== "") {
       //Send Message
-      const objDiv = document.querySelector(".chat");
-      objDiv!.scrollTop = objDiv!.scrollHeight;
+
       stompClient.publish({
         destination: "/app/chat",
         headers: {},
@@ -190,21 +232,185 @@ export function SendingMessages() {
     }
   };
 
-  const messagesEnd = useRef<null | HTMLDivElement>(null);
-  const scrollToBottom = () => {
-    messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
+  const convertTimestamp = (timestamp: number) => {
+    let h = new Date(Number(timestamp)).getHours().toString();
+    let m = new Date(Number(timestamp)).getMinutes().toString();
+
+    return h + ":" + `${Number(m) < 10 ? "0" + m : m}`;
   };
+  type Anchor = "left";
+
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+  const [state, setState] = useState({
+    left: false,
+  });
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+  const toggleDrawer =
+    (anchor: Anchor, open: boolean) =>
+    (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return;
+      }
+
+      setState({ ...state, [anchor]: open });
+    };
+
+  const handleClose = (event: Event | React.SyntheticEvent) => {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const list = (anchor: Anchor) => (
+    <Box
+      role="presentation"
+      sx={{
+        paddingTop: 5,
+        paddingX: 4,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <CloseIcon
+        sx={{ marginLeft: "auto", mb: 2 }}
+        onClick={toggleDrawer(anchor, false)}
+        onKeyDown={toggleDrawer(anchor, false)}
+      />
+
+      <Typography fontWeight={"bold"} fontSize={24} pb={2}>
+        Chat
+      </Typography>
+      <TextField
+        id="outlined-basic-email"
+        label="Search contacts"
+        variant="outlined"
+        fullWidth
+        onChange={handleOnChange}
+        sx={{ paddingBottom: 2 }}
+      />
+      <div>
+        {contacts?.map((item, index) => {
+          return (
+            <ListItem
+              button
+              key={item.chatId}
+              sx={{
+                display:
+                  item.chatRecipient.userId === currentUserInChat?.userId
+                    ? "none"
+                    : "",
+
+                paddingLeft: 0,
+              }}
+              onClick={toggleDrawer(anchor, false)}
+              onKeyDown={toggleDrawer(anchor, false)}
+            >
+              <Link
+                href={`/chat/${item.chatRecipient.userId}`}
+                className="link"
+              >
+                <ListItemIcon>
+                  <Avatar
+                    alt="Remy Sharp"
+                    sx={{ bgcolor: red[500], textTransform: "capitalize" }}
+                  >
+                    {" "}
+                    {item?.chatRecipient?.username?.charAt(0)}
+                  </Avatar>
+                </ListItemIcon>
+
+                <ListItemText
+                  primary={item?.chatRecipient?.username}
+                ></ListItemText>
+              </Link>
+            </ListItem>
+          );
+        })}
+      </div>
+    </Box>
+  );
 
   return (
     <>
-      <Grid container component={Paper} sx={{ width: "100%", height: "100%" }}>
+      <Grid
+        container
+        component={Paper}
+        sx={{ width: "100%", height: "100%", position: "relative" }}
+      >
+        {/* mobile bar */}
+        <Grid
+          xs={12}
+          sm={0}
+          sx={{
+            position: "absolute",
+            top: 20,
+            left: 0,
+            right: 0,
+            display: { xs: "block", sm: "none" },
+          }}
+        >
+          <List
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              paddingLeft: 2,
+              borderBottom: "1px solid #f9f9f9",
+              zIndex: 20,
+            }}
+          >
+            {(["left"] as const).map((anchor) => (
+              <React.Fragment key={anchor}>
+                <Button onClick={toggleDrawer(anchor, true)}>
+                  {" "}
+                  <KeyboardBackspaceIcon sx={{ color: "black" }} />
+                </Button>
+                <Drawer
+                  anchor={anchor}
+                  open={state[anchor]}
+                  onClose={toggleDrawer(anchor, false)}
+                >
+                  {list(anchor)}
+                </Drawer>
+              </React.Fragment>
+            ))}
+
+            <ListItem button key="RemySharp">
+              <ListItemIcon>
+                <Avatar
+                  alt="Remy Sharp"
+                  sx={{ bgcolor: red[500], textTransform: "capitalize" }}
+                >
+                  {" "}
+                  {currentUserInChat?.username?.charAt(0)}
+                </Avatar>
+              </ListItemIcon>
+              <ListItemText
+                primary={currentUserInChat?.username}
+              ></ListItemText>
+            </ListItem>
+          </List>
+        </Grid>
+        {/* leftbar */}
         <Grid
           item
           xs={3}
           sx={{
-            borderRight: "1px solid #e0e0e0",
             display: { xs: "none", sm: "block" },
           }}
+          className="left-bar"
         >
           <List>
             <ListItem button key="RemySharp">
@@ -218,7 +424,6 @@ export function SendingMessages() {
                 </Avatar>
               </ListItemIcon>
               <ListItemText
-                sx={{ textTransform: "capitalize" }}
                 primary={currentUserInChat?.username}
               ></ListItemText>
             </ListItem>
@@ -227,107 +432,164 @@ export function SendingMessages() {
           <Grid item xs={12} style={{ padding: "10px" }}>
             <TextField
               id="outlined-basic-email"
-              label="Search"
+              label="Search contacts"
               variant="outlined"
               fullWidth
+              onChange={handleOnChange}
             />
           </Grid>
           <Divider />
-          <List>
-            <ListItem button key="RemySharp">
-              <ListItemIcon>
-                <Avatar
-                  alt="Remy Sharp"
-                  src="https://material-ui.com/static/images/avatar/1.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="Remy Sharp">Remy Sharp</ListItemText>
-              <ListItemText
-                secondary="online"
-                sx={{ textAlign: "right" }}
-              ></ListItemText>
-            </ListItem>
-            <ListItem button key="Alice">
-              <ListItemIcon>
-                <Avatar
-                  alt="Alice"
-                  src="https://material-ui.com/static/images/avatar/3.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="Alice">Alice</ListItemText>
-            </ListItem>
-            <ListItem button key="CindyBaker">
-              <ListItemIcon>
-                <Avatar
-                  alt="Cindy Baker"
-                  src="https://material-ui.com/static/images/avatar/2.jpg"
-                />
-              </ListItemIcon>
-              <ListItemText primary="Cindy Baker">Cindy Baker</ListItemText>
-            </ListItem>
-          </List>
-        </Grid>
-        <Grid item xs={12} sm={9} sx={{ maxHeight: "80%" }}>
-          <List sx={{ overflowY: "auto", height: "100%" }} className="chat">
-            {/* my message */}
-
-            {messages.map((msg: any, index: number) => {
+          <div>
+            {contacts?.map((item, index) => {
               return (
-                <ListItem key={index}>
-                  <Grid container>
-                    <Grid
-                      item
-                      xs={12}
-                      sx={{ textAlign: "right", fontSize: "10px" }}
-                    >
-                      <Typography
-                        sx={{ fontSize: 12, textTransform: "capitalize" }}
+                <ListItem
+                  button
+                  key={item.chatId}
+                  sx={{
+                    display:
+                      item.chatRecipient.userId === currentUserInChat?.userId
+                        ? "none"
+                        : "",
+                  }}
+                >
+                  <Link
+                    href={`/chat/${item.chatRecipient.userId}`}
+                    className="link"
+                    sx={{ display: "flex" }}
+                  >
+                    <ListItemIcon>
+                      <Avatar
+                        alt="Remy Sharp"
+                        sx={{ bgcolor: red[500], textTransform: "capitalize" }}
                       >
-                        {msg?.username}
-                      </Typography>
-                    </Grid>
+                        {" "}
+                        {item?.chatRecipient?.username?.charAt(0)}
+                      </Avatar>
+                    </ListItemIcon>
 
-                    <Grid item xs={12} sx={{ textAlign: "right" }}>
-                      <ListItemText
-                        className="right-text"
-                        primary={msg.chatContent}
-                      ></ListItemText>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <ListItemText
-                        sx={{ textAlign: "right" }}
-                        secondary={msg.sentTime}
-                      ></ListItemText>
-                    </Grid>
-                  </Grid>
+                    <ListItemText
+                      primary={item?.chatRecipient?.username}
+                    ></ListItemText>
+                    <ListItemIcon
+                      sx={{
+                        marginLeft: "auto",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          borderRadius: "999px",
+                          width: 10,
+                          height: 10,
+                          background: "#1876D2",
+
+                          display:
+                            newNotification &&
+                            item.chatRecipient.username === senderName
+                              ? "block"
+                              : "none",
+                        }}
+                      ></Box>
+                    </ListItemIcon>
+                  </Link>
                 </ListItem>
               );
             })}
+          </div>
+        </Grid>
+        {/* chat */}
+        <Grid
+          item
+          xs={12}
+          sm={9}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            borderLeft: "1px solid #e0e0e0",
+            maxHeight: "100%",
+            minHeight: {
+              xs: "calc(100vh - 75px)",
+              sm: "calc(100vh - 105px)",
+            },
+          }}
+        >
+          <List
+            sx={{
+              overflowY: "auto",
+              height: "100%",
+              paddingTop: { xs: "100px", sm: 0 },
+            }}
+            className="chat"
+          >
+            {/* my message */}
+            <ScrollToBottom
+              className={ROOT_CSS}
+              initialScrollBehavior="auto"
+              followButtonClassName="dont-display"
+            >
+              {messages.map((msg: any, index: number) => {
+                return (
+                  <ListItem key={index}>
+                    {msg.chatId !==
+                    `${currentUserInChat?.userId}_${currentUser?.userId}` ? (
+                      <Grid container>
+                        <Grid
+                          item
+                          xs={12}
+                          sx={{ textAlign: "right", fontSize: "10px" }}
+                        >
+                          <Typography sx={{ fontSize: 12 }}>
+                            {" "}
+                            {myName}
+                          </Typography>
+                        </Grid>
 
-            {/*  receipient message */}
-            {/* <ListItem key="2">
-              <Grid container>
-                <Grid item xs={12} sx={{ textAlign: "left", fontSize: "10px" }}>
-                  <Typography sx={{ fontSize: 12 }}>Pato</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <ListItemText
-                    sx={{ textAlign: "left" }}
-                    className="left-text"
-                    primary="Hey, Iam Good! What about you ?"
-                  ></ListItemText>
-                </Grid>
-                <Grid item xs={12}>
-                  <ListItemText
-                    sx={{ textAlign: "left" }}
-                    secondary="09:31"
-                  ></ListItemText>
-                </Grid>
-              </Grid>
-            </ListItem> */}
+                        <Grid item xs={12} sm={6} sx={{ marginLeft: "auto" }}>
+                          <ListItemText
+                            className="right-text"
+                            primary={msg.chatContent}
+                          ></ListItemText>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <ListItemText
+                            sx={{ textAlign: "right", fontSize: 12 }}
+                            secondary={convertTimestamp(msg.sentTime)}
+                          ></ListItemText>
+                        </Grid>
+                      </Grid>
+                    ) : (
+                      <Grid container>
+                        <Grid
+                          item
+                          xs={12}
+                          sx={{ textAlign: "left", fontSize: "10px" }}
+                        >
+                          <Typography sx={{ fontSize: 12 }}>
+                            {" "}
+                            {currentUserInChat?.username}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <ListItemText
+                            sx={{ textAlign: "left" }}
+                            className="left-text"
+                            primary={msg.chatContent}
+                          ></ListItemText>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <ListItemText
+                            sx={{ textAlign: "left" }}
+                            secondary={convertTimestamp(msg.sentTime)}
+                          ></ListItemText>
+                        </Grid>
+                      </Grid>
+                    )}
+                  </ListItem>
+                );
+              })}
+            </ScrollToBottom>
           </List>
-
-          {/* bottom for sending message className="chat-bar" */}
           <Grid container style={{ padding: "20px" }}>
             <Grid item xs={10} sm={11}>
               <TextField
@@ -342,12 +604,19 @@ export function SendingMessages() {
               />
             </Grid>
             <Grid xs={2} sm={1} sx={{ textAlign: "right" }}>
-              <Fab color="primary" aria-label="add" onClick={sendMessage}>
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={() => {
+                  sendMessage();
+                }}
+              >
                 <SendIcon />
               </Fab>
             </Grid>{" "}
-            {/* <Subscribing /> */}
           </Grid>
+
+          {/* bottom for sending message className="chat-bar" */}
         </Grid>
       </Grid>
     </>

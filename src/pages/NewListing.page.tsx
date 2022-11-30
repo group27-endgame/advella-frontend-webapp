@@ -23,7 +23,6 @@ import ProductCategory from "../models/CategoryProduct.model";
 import ServiceCategory from "../models/CategoryService.model";
 import ServiceService from "../services/Service.service";
 import UserService from "../services/User.service";
-import LocationService from "../services/Location.service";
 import FormHelperText from "@mui/material/FormHelperText";
 
 export default function NewListing() {

@@ -19,7 +19,7 @@ import {
 import UserService from "../services/User.service";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ListAltIcon from "@mui/icons-material/ListAlt";
-
+import ChatIcon from "@mui/icons-material/Chat";
 type Anchor = "right";
 
 function Navbar() {
@@ -143,6 +143,20 @@ function Navbar() {
             ""
           )}
 
+          <Link
+            href={`/chat/${chat}`}
+            sx={{
+              textDecoration: "none",
+              color: "black",
+              alignItems: "center",
+              gap: 1,
+              display: chat !== undefined ? "flex" : "none",
+            }}
+          >
+            <ChatIcon />
+            Chat
+          </Link>
+
           {cookie.token !== undefined ? (
             <Link
               href="/"
@@ -207,6 +221,8 @@ function Navbar() {
     }
   }
 
+  const [chat, setChat] = useState("null");
+
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
   React.useEffect(() => {
@@ -217,6 +233,17 @@ function Navbar() {
     userService.getCurrentUser(cookie.token).then((response) => {
       if (response !== undefined) {
         setId(response?.userId!);
+      }
+
+      if (response?.receivedChatRoom !== undefined) {
+        const firstItem = response.receivedChatRoom;
+        if (Array.isArray(firstItem)) {
+          let chat = firstItem.filter((res) => res.chatId);
+          const item = chat[0].chatId.slice(0, 3);
+          console.log(item);
+          setChat(item);
+        }
+        // firstItem.filter(element => element!==undefined).shift();
       }
     });
 
@@ -233,16 +260,20 @@ function Navbar() {
         alignItems="center"
         alignContent="center"
         wrap="wrap"
-        paddingY={2}
         paddingX={2}
         position={"sticky"}
-        sx={{ top: 0, zIndex: 999, backgroundColor: "white" }}
+        sx={{
+          top: 0,
+          zIndex: 999,
+          backgroundColor: "white",
+          paddingY: { xs: 1, sm: 2 },
+        }}
       >
         <Grid item xs={2}>
           <Link href="/">
             <img
               src={require("../assets/images/logo.png")}
-              width="80"
+              width="60"
               style={{ objectFit: "cover" }}
               alt="logo"
             />
@@ -349,6 +380,21 @@ function Navbar() {
                             >
                               <ListAltIcon />
                               My listings
+                            </Link>
+                          </MenuItem>
+                          <MenuItem>
+                            <Link
+                              href={`/chat/${chat}`}
+                              sx={{
+                                textDecoration: "none",
+                                color: "black",
+                                alignItems: "center",
+                                gap: 1,
+                                display: chat !== undefined ? "flex" : "none",
+                              }}
+                            >
+                              <ChatIcon />
+                              Chat
                             </Link>
                           </MenuItem>
                           <MenuItem>

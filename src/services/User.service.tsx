@@ -1,5 +1,6 @@
 import axios from "axios";
 import { apiURL } from "../constants/constants";
+import ChatRoom from "../models/ChatRoom.model";
 import UserModel from "../models/User.model";
 // import UserModel from "../models/User.model";
 export default class User {
@@ -71,6 +72,24 @@ export default class User {
     if (response.status !== 200) return undefined;
 
     user = response.data;
+
+    return user;
+  }
+
+  public async getAllContacts(userId: number): Promise<ChatRoom[] | undefined> {
+    let user: ChatRoom[];
+    try {
+      const response = await axios.get(`${apiURL}/api/users/contact`, {
+        params: { userId: userId },
+      });
+
+      if (response.status !== 200) return undefined;
+
+      user = response.data;
+    } catch (err) {
+      console.log(err);
+      return undefined;
+    }
 
     return user;
   }

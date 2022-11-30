@@ -162,7 +162,6 @@ export default function Service() {
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
           setUserId(e?.posted?.userId);
-          console.log(userId);
         }
       });
     });
@@ -435,7 +434,7 @@ export default function Service() {
                                 }}
                               >
                                 <Link
-                                  href={`/user/${highestBidder?.userId}`}
+                                  href={`/user/${highestBidder.userId}`}
                                   sx={{
                                     color: "white",
                                     textDecoration: "none",
@@ -500,7 +499,15 @@ export default function Service() {
                                   textTransform: "capitalize",
                                 }}
                               >
-                                Message
+                                <Link
+                                  href={`/user/${item.userId}`}
+                                  sx={{
+                                    color: "white",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  Message
+                                </Link>
                               </Button>
                               <Divider sx={{ display: { sm: "none" } }} />
                             </Box>
@@ -582,11 +589,7 @@ export default function Service() {
                   alignItems: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography
-                  fontSize={20}
-                  className="userName"
-                  sx={{ textTransform: "capitalize" }}
-                >
+                <Typography fontSize={20} className="userName">
                   {username}
                 </Typography>
               </Box>
@@ -614,16 +617,17 @@ export default function Service() {
                 </Button>
                 <Button
                   variant="contained"
-                  size="large"
                   sx={{
-                    marginLeft: { sm: "auto" },
+                    ml: { sm: "auto" },
                     textTransform: "capitalize",
                   }}
-                  disabled={cookie.token === undefined}
                 >
                   <Link
-                    href="/chat"
-                    sx={{ textDecoration: "none", color: "white" }}
+                    href={`/user/${userId}`}
+                    sx={{
+                      color: "white",
+                      textDecoration: "none",
+                    }}
                   >
                     Message
                   </Link>

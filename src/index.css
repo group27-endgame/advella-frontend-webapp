@@ -9,10 +9,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html {
+  height: 100%;
 }
+body {
+  min-height: 100%;
+}
+
+
 
 .upload__image-wrapper{
 
@@ -127,3 +131,32 @@ code {
   border-radius: 20px;
 }
 
+.link{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none !important;
+  color: black !important;
+}
+
+.bottom-bar{
+  position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 25%;
+    width: 76% !important;
+}
+
+.left-bar{
+  position: sticky;
+  top: 110px;
+  height: fit-content;
+}
+
+.height{
+  height: 700px;
+}
+
+.dont-display{
+  display:none;
+}

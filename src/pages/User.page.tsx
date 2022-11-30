@@ -11,6 +11,7 @@ import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
 import Rating from "@mui/material/Rating";
 import ServiceCard from "../components/ServiceCard.component";
+import { useNavigate } from "react-router-dom";
 
 import { useCookies } from "react-cookie";
 import UserService from "../services/User.service";
@@ -18,10 +19,13 @@ import UserModel from "../models/User.model";
 import { useParams } from "react-router-dom";
 
 export default function User() {
+  let navigate = useNavigate();
+
   const [cookie, setCookie, removeCookie] = useCookies(["token"]);
   const [userName, setUsername] = useState("");
   const [description, setDescription] = useState("");
   const [user, setUser] = useState<UserModel | undefined>();
+  const [currentUser, setCurrentUser] = useState<UserModel | undefined>();
   const { id } = useParams();
 
   useEffect(() => {
@@ -29,6 +33,10 @@ export default function User() {
       console.log(resp);
       setUser(resp);
       setDescription(resp?.description!);
+    });
+
+    userService.getCurrentUser(cookie.token).then((resp) => {
+      setCurrentUser(resp);
     });
   }, []);
 
@@ -95,13 +103,18 @@ export default function User() {
                       sx={{
                         marginLeft: { sm: "auto" },
                         textTransform: "capitalize",
+                        color: "white",
                       }}
                     >
                       <Link
                         href={`/chat/${id}`}
-                        sx={{ color: "white", textDecoration: "none" }}
+                        sx={{
+                          marginLeft: { sm: "auto" },
+                          textTransform: "capitalize",
+                          color: "white",
+                          textDecoration: "none",
+                        }}
                       >
-                        {" "}
                         Message
                       </Link>
                     </Button>
@@ -114,7 +127,6 @@ export default function User() {
                   alignItems: "center",
                   flexDirection: { xs: "column", sm: "row" },
                   gap: { xs: "0.5rem", sm: "0rem" },
-
                   maxWidth: "700px",
                   margin: "auto",
                   textAlign: "left",

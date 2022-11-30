@@ -72,6 +72,7 @@ export default function Product() {
   const [bidders, setBidders] = useState<User[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [highestBidder, setHighestBidder] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     productService.getProductById(Number(productId)).then((response) => {
@@ -137,7 +138,7 @@ export default function Product() {
     productService.getProductById(Number(productId)).then((e) => {
       userService.getCurrentUser(cookie.token).then((resp) => {
         setUserId(e?.posted?.userId!);
-
+        setCurrentUser(resp!);
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
           setUserId(e?.posted?.userId);
@@ -224,8 +225,6 @@ export default function Product() {
       }, 6000);
     }
   };
-
-  const addUserToChatList = () => {};
 
   return (
     <>
@@ -464,7 +463,7 @@ export default function Product() {
                                 }}
                               >
                                 <Link
-                                  href={`/chat/${userId}`}
+                                  href={`/chat/${item.userId}`}
                                   sx={{
                                     color: "white",
                                     textDecoration: "none",
@@ -599,7 +598,6 @@ export default function Product() {
                       color: "white",
                       textDecoration: "none",
                     }}
-                    onClick={addUserToChatList}
                   >
                     Message
                   </Link>

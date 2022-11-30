@@ -43,7 +43,7 @@ function App() {
         <Route path="/search/:searchedQuery" element={<SearchPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>
-      <div style={{ paddingBottom: 150 }} />
+      <footer style={{ paddingBottom: 150 }} />
     </>
   );
 }

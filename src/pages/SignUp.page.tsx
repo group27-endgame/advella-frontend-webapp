@@ -141,7 +141,6 @@ export default function SignUp() {
             label="Email Address"
             name="email"
             autoComplete="email"
-            autoFocus
             value={email}
             error={emailError}
             helperText={emailErrorMessage}
@@ -154,7 +153,6 @@ export default function SignUp() {
             label="Bio"
             name="Bio"
             autoComplete="Bio"
-            autoFocus
             multiline={true}
             rows={4}
             value={description}

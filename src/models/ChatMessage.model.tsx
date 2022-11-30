@@ -7,6 +7,7 @@ export default class ChatMessage {
   public chatMessageSender: User | undefined;
   public chatStatus: string | undefined;
   public id: string | undefined;
+  public sentTime: string | undefined;
 
   constructor(
     chatContent?: string,
@@ -14,7 +15,8 @@ export default class ChatMessage {
     chatMessageSender?: User,
     chatMessageRecipient?: User,
     chatStatus?: string,
-    id?: string
+    id?: string,
+    sentTime?: string
   ) {
     this.chatContent = chatContent;
     this.chatId = chatId;
@@ -22,5 +24,6 @@ export default class ChatMessage {
     this.chatMessageRecipient = chatMessageRecipient;
     this.chatStatus = chatStatus;
     this.id = id;
+    this.sentTime = sentTime;
   }
 }

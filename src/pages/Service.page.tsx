@@ -34,6 +34,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import UserService from "../services/User.service";
 import User from "../models/User.model";
 import { red } from "@mui/material/colors";
+import ProductService from "../services/Product.service";
+import ServiceCard from "../components/ServiceCard.component";
 
 export default function Service() {
   const [cookie] = useCookies(["token"]);
@@ -65,7 +67,9 @@ export default function Service() {
   const [userId, setUserId] = useState<number | null>(null);
 
   const [isPostedUser, setIsPostedUser] = useState(false);
+  const [otherListings, setOtherListings] = useState<any>([]);
 
+  const productService: ProductService = new ProductService();
   const serviceService: ServiceService = new ServiceService();
   const userService: UserService = new UserService();
   const { serviceId } = useParams();
@@ -158,7 +162,15 @@ export default function Service() {
     userService.getCurrentUser(cookie.token).then((resp) => {
       serviceService.getServiceById(Number(serviceId)).then((e) => {
         setUserId(e?.posted?.userId!);
-
+        productService
+          .getProductsInPostedByUser(e?.posted?.userId!)
+          .then((products) => {
+            serviceService
+              .getServicesInPostedByUser(e?.posted?.userId!)
+              .then((services) => {
+                setOtherListings([...products, ...services]);
+              });
+          });
         if (resp?.userId! === e?.posted?.userId) {
           setIsPostedUser(true);
           setUserId(e?.posted?.userId);
@@ -684,6 +696,59 @@ export default function Service() {
             </Box>
           </Grid>
         </Grid>
+
+        <div>
+          <Grid container spacing={3} mt={10}>
+            <Grid
+              item
+              xs={12}
+              display="flex"
+              alignItems={{ xs: "start", sm: "center" }}
+              justifyContent="space-between"
+              flexDirection={{ xs: "column", sm: "row" }}
+              mb={1}
+            >
+              <Typography
+                gutterBottom
+                sx={{
+                  fontWeight: "900",
+                  fontSize: { xs: "2rem", md: "3.5rem" },
+                  lineHeight: { xs: "3rem", md: "3.5rem" },
+                }}
+              >
+                Other posting by user
+              </Typography>
+            </Grid>
+            {otherListings.length > 0
+              ? otherListings.map((name: any, index: number) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                    {name.productId ? (
+                      <ServiceCard
+                        id={name.productId}
+                        image={name.image}
+                        title={name.title}
+                        description={name.detail}
+                        price={name.moneyAmount}
+                        type={"product"}
+                        posted={name?.posted?.username}
+                      />
+                    ) : (
+                      <ServiceCard
+                        id={name.serviceId}
+                        image={name.image}
+                        serviceDescription={name.detail}
+                        price={name.service}
+                        type={"service"}
+                        serviceTitle={name.title}
+                        servicePrice={name.moneyAmount}
+                        posted={name?.posted?.username}
+                      />
+                    )}
+                  </Grid>
+                ))
+              : " "}
+          </Grid>
+        </div>
 
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "center" }}

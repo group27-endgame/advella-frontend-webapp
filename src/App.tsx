@@ -15,8 +15,11 @@ import ChatPage from "./pages/Chat.page";
 import CategoryProductPage from "./pages/CategoryProduct.page";
 import CategoryServicePage from "./pages/CategoryService.page";
 import SearchPage from "./pages/Search.page";
+import { useCookies } from "react-cookie";
 
 function App() {
+  const [cookie, setCookie, removeCookie] = useCookies(["token"]);
+
   return (
     <>
       <Navbar />
@@ -24,8 +27,14 @@ function App() {
         <Route path="/" element={<MainPage />}></Route>
         <Route path="/signin" element={<SignInPage />}></Route>
         <Route path="/signup" element={<SignUpPage />}></Route>
-        <Route path="/newlisting" element={<Newlisting />}></Route>
-        <Route path="/mylistings" element={<MyListings />}></Route>
+        <Route
+          path="/newlisting"
+          element={cookie.token !== undefined ? <Newlisting /> : <SignInPage />}
+        ></Route>
+        <Route
+          path="/mylistings"
+          element={cookie.token !== undefined ? <MyListings /> : <SignInPage />}
+        ></Route>
 
         <Route
           path="/categoryProduct/:categoryId"
@@ -39,7 +48,10 @@ function App() {
         <Route path="/service/:serviceId" element={<ServicePage />} />
         <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="/user/:id" element={<UserPage />} />
-        <Route path="/chat/:id" element={<ChatPage />} />
+        <Route
+          path="/chat/:id"
+          element={cookie.token !== undefined ? <ChatPage /> : <SignInPage />}
+        />
         <Route path="/search/:searchedQuery" element={<SearchPage />} />
         <Route path="*" element={<p>Path not resolved</p>} />
       </Routes>

@@ -9,8 +9,6 @@ import {
 } from "@mui/material";
 import Container from "@mui/material/Container";
 import { useEffect, useState } from "react";
-import Rating from "@mui/material/Rating";
-import ServiceCard from "../components/ServiceCard.component";
 import { useNavigate } from "react-router-dom";
 
 import { useCookies } from "react-cookie";
@@ -85,7 +83,6 @@ export default function User() {
                   <Typography fontSize={20} className="userName">
                     {user?.username}
                   </Typography>
-                  <Rating size="small" />
                 </Box>
                 <Box
                   sx={{

@@ -143,51 +143,66 @@ function Navbar() {
             ""
           )}
 
-          <Link
-            href={`/chat/${chat}`}
-            sx={{
-              textDecoration: "none",
-              color: "black",
-              alignItems: "center",
-              gap: 1,
-              display: chat !== undefined ? "flex" : "none",
-            }}
-          >
-            <ChatIcon />
-            Chat
-          </Link>
-
           {cookie.token !== undefined ? (
             <Link
-              href="/"
-              width={"100%"}
+              href={`/chat/${chat}`}
               sx={{
                 textDecoration: "none",
                 color: "black",
-                marginRight: "1rem",
-                width: "auto",
-                fontSize: "16px",
-                display: "flex",
                 alignItems: "center",
+                gap: 1,
+                display: chat !== undefined ? "flex" : "none",
               }}
-              component="button"
-              onClick={signOut}
             >
-              {"Sign Out"}
+              <ChatIcon />
+              Chat
             </Link>
           ) : (
-            <Link
-              href="/signin"
-              width={"100%"}
+            ""
+          )}
+
+          {cookie.token !== undefined ? (
+            <div style={{ width: "100%" }}>
+              <Divider sx={{ width: "100%", my: 2 }} />
+              <Link
+                href="/"
+                width={"100%"}
+                sx={{
+                  textDecoration: "none",
+                  color: "black",
+                  marginRight: "1rem",
+                  width: "auto",
+                  fontSize: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                component="button"
+                onClick={signOut}
+              >
+                {"Sign Out"}
+              </Link>
+            </div>
+          ) : (
+            <Button
+              fullWidth
+              variant="contained"
+              size="large"
               sx={{
-                textDecoration: "none",
-                color: "black",
-                marginRight: "1rem",
-                width: "auto",
+                paddingY: ".9rem",
+                textTransform: "none",
               }}
             >
-              {"Sign In"}
-            </Link>
+              <Link
+                href="/signin"
+                width={"100%"}
+                sx={{
+                  textDecoration: "none",
+                  color: "white",
+                }}
+              >
+                {"Sign In"}
+              </Link>
+            </Button>
           )}
         </Grid>
       </Grid>
@@ -240,7 +255,6 @@ function Navbar() {
         if (Array.isArray(firstItem)) {
           let chat = firstItem.filter((res) => res.chatId);
           const item = chat[0].chatId.slice(0, 3);
-          console.log(item);
           setChat(item);
         }
         // firstItem.filter(element => element!==undefined).shift();

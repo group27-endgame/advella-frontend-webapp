@@ -81,6 +81,7 @@ export default function Product() {
   useEffect(() => {
     productService.getProductById(Number(productId)).then((response) => {
       let array: any = [];
+      document.title = "Advella -  " + response?.title;
 
       response?.bidProducts.forEach((element) => {
         array.push(element.amount);

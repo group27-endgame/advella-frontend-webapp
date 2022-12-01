@@ -149,7 +149,6 @@ export default function NewListing() {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     if (radioCategory === "product") {
       productService.getProductCategories().then((category) => {
         setProductCategories(category);
@@ -328,13 +327,14 @@ export default function NewListing() {
                 fullWidth
                 label="Price in DKK"
                 name="price"
-                autoComplete="price"
                 type="number"
                 InputProps={{ inputProps: { min: 0, max: 99999 } }}
                 value={price}
                 error={priceError}
                 helperText={priceErrorMessage}
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) => {
+                  setPrice(Number(e.target.value));
+                }}
               />
             </Grid>
 

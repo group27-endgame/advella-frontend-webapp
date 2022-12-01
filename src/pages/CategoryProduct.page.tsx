@@ -30,6 +30,7 @@ export default function CategoryProduct() {
 
     productService.getProductCategory(Number(categoryId)).then((response) => {
       setCategoryName(response?.title!);
+      document.title = "Advella -  " + response?.title;
 
       productService.getProductsInCategory(categoryId).then((resp) => {
         setProducts(resp);

@@ -19,9 +19,9 @@ import {
 import UserService from "../services/User.service";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import LoginIcon from "@mui/icons-material/Login";
 import ChatIcon from "@mui/icons-material/Chat";
 type Anchor = "right";
-
 function Navbar() {
   const navigate = useNavigate();
   const [cookie, , removeCookie] = useCookies(["token"]);
@@ -198,8 +198,13 @@ function Navbar() {
                 sx={{
                   textDecoration: "none",
                   color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
                 }}
               >
+                <LoginIcon />
                 {"Sign In"}
               </Link>
             </Button>
@@ -319,8 +324,13 @@ function Navbar() {
                 color: "black",
                 marginRight: "1rem",
                 width: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
               }}
             >
+              <LoginIcon />
               {"Sign In"}
             </Link>
           )}

@@ -33,6 +33,7 @@ export default function CategoryService() {
         serviceService
           .getServiceCategory(Number(categoryId))
           .then((response) => {
+            document.title = "Advella -  " + response?.title;
             setCategoryName(response?.title!);
           });
 

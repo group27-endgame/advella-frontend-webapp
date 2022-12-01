@@ -226,6 +226,8 @@ export default function Service() {
     if (newBid! > currentBid) {
       setNewHighestBidder(true);
       serviceService.getServiceById(Number(serviceId)).then((resp) => {
+        document.title = "Advella -  " + resp?.title;
+
         serviceService
           .bidProduct(cookie.token, newBid!, resp?.serviceId!)
           .then((ok) => {

@@ -51,6 +51,7 @@ const Chat = () => {
   useEffect(() => {
     userService.getUserById(id?.toString()!).then((user) => {
       setCurrentUserInChat(user);
+      document.title = "Advella - chat with " + user?.username;
     });
   }, []);
   return (
@@ -121,11 +122,25 @@ export function SendingMessages() {
   useEffect(() => {
     const height = window.innerHeight - 250;
     setHeight(height);
+
+    const handleResize = () => {
+      console.log("resized to: ", window.innerWidth, "x", window.innerHeight);
+      const resized = window.innerHeight - 250;
+
+      setHeight(resized);
+    };
+
     userService.getUserById(id?.toString()!).then((user) => {
       setCurrentUserInChat(user);
       setActive(createUser(user?.userId!));
     });
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
+
   const ROOT_CSS = css({
     height: height,
   });
@@ -511,7 +526,7 @@ export function SendingMessages() {
             maxHeight: "100%",
             minHeight: {
               xs: "calc(100vh - 75px)",
-              sm: "calc(100vh - 105px)",
+              sm: "calc(100vh - 87px)",
             },
           }}
         >

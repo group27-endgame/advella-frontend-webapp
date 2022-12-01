@@ -143,7 +143,7 @@ function Navbar() {
             ""
           )}
 
-          {cookie.token !== undefined ? (
+          {cookie.token !== undefined && chat !== undefined ? (
             <Link
               href={`/chat/${chat}`}
               sx={{
@@ -241,7 +241,7 @@ function Navbar() {
     }
   }
 
-  const [chat, setChat] = useState("null");
+  const [chat, setChat] = useState("");
 
   const [easterEgg, setEasterEgg] = useState(true);
 
@@ -293,7 +293,13 @@ function Navbar() {
         const firstItem = response.receivedChatRoom;
         if (Array.isArray(firstItem)) {
           let chat = firstItem.filter((res) => res.chatId);
-          const item = chat[0].chatId.slice(0, 3);
+          // console.log(chat?.[0]?.chatId.length);
+          const item =
+            chat?.[0]?.chatId.length >= 7
+              ? chat?.[0]?.chatId?.slice(0, 3)
+              : chat?.[0]?.chatId?.slice(0, 2);
+          console.log(item);
+
           setChat(item);
         }
         // firstItem.filter(element => element!==undefined).shift();
@@ -440,21 +446,27 @@ function Navbar() {
                               My listings
                             </Link>
                           </MenuItem>
-                          <MenuItem>
-                            <Link
-                              href={`/chat/${chat}`}
-                              sx={{
-                                textDecoration: "none",
-                                color: "black",
-                                alignItems: "center",
-                                gap: 1,
-                                display: chat !== undefined ? "flex" : "none",
-                              }}
-                            >
-                              <ChatIcon />
-                              Chat
-                            </Link>
-                          </MenuItem>
+
+                          {chat !== undefined ? (
+                            <MenuItem>
+                              <Link
+                                href={`/chat/${chat}`}
+                                sx={{
+                                  textDecoration: "none",
+                                  color: "black",
+                                  alignItems: "center",
+                                  gap: 1,
+                                  display: "flex",
+                                }}
+                              >
+                                <ChatIcon />
+                                Chat
+                              </Link>
+                            </MenuItem>
+                          ) : (
+                            ""
+                          )}
+
                           <MenuItem>
                             <div
                               style={{ display: "flex", alignItems: "center" }}

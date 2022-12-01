@@ -190,7 +190,6 @@ export function SendingMessages() {
               return 0;
             });
 
-            console.log(temporary);
             setMessages(temporary);
           });
       });
@@ -226,7 +225,6 @@ export function SendingMessages() {
       Date.now().toString()
     );
 
-    console.log(message);
     if (stompClient && input !== "") {
       //Send Message
 

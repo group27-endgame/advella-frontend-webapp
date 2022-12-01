@@ -393,17 +393,15 @@ export default function NewListing() {
                 apiKey="AIzaSyCL9N2D1Rnli3pBRgURbN-nGq2yVm85QbE"
                 apiOptions={{ language: "dk", region: "DK" }}
                 autocompletionRequest={{
-                  bounds: [
-                    { lat: 50, lng: 50 },
-                    { lat: 100, lng: 100 },
-                  ],
                   componentRestrictions: {
                     country: ["dk"],
                   },
                 }}
                 selectProps={{
                   placeholder: "Select your location*",
-
+                  noOptionsMessage: () => {
+                    return "Type something to show location suggestions";
+                  },
                   location,
                   onChange: (e: any) => {
                     setTerms(e.value.terms.slice(-1)[0].value);

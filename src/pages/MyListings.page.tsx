@@ -27,22 +27,17 @@ export default function MyListings() {
 
   useEffect(() => {
     userService.getCurrentUser(cookie.token).then((response) => {
-      console.log(response);
       setName(response?.username!);
       setPosted(posted);
       productService
         .getProductsInPostedByUser(response?.userId!)
         .then((value) => {
-          console.log(value);
           setProductList(value);
-          console.log(productList);
         });
 
       serviceService
         .getServicesInPostedByUser(response?.userId!)
         .then((response) => {
-          console.log(response);
-
           setServiceList(response);
         });
     });

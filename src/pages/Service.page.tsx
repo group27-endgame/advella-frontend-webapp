@@ -95,7 +95,6 @@ export default function Service() {
   useEffect(() => {
     serviceService.getServiceById(Number(serviceId)).then((response) => {
       let array: any = [];
-      console.log(response);
 
       response?.bidServices.forEach((element) => {
         array.push(element.amount);

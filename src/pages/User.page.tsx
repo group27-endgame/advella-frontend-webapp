@@ -28,7 +28,6 @@ export default function User() {
 
   useEffect(() => {
     userService.getUserById(id!).then((resp) => {
-      console.log(resp);
       setUser(resp);
       setDescription(resp?.description!);
     });

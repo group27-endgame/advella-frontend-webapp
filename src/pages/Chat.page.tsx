@@ -124,7 +124,6 @@ export function SendingMessages() {
     setHeight(height);
 
     const handleResize = () => {
-      console.log("resized to: ", window.innerWidth, "x", window.innerHeight);
       const resized = window.innerHeight - 250;
 
       setHeight(resized);

@@ -131,7 +131,6 @@ export default function NewListing() {
         returnVal = false;
       }
     }
-    console.log(productCategoryId);
 
     if (location === null) {
       setLocationError(true);

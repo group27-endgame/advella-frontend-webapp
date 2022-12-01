@@ -34,7 +34,6 @@ export default function CategoryProduct() {
 
       productService.getProductsInCategory(categoryId).then((resp) => {
         setProducts(resp);
-        console.log(resp);
         setProductsCopy(resp);
         setLoading(false);
       });

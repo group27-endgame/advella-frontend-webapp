@@ -39,6 +39,7 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import { css } from "@emotion/css";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React from "react";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Chat = () => {
   const [currentUserInChat, setCurrentUserInChat] = useState<User | undefined>(
@@ -118,15 +119,27 @@ export function SendingMessages() {
   };
 
   const [height, setHeight] = useState(0);
+  const matches = useMediaQuery("(min-width:600px)");
 
   useEffect(() => {
-    const height = window.innerHeight - 250;
-    setHeight(height);
+    if (matches) {
+      const height = window.innerHeight - 200;
+      setHeight(height);
+    } else {
+      const height = window.innerHeight - 250;
+      setHeight(height);
+    }
 
     const handleResize = () => {
-      const resized = window.innerHeight - 250;
+      if (matches) {
+        const resized = window.innerHeight - 200;
 
-      setHeight(resized);
+        setHeight(resized);
+      } else {
+        const resized = window.innerHeight - 250;
+
+        setHeight(resized);
+      }
     };
 
     userService.getUserById(id?.toString()!).then((user) => {

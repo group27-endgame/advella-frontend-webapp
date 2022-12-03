@@ -207,7 +207,7 @@ export function SendingMessages() {
           });
       });
     });
-  }, [id, search]);
+  }, [id, search, senderName]);
 
   useSubscription(`/user/${currentUser?.userId}/queue/messages`, (message) => {
     const notification = JSON.parse(message.body);

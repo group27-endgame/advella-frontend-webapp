@@ -24,17 +24,6 @@ export const chatMessages = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const chatActiveContact = atom({
-  key: "chatActiveContact",
-  default: [],
-  effects_UNSTABLE: [persistAtom],
-});
-
-export const userList = atom({
-  key: "userList",
-  default: [],
-});
-
 root.render(
   <React.StrictMode>
     <Router>

@@ -90,7 +90,8 @@ export default function User() {
                     gap: "1rem",
                   }}
                 >
-                  {cookie.token === undefined ? (
+                  {cookie.token === undefined ||
+                  user.userId == currentUser?.userId ? (
                     ""
                   ) : (
                     <Button
@@ -102,6 +103,7 @@ export default function User() {
                         color: "white",
                       }}
                     >
+                      {}
                       <Link
                         href={`/chat/${id}`}
                         sx={{

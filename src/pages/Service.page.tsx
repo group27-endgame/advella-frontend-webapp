@@ -646,7 +646,7 @@ export default function Service() {
                   }}
                 >
                   <Link
-                    href={`/user/${userId}`}
+                    href={`/chat/${userId}`}
                     sx={{
                       color: "white",
                       textDecoration: "none",

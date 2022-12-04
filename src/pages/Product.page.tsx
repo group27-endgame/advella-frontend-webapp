@@ -513,9 +513,7 @@ export default function Product() {
                     name="bidAmount"
                     type="number"
                     value={newBid}
-                    InputProps={{
-                      inputProps: { min: { currentBid } },
-                    }}
+                    InputProps={{ inputProps: { min: 0 } }}
                     disabled={
                       status === "closed" ||
                       status === "Closed" ||

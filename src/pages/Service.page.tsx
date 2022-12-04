@@ -547,6 +547,7 @@ export default function Service() {
                     label="Bid amount"
                     name="bidAmount"
                     type="number"
+                    InputProps={{ inputProps: { min: 0 } }}
                     value={newBid}
                     onChange={(e) => setNewBid(Number(e.target.value))}
                     sx={{ maxWidth: { md: "25%" } }}

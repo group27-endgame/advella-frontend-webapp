@@ -79,8 +79,17 @@ export default function Search() {
         ) : (
           <div>
             <Grid container spacing={3}>
+              {productsAndServices.length === 0 ? (
+                <Grid item xs={12}>
+                  <Typography fontSize={20}> No results</Typography>
+                </Grid>
+              ) : (
+                ""
+              )}
+
               {productsAndServices.map((name: any, index: number) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  {name}
                   {name.productId ? (
                     <ServiceCard
                       id={name.productId}

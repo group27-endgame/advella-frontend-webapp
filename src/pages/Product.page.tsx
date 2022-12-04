@@ -412,7 +412,7 @@ export default function Product() {
                                 }}
                               >
                                 <Link
-                                  href={`/user/${highestBidder?.userId}`}
+                                  href={`/chat/${highestBidder?.userId}`}
                                   sx={{
                                     color: "white",
                                     textDecoration: "none",
@@ -573,9 +573,17 @@ export default function Product() {
                   alignItems: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography fontSize={20} className="userName">
-                  {username}
-                </Typography>
+                <Link
+                  href={`/chat/${user?.userId}`}
+                  sx={{
+                    color: "black",
+                    textDecoration: "none",
+                  }}
+                >
+                  <Typography fontSize={20} className="userName">
+                    {username}
+                  </Typography>
+                </Link>
               </Box>
               <Box
                 sx={{

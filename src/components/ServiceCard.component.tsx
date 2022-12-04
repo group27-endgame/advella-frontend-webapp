@@ -60,27 +60,36 @@ export default function ServiceCard(this: any, props: CardProps) {
   return (
     <React.Fragment>
       <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <CardHeader
-          className="title-line-clamp"
-          avatar={
-            <Avatar
-              sx={{ bgcolor: red[500], textTransform: "uppercase" }}
-              aria-label="recipe"
-            >
-              {props.posted !== undefined
-                ? props.posted?.charAt(0).toUpperCase()
-                : props.username?.charAt(0).toUpperCase()
-                ? props.username?.charAt(0).toUpperCase()
-                : ""}
-            </Avatar>
+        <Link
+          sx={{ textDecoration: "none" }}
+          href={
+            props.type === "service"
+              ? "/service/" + props.id
+              : "/product/" + props.id
           }
-          title={props.type === "product" ? props.title : props.serviceTitle}
-          subheader={
-            "Price: " +
-            `${props.type === "product" ? props.price : props.servicePrice}` +
-            " dkk"
-          }
-        />
+        >
+          <CardHeader
+            className="title-line-clamp card"
+            avatar={
+              <Avatar
+                sx={{ bgcolor: red[500], textTransform: "uppercase" }}
+                aria-label="recipe"
+              >
+                {props.posted !== undefined
+                  ? props.posted?.charAt(0).toUpperCase()
+                  : props.username?.charAt(0).toUpperCase()
+                  ? props.username?.charAt(0).toUpperCase()
+                  : ""}
+              </Avatar>
+            }
+            title={props.type === "product" ? props.title : props.serviceTitle}
+            subheader={
+              "Price: " +
+              `${props.type === "product" ? props.price : props.servicePrice}` +
+              " dkk"
+            }
+          />
+        </Link>
         <Link
           href={
             props.type === "service"

@@ -65,6 +65,7 @@ export default function Service() {
 
   const [duration, setDuration] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const [isPostedUser, setIsPostedUser] = useState(false);
   const [otherListings, setOtherListings] = useState<any>([]);
@@ -107,7 +108,7 @@ export default function Service() {
       });
 
       setUserName(response?.posted?.username!);
-
+      setUser(response?.posted!);
       serviceService
         .getServiceCategory(response?.serviceCategory?.serviceCategoryId!)
         .then((cat) => {
@@ -513,7 +514,7 @@ export default function Service() {
                                 }}
                               >
                                 <Link
-                                  href={`/user/${item.userId}`}
+                                  href={`/chat/${item.userId}`}
                                   sx={{
                                     color: "white",
                                     textDecoration: "none",
@@ -602,9 +603,17 @@ export default function Service() {
                   alignItems: { xs: "center", sm: "flex-start" },
                 }}
               >
-                <Typography fontSize={20} className="userName">
-                  {username}
-                </Typography>
+                <Link
+                  href={`/chat/${user?.userId}`}
+                  sx={{
+                    color: "black",
+                    textDecoration: "none",
+                  }}
+                >
+                  <Typography fontSize={20} className="userName">
+                    {username}
+                  </Typography>
+                </Link>
               </Box>
               <Box
                 sx={{

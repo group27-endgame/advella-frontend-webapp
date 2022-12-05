@@ -111,7 +111,6 @@ export default function ServiceCard(this: any, props: CardProps) {
             sx={{ objectFit: "cover" }}
           />
         </Link>
-        <div>{props.image}</div>
 
         <CardContent>
           <Typography

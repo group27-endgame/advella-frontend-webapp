@@ -89,11 +89,10 @@ export default function Search() {
 
               {productsAndServices.map((name: any, index: number) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  {name}
                   {name.productId ? (
                     <ServiceCard
                       id={name.productId}
-                      image={name.image}
+                      image={name.productImages?.[0]?.path}
                       title={name.title}
                       description={name.detail}
                       price={name.moneyAmount}
@@ -103,7 +102,7 @@ export default function Search() {
                   ) : (
                     <ServiceCard
                       id={name.serviceId}
-                      image={name.image}
+                      image={name.serviceImages?.[0]?.path}
                       serviceDescription={name.detail}
                       price={name.service}
                       type={"service"}

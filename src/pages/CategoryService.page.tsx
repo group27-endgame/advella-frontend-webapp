@@ -28,7 +28,6 @@ export default function CategoryService() {
       if (mounted) {
         setServices(response);
         setServicesCopy(response);
-        console.log(response);
 
         serviceService
           .getServiceCategory(Number(categoryId))

@@ -161,7 +161,7 @@ export default function Product() {
         }
       });
     });
-  }, [isPostedUser, status, newBid, highestBidder, newHighestBidder]);
+  }, [isPostedUser, status, newBid, currentBid]);
 
   const style = {
     position: "absolute" as "absolute",

@@ -298,7 +298,6 @@ function Navbar() {
             chat?.[0]?.chatId.length >= 7
               ? chat?.[0]?.chatId?.slice(0, 3)
               : chat?.[0]?.chatId?.slice(0, 2);
-          console.log(item);
 
           setChat(item);
         }

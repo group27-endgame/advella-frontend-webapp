@@ -146,17 +146,14 @@ export default function Service() {
 
           setDuration(`${padTo2Digits(hours)}:${padTo2Digits(minutes)} hours`);
         });
-      serviceService.getHighestBidder(Number(serviceId)).then((resp) => {
-        if (resp !== null || resp !== undefined) {
-          setHighestBidder(resp);
-        }
-      });
+    });
+    serviceService.getHighestBidder(Number(serviceId)).then((resp) => {
+      setHighestBidder(resp);
+    });
 
-      serviceService.getAllBidders(Number(serviceId)).then((bidders) => {
-        if (bidders !== null || bidders !== undefined) {
-          setBidders(bidders);
-        }
-      });
+    serviceService.getAllBidders(Number(serviceId)).then((bidders) => {
+      console.log(bidders);
+      setBidders(bidders);
     });
 
     userService.getCurrentUser(cookie.token).then((resp) => {
@@ -177,7 +174,8 @@ export default function Service() {
         }
       });
     });
-  }, [isPostedUser, status, newBid, highestBidder, newHighestBidder]);
+    console.log(status);
+  }, [isPostedUser, status, newBid, currentBid]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -239,6 +237,8 @@ export default function Service() {
           });
       });
     } else {
+      setNewHighestBidder(false);
+
       setOpenErrorSnackbar(true);
       setTimeout(() => {
         setOpenErrorSnackbar(false);
@@ -494,10 +494,10 @@ export default function Service() {
                                   {item.username} - &#8203;
                                 </Typography>
                                 <Typography>
-                                  {item.bidProducts?.map((it, ind) => {
+                                  {item.bidServices?.map((it, ind) => {
                                     return (
                                       <div key={ind}>
-                                        {Number(it.id.product) ===
+                                        {Number(it.id.service) ===
                                         Number(serviceId)
                                           ? it.amount + "dkk"
                                           : ""}

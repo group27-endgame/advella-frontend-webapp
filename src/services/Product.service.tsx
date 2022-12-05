@@ -59,7 +59,6 @@ export default class Product {
       }
 
       product = response.data;
-      console.log(product);
       return product;
     } catch (error) {
       console.error(error);

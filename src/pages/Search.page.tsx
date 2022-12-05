@@ -26,7 +26,6 @@ export default function Search() {
       .getCategoriesAndServices(param?.searchedQuery!)
       .then((response) => {
         setLoading(false);
-        console.log(response);
         setProductsAndServices(response);
       });
     return () => {

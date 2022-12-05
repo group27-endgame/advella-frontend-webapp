@@ -81,7 +81,6 @@ export default function NewListing() {
     imageList: ImageListType,
     addUpdateIndex: number[] | undefined
   ) => {
-    console.log(imageList, addUpdateIndex);
     setImages(imageList);
   };
 

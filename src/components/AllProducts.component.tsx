@@ -50,7 +50,7 @@ export default function AllProducts() {
               {name.productId ? (
                 <ServiceCard
                   id={name.productId}
-                  image={name.image}
+                  image={name.productImages?.[0]?.path}
                   title={name.title}
                   description={name.detail}
                   price={name.moneyAmount}
@@ -61,7 +61,7 @@ export default function AllProducts() {
                 <ServiceCard
                   id={name.serviceId}
                   serviceDescription={name.detail}
-                  image={name.image}
+                  image={name.serviceImages?.[0]?.path}
                   price={name.service}
                   type={"service"}
                   serviceTitle={name.title}

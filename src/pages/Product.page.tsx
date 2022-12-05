@@ -572,7 +572,7 @@ export default function Product() {
                 }}
               >
                 <Link
-                  href={`/chat/${user?.userId}`}
+                  href={`/user/${user?.userId}`}
                   sx={{
                     color: "black",
                     textDecoration: "none",

@@ -79,6 +79,8 @@ export default function Product() {
   const [otherListings, setOtherListings] = useState<any>([]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     productService.getProductById(Number(productId)).then((response) => {
       let array: any = [];
       document.title = "Advella -  " + response?.title;

@@ -94,6 +94,8 @@ export default function Service() {
   const [highestBidder, setHighestBidder] = useState<User | null>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     serviceService.getServiceById(Number(serviceId)).then((response) => {
       let array: any = [];
 

@@ -736,7 +736,7 @@ export default function Service() {
                     {name.productId ? (
                       <ServiceCard
                         id={name.productId}
-                        image={name.image}
+                        image={name.productImages?.[0]?.path}
                         title={name.title}
                         description={name.detail}
                         price={name.moneyAmount}
@@ -746,7 +746,7 @@ export default function Service() {
                     ) : (
                       <ServiceCard
                         id={name.serviceId}
-                        image={name.image}
+                        image={name.serviceImages?.[0]?.path}
                         serviceDescription={name.detail}
                         price={name.service}
                         type={"service"}

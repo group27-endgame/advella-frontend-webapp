@@ -123,7 +123,7 @@ export function SendingMessages() {
 
   useEffect(() => {
     if (matches) {
-      const height = window.innerHeight - 200;
+      const height = window.innerHeight;
       setHeight(height);
     } else {
       const height = window.innerHeight - 250;
@@ -544,7 +544,7 @@ export function SendingMessages() {
             sx={{
               overflowY: "auto",
               height: "100%",
-              paddingTop: { xs: "100px", sm: 0 },
+              paddingTop: { xs: "100px", sm: "50px" },
             }}
             className="chat"
           >
@@ -616,31 +616,33 @@ export function SendingMessages() {
               })}
             </ScrollToBottom>
           </List>
-          <Grid container style={{ padding: "20px" }}>
-            <Grid item xs={10} sm={11}>
-              <TextField
-                id="outlined-basic-email"
-                label="Type Something"
-                fullWidth
-                value={input}
-                onKeyDown={(e: any) =>
-                  e.keyCode === 13 ? sendMessage() : null
-                }
-                onChange={(event) => setInput(event.target.value)}
-              />
+          <div>
+            <Grid container style={{ padding: "20px" }}>
+              <Grid item xs={10} sm={11}>
+                <TextField
+                  id="outlined-basic-email"
+                  label="Type Something"
+                  fullWidth
+                  value={input}
+                  onKeyDown={(e: any) =>
+                    e.keyCode === 13 ? sendMessage() : null
+                  }
+                  onChange={(event) => setInput(event.target.value)}
+                />
+              </Grid>
+              <Grid xs={2} sm={1} sx={{ textAlign: "right" }}>
+                <Fab
+                  color="primary"
+                  aria-label="add"
+                  onClick={() => {
+                    sendMessage();
+                  }}
+                >
+                  <SendIcon />
+                </Fab>
+              </Grid>{" "}
             </Grid>
-            <Grid xs={2} sm={1} sx={{ textAlign: "right" }}>
-              <Fab
-                color="primary"
-                aria-label="add"
-                onClick={() => {
-                  sendMessage();
-                }}
-              >
-                <SendIcon />
-              </Fab>
-            </Grid>{" "}
-          </Grid>
+          </div>
 
           {/* bottom for sending message className="chat-bar" */}
         </Grid>
